@@ -1,6 +1,6 @@
 ## **PYTHON**
 
-Typy wbudowane:
+###   Typy wbudowane:
 -   `str`  – string, tekstowy typ danych,
 -   `int`  – liczba,
 -   `float`  – liczba zmiennoprzecinkowa,

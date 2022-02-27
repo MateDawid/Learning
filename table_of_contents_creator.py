@@ -27,7 +27,8 @@ class TableGenerator:
     def get_sections(self):
         sections = []
         for line in self.file_lines:
-            if line.startswith('##') and line != self.TABLE_OF_CONTENT_HEADER:
+            cleaned_line = line.replace('\n', '').strip()
+            if cleaned_line.startswith('##') and cleaned_line != self.TABLE_OF_CONTENT_HEADER:
                 line = line.strip()
                 level = self.get_level(line)
                 line = line.replace('#', '').strip()
@@ -46,7 +47,6 @@ class TableGenerator:
             f.write(self.file_header)
             f.write('\n')
             f.write(self.table_of_contents)
-            f.write('\n')
             for line in self.file_lines:
                 cleaned_line = line.replace('\n', '').strip()
                 if cleaned_line not in [self.file_header, self.TABLE_OF_CONTENT_HEADER] and not re.match('\* \[.*]\(#.*\)$', cleaned_line):

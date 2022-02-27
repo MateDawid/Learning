@@ -19,35 +19,35 @@ commit
 stage
 
 ##   KOMENDY
-- ### git config
+### git config
 ```bash
 git config --global user.name "<username>"
 git config --global user.email "<email>"
 ```
-- ### git init
+### git init
 ```bash
 git init
 ```
- - ### git remote
+ ### git remote
 ```bash
 git remote add origin "<remote_repository_url>"
 ```
-- ### git clone
+### git clone
 Klonowanie repozytorium z podanego linka
 ```bash
 git clone "<remote_repository_url>"
 ```
-- ### git pull
+### git pull
 Aktualizowanie lokalnego repozytorium o nowe commity z repozytorium centralnego z aktualnego brancha 
 ```bash
 git pull
 ```
-- ### git status
+### git status
 ```bash
 git status
 ```
 
-- ### git push
+### git push
 Wypychanie zmian na aktualnym branchu z lokalnego repozytorium do repozytorium centralnego 
 ```bash
 git push

@@ -1,72 +1,171 @@
-# **PYTHON**
+
 ## SPIS TREŚCI
-* [Typy wbudowane](#Typy-wbudowane)
-* [__init__](#__init__)
-* [lambda](#lambda)
-* [Kopiowanie obiektów](#Kopiowanie-obiektów)
-* [Zakresy](#Zakresy)
-* [Przestrzenie nazw](#Przestrzenie-nazw)
-* [Różnica między modułem i paczką](#Różnica-między-modułem-i-paczką)
-* [Różnica między listą i tablicą](#Różnica-między-listą-i-tablicą)
-* [PYTHONPATH](#PYTHONPATH)
-* [PEP8](#PEP8)
-
-##   Typy wbudowane
--   `str`  – string, tekstowy typ danych,
--   `int`  – liczba,
--   `float`  – liczba zmiennoprzecinkowa,
--   `complex`  – liczba zespolona,
--   `list`  – lista
--   `tuple`  – kortka
--   `range`  – zakres, liczby naturalne stanowiące szereg arytmetyczny,
--   `dict`  – słownik,
--   `set`  – zbiór,
--   `frozenset`  – zbiór niemutowalny,
--   `bool`  – logika boolowska,
--   `bytes`  – konwersja ciągu na bajty,
--   `bytearray`  – mutowalny wariant bytes,
--   `memoryview`  – dostęp do wewnętrznych danych obiektów obsługujących bufory protokołów.
-
-
-## __init__
-
-Jest to metoda specjalna wywoływana automatycznie podczas po utworzeniu instancji klasy. Dzięki niej możliwe jest na przykład doczytanie kodu czy automatycznie dodanie atrybutów zawsze, gdy tworzony będzie nowy obiekt lub instancja. Pozwala także odróżnić metody i atrybuty klasy od lokalnych zmiennych.
-
-## lambda
-
-Lambda w Pythonie to funkcja, która może przyjąć każdą liczbę argumentów, ale mieć tylko jedno wyrażenie. Co ważne, jest to funkcja anonimowa, a zatem nie jest powiązana z żadnym identyfikatorem. Pozwala wyeliminować funkcję zainicjowane na potrzeby funkcji wyższego rzędu i przekazać jej parametry
-
-## Kopiowanie obiektów
-
-W Pythonie kopiowanie nie odbywa się z użyciem operatora  `=`. Wówczas jedynie tworzymy powiązanie istniejącym już obiektem a docelową nazwą zmiennej. Zamiast wspomnianego operatora, w Pythonie wykorzystuje się moduł copy. Mamy dzięki niemu dwie możliwości kopiowania: płytkie i głębokie. W pierwszym przypadku tworzy się bitową kopię 1:1, zaś głęboka kopia pozwala na re kursywne kopiowanie wszystkich wartości. Składnia:
-
+* [String](#String)
+	* [Zamiana elementów stringa](#Zamiana-elementów-stringa)
+* [List](#List)
+	* [Lista niepowtarzalnych elementów](#Lista-niepowtarzalnych-elementów)
+	* [Różnice między listą, a krotką](#Różnice-między-listą,-a-krotką)
+	* [Odwrócenie listy](#Odwrócenie-listy)
+	* [List comprehension](#List-comprehension)
+* [Dictionary](#Dictionary)
+	* [Poprawne tworzenie słowników](#Poprawne-tworzenie-słowników)
+	* [Dict comprehension](#Dict-comprehension)
+* [Use cases](#Use-cases)
+	* [Palindrom](#Palindrom)
+* [DO ROZŁOŻENIA](#DO-ROZŁOŻENIA)
+	* [Typy wbudowane](#Typy-wbudowane)
+	* [\_\_init\_\_](#\_\_init\_\_)
+	* [lambda](#lambda)
+	* [Kopiowanie obiektów](#Kopiowanie-obiektów)
+	* [Zakresy](#Zakresy)
+	* [Przestrzenie nazw](#Przestrzenie-nazw)
+	* [Różnica między modułem i paczką](#Różnica-między-modułem-i-paczką)
+	* [Różnica między listą i tablicą](#Różnica-między-listą-i-tablicą)
+	* [PYTHONPATH](#PYTHONPATH)
+	* [PEP8](#PEP8)
+# **PYTHON**  
+## String
+### Zamiana elementów stringa
 ```python
-list_1 = [1, 2, 3]
-list_2 = copy(list_1) # płytkie kopiowanie
-list_3 = deepcopy(list_1) # głębokie kopiowanie
+a = "abcdefg"            # do zmiennej a przypisz zostaje string 'abcdefg'
+print(a[1])              # wydrukuj element znajdujący się pod indeksem 1 w stringu a
+# a[1] = 'X'             # próba modyfikacji stringa - operacja zabroniona skutkująca TypeError
+a_list = list(a)        # stwórz listę a_list zawierającą litery ze stringa a
+a_list[1] = 'X'         # zmodyfikuj zawartość listy pod indeksem 1
+a = "".join(a_lista)     # stwórz stringa a łącząc elementy listy a_list przy użyciu pustego separatora ""
+print(a)
 ```
-## Zakresy
-
-Zakresy, czy też scope’y, w Pythonie nie różnią się od tego, co znamy z innych języków programowania. Scope to blok kodu, w którym działa dany obiekt i tylko w nim jest dostępny. Na przykład lokalny zakres odnosi się do wszystkich obiektów w danej funkcji, zaś zakres globalny będzie zawierał wszystkie obiekty w całym kodzie.
-
-## Przestrzenie nazw
-
-W pewnym sensie powiązane z zakresami są przestrzenie nazw. Są to zakresy zapewniające nam to, że nazwa danego obiektu będzie unikalna i że można z nich będzie korzystać bez ryzyka wystąpienia jakichkolwiek konfliktów. To swojego rodzaju zbiór nazw i definicji, które mogą mieć zastosowanie lokalne (podobnie jak zakresy, w obrębie funkcji), ale także globalnie, które określają nazwy dla całego kodu, zaimportowanych paczek. W Pythonie funkcjonują także wbudowane przestrzenie nazw kluczowych funkcji w tym języku, dzięki którym możemy mieć pewność, że utworzony przez nas obiekt nie będzie w konflikcie z którąkolwiek z wbudowanych funkcji Pythona.
-
-## Różnica między modułem i paczką
-
-Zarówno moduły jak i paczki wykorzystywane są do modularyzacji kodu, co przekłada się na jego łatwość w utrzymaniu i ułatwia pracę z omówionymi już zakresami. Moduły są plikami zawierający zestaw zdefiniowanych instrukcji, klas i zmiennych. Można zaimportować zarówno całe moduły, jak i ich części.
-
-Paczka w Pythonie zazwyczaj składa się z kilku modułów. Jest ona jednak na tyle przydatna, że określa dla nich przestrzenie nazw i eliminuje konflikty pomiędzy poszczególnymi modułami.
-
-## Różnica między listą i tablicą
-
-Tablice w Pythonie są homogeniczne. Oznacza to, że zawierają dane tylko i wyłącznie jednego typu. W przypadku list nie ma tego ograniczenia i swobodnie można wewnątrz nich zawrzeć np. liczby i stringi. Warto wspomnieć, że homogeniczne listy zużywają znacznie mniej pamięci.
-
-## PYTHONPATH
-
-`PYTHONPATH`  to zmienna środowiskowa pozwalająca wskazać dodatkowe lokalizacje, z których Python będzie mógł zaciągnąć moduły i paczki.
-
-## PEP8
-
+## List
+### Lista niepowtarzalnych elementów
+```python 
+A = [1,2,3,3,2,1,2,3]
+# rozwiązanie 1
+B = []
+for element in A:
+  if element not in B:
+    B.append(element)
+print(B)
+# rozwiązanie 2
+B = list(set(A))
+print(B)
+```
+### Różnice między listą, a krotką
+```python
+L = [1, 2, 3, True, (1, 2)]
+T = (4, 5, 6, False, ['x', 'y'])
+L[2] = 'trzy'   # modyfikacja zawartości listy - operacja legalna
+T[2] = 'sześć'  # próba modyfikacji zawartości tupli - operacja zabroniona, skutkuje TypeError
+```
+### Odwrócenie listy
+```python
+languages = ['Python', 'Java', 'C#', 'Ruby']
+# 1
+languages .reverse()             # odwróć listę languages (nastąpi nadpisanie wcześniejszej listy)
+reversed_languages = languages # przypisz wartość listy languages do nowej zmiennej reversed_languages
+# 2
+reversed_languages= list(reversed(languages))  # stwórz listę na podstawie obiektu zawierającego odwrócone elementy listy languages i przypisz do reversed_languages
+# 3
+reversed_languages = languages[::-1]            # do zmiennej reversed_languages przypisz wartosci listy languages odczytane od tyłu
+# 4
+reversed_languages = []                  # stworz pusta liste reversed_languages 
+for language in languages:                   # dla kolejnego jezyka w liscie languages
+    reversed_languages.insert(0,language)   # umiesc ten jezyk na indeksie zerowym listy reversed_languages
+```
+### List comprehension
+```python
+L = [1,2,3,4,5,6]
+L1 = [x for x in range(5)]        # elementy z zakresu od 0 do 4
+L2 = [x**2 for x in L]            # elementy z listy L podniesione do kwadratu
+L3 = [x for x in L if x % 2 == 0] # elementy z listy L, tylko jeśli dany element jest podzielny przez 2
+L4 = ['Parzysta' if x%2 == 0 else 'Nieparzysta' for x in range(5)]
+                                  # 'Parzysta' lub 'Nieparzysta' w zależności od tego czy kolejny element
+                                  # z zakresu 0 do 4 jest podzielny lub nie jest podzielny przez 2
+L5 = [(x, x+10) for x in L]       # dwuelementowe tuple, które na indeksie 0 mają kolejny element z listy L
+                                  # a na indeksie 1 ten sam element zwiększony o 10
+```
+## Dictionary
+### Poprawne tworzenie słowników
+Klucze słownika muszą być elementem niemutowalnym, a więc mogą być typu int, string lub tuple, ale nie mogą być listą lub innym słownikiem.
+```python
+A = {1: 1, 2: 4, 3: 9}
+B = {'imie': 'Anna', 'nazwisko': 'Kowalska'}
+# C = {[4, 5]: [16, 25]}    # lista jako element mutowalny nie może byc kluczem słownika!
+D = {(4, 5): [16, 25]}
+# E = {{1:2}: 'jeden_dwa'}  # słownik jako element mutowalny równiez nie może być kluczem!
+```
+### Dict comprehension
+```python
+L = [1,2,3,4,5,6]
+D1 = {x:x % 2 == 0 for x in L}   
+# pary klucz:wartość, gdzie kluczem są elementy z listy L a wartościami 
+# True lub False, w zależności od tego czy dany klucz jest podzielny przez 2
+```
+## Use cases
+### Palindrom
+```python
+#1
+def is_palindrome(word):
+    reversed_word= word[::-1]     # utworz zmienna slowo_odwrocone odwracając przy użyciu sliców
+    if word== reversed_word:      # jeśli slowo jest równe slowo_odwrocone
+        return True               # zwróć True
+    else:                         # w przeciwnym wypadku
+        return False              # zwróć False
+#2
+def is_palindrome(word):
+    return True if word== slowo[::-1] else False
+    # zwróć True jeśli slowo jest rowne samemu sobie przeczytanemu od tyłu, 
+    # w przeciwnym wypadku zwróć False
+#3
+def is_palindrome(word):
+    start = 0                             # stwórz indeks poczatkowy równy 0
+    end = len(word) - 1                   # stwórz indeks końcowy równy długości stringa zmniejszonej o 1
+    while start <= end:                   # wykonuj pętlę dopóki indeks poczatkowy jest mniejszy lub równy indeksowi końcowemu
+        if word[start ] != word[end]:     # jeśli wartosc zmiennej slowo od indeksu początkowego jest różna od wartości od indeksu końcowego
+            return False                  # zwróć False
+        else:                             # w przeciwnym wypadku
+            start += 1                    # zwiększ indeks początkowy o 1
+            end -= 1                      # zmniejsz indeks końcowy o 1
+    return True                           # jeśli funkcja dotarła do tego miejsca, to znaczy że słowo jest palindromem i funkcja zwraca True
+print(is_palindrome("kajak"))
+print(is_palindrome("anakonda"))
+```
+## DO ROZŁOŻENIA
+###   Typy wbudowane  
+- `str` – string, tekstowy typ danych,  
+- `int` – liczba,  
+- `float` – liczba zmiennoprzecinkowa,  
+- `complex` – liczba zespolona,  
+- `list` – lista  
+- `tuple` – kortka  
+- `range` – zakres, liczby naturalne stanowiące szereg arytmetyczny,  
+- `dict` – słownik,  
+- `set` – zbiór,  
+- `frozenset` – zbiór niemutowalny,  
+- `bool` – logika boolowska,  
+- `bytes` – konwersja ciągu na bajty,  
+- `bytearray` – mutowalny wariant bytes,  
+- `memoryview` – dostęp do wewnętrznych danych obiektów obsługujących bufory protokołów.  
+### \_\_init\_\_  
+Jest to metoda specjalna wywoływana automatycznie podczas po utworzeniu instancji klasy. Dzięki niej możliwe jest na przykład doczytanie kodu czy automatycznie dodanie atrybutów zawsze, gdy tworzony będzie nowy obiekt lub instancja. Pozwala także odróżnić metody i atrybuty klasy od lokalnych zmiennych.  
+### lambda  
+Lambda w Pythonie to funkcja, która może przyjąć każdą liczbę argumentów, ale mieć tylko jedno wyrażenie. Co ważne, jest to funkcja anonimowa, a zatem nie jest powiązana z żadnym identyfikatorem. Pozwala wyeliminować funkcję zainicjowane na potrzeby funkcji wyższego rzędu i przekazać jej parametry  
+### Kopiowanie obiektów  
+W Pythonie kopiowanie nie odbywa się z użyciem operatora  `=`. Wówczas jedynie tworzymy powiązanie istniejącym już obiektem a docelową nazwą zmiennej. Zamiast wspomnianego operatora, w Pythonie wykorzystuje się moduł copy. Mamy dzięki niemu dwie możliwości kopiowania: płytkie i głębokie. W pierwszym przypadku tworzy się bitową kopię 1:1, zaś głęboka kopia pozwala na re kursywne kopiowanie wszystkich wartości. Składnia:  
+```python  
+list_1 = [1, 2, 3]  
+list_2 = copy(list_1) # płytkie kopiowanie  
+list_3 = deepcopy(list_1) # głębokie kopiowanie  
+```  
+### Zakresy  
+Zakresy, czy też scope’y, w Pythonie nie różnią się od tego, co znamy z innych języków programowania. Scope to blok kodu, w którym działa dany obiekt i tylko w nim jest dostępny. Na przykład lokalny zakres odnosi się do wszystkich obiektów w danej funkcji, zaś zakres globalny będzie zawierał wszystkie obiekty w całym kodzie.  
+### Przestrzenie nazw  
+W pewnym sensie powiązane z zakresami są przestrzenie nazw. Są to zakresy zapewniające nam to, że nazwa danego obiektu będzie unikalna i że można z nich będzie korzystać bez ryzyka wystąpienia jakichkolwiek konfliktów. To swojego rodzaju zbiór nazw i definicji, które mogą mieć zastosowanie lokalne (podobnie jak zakresy, w obrębie funkcji), ale także globalnie, które określają nazwy dla całego kodu, zaimportowanych paczek. W Pythonie funkcjonują także wbudowane przestrzenie nazw kluczowych funkcji w tym języku, dzięki którym możemy mieć pewność, że utworzony przez nas obiekt nie będzie w konflikcie z którąkolwiek z wbudowanych funkcji Pythona.  
+### Różnica między modułem i paczką  
+Zarówno moduły jak i paczki wykorzystywane są do modularyzacji kodu, co przekłada się na jego łatwość w utrzymaniu i ułatwia pracę z omówionymi już zakresami. Moduły są plikami zawierający zestaw zdefiniowanych instrukcji, klas i zmiennych. Można zaimportować zarówno całe moduły, jak i ich części.  
+Paczka w Pythonie zazwyczaj składa się z kilku modułów. Jest ona jednak na tyle przydatna, że określa dla nich przestrzenie nazw i eliminuje konflikty pomiędzy poszczególnymi modułami.  
+### Różnica między listą i tablicą  
+Tablice w Pythonie są homogeniczne. Oznacza to, że zawierają dane tylko i wyłącznie jednego typu. W przypadku list nie ma tego ograniczenia i swobodnie można wewnątrz nich zawrzeć np. liczby i stringi. Warto wspomnieć, że homogeniczne listy zużywają znacznie mniej pamięci.  
+### PYTHONPATH  
+`PYTHONPATH` to zmienna środowiskowa pozwalająca wskazać dodatkowe lokalizacje, z których Python będzie mógł zaciągnąć moduły i paczki.  
+### PEP8  
 PEP 8 to opracowany jeszcze w 2001 r. dokument, w którym opisane zostały najlepsze praktyki w zakresie pisania czytelnego kodu w Pythonie. Stanowi część oficjalnej dokumentacji języka. Stanowi on powszechnie respektowaną normę i w zasadzie stanowi lekturę obowiązkową dla każdego, kto chce programować w Pythonie. Z treścią dokumentu zapoznać się można na  [oficjalnej stronie Pythona](https://www.python.org/dev/peps/pep-0008/#introduction).

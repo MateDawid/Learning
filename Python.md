@@ -1,21 +1,23 @@
 # **PYTHON**
 ## SPIS TREŚCI
-* [String](#String)
+* [SYNTAX](#SYNTAX)
+	* [Różnica między 'is', a '=='](#Różnica-między-'is',-a-'==')
+	* [Porównania łańcuchowe](#Porównania-łańcuchowe)
+	* [lambda](#lambda)
+* [STRING](#STRING)
 	* [Zamiana elementów stringa](#Zamiana-elementów-stringa)
-* [List](#List)
+* [LIST](#LIST)
 	* [Lista niepowtarzalnych elementów](#Lista-niepowtarzalnych-elementów)
 	* [Różnice między listą, a krotką](#Różnice-między-listą,-a-krotką)
 	* [Odwrócenie listy](#Odwrócenie-listy)
 	* [List comprehension](#List-comprehension)
-* [Dictionary](#Dictionary)
+* [DICTIONARY](#DICTIONARY)
 	* [Poprawne tworzenie słowników](#Poprawne-tworzenie-słowników)
 	* [Dict comprehension](#Dict-comprehension)
-* [Use cases](#Use-cases)
+* [USE CASES](#USE-CASES)
 	* [Palindrom](#Palindrom)
 * [DO ROZŁOŻENIA](#DO-ROZŁOŻENIA)
 	* [Typy wbudowane](#Typy-wbudowane)
-	* [\_\_init\_\_](#\_\_init\_\_)
-	* [lambda](#lambda)
 	* [Kopiowanie obiektów](#Kopiowanie-obiektów)
 	* [Zakresy](#Zakresy)
 	* [Przestrzenie nazw](#Przestrzenie-nazw)
@@ -23,8 +25,54 @@
 	* [Różnica między listą i tablicą](#Różnica-między-listą-i-tablicą)
 	* [PYTHONPATH](#PYTHONPATH)
 	* [PEP8](#PEP8)
+	* [\_\_init\_\_](#\_\_init\_\_)
 
-## String
+## SYNTAX
+### Różnica między 'is', a '=='
+```python
+print(1 == True) # == to operator porównania wartości
+print(1 is True) # is to operator porównania identyczności/tożsamości
+
+print(id(1), id(1), id(True))  # wydrukuj id integera 1 i booleana True
+
+print(2 ** 3 == 10 - 2)        # wydrukuj wynik porównania wartości dwóch równań
+
+A = [1,2,3]                    # stworzenie dwóch list o identycznej zawartości
+B = [1,2,3]                    # i przypisanych do innych zmiennych A i B
+print(A == B)                  # porównanie wartości list A i B
+print(A is B)                  # porównanie identyczności/tożsamośli list A i B
+
+a = 'abc'                    # stworzenie dwóch stringów o identycznej zawartości
+b = 'abc'                    # i przypisanych do innych zmiennych a i b
+print(a == b)                  # porównanie wartości stringów a i b
+print(a is b)                  # porównanie identyczności/tożsamości stringów a i b
+```
+### Porównania łańcuchowe
+```python
+print(False is False)
+print(True is False)
+print(False is False is False) # (False is False) and (False is False) -> (True) and (True) -> True
+print(1 < 3 == 5)              # (1 < 3) and (3 == 5) -> (True) and (False) -> False
+```
+Wszystkie porównania łańcuchowe w Pythonie traktowane są wg tego samego schematu: porównanie rozbijane jest na dwuelementowe podgrupy połączone operatorem 'and' Przykładowo, porównanie czteroelementowe zostanie potraktowane następująco:
+```python
+A is B == C > D  -> (A is B) and (B == C) and (C > D)
+```
+ Analogicznie postępujemy dla pięciu i więcej elementów.
+### lambda  
+Lambda w Pythonie to funkcja, która może przyjąć każdą liczbę argumentów, ale mieć tylko jedno wyrażenie. Co ważne, jest to funkcja anonimowa, a zatem nie jest powiązana z żadnym identyfikatorem. Pozwala wyeliminować funkcję zainicjowane na potrzeby funkcji wyższego rzędu i przekazać jej parametry.
+```python
+# lambda argument : wyrażenie
+# lambda x:x+2
+
+L = [('Anna',82), ('Robert',33), ('Arthur',40), ('John',56)]
+# Funkcja sorted pobiera sekwencję danych do posortowania i klucz, po którym będzie sortować.
+# Sekwencją jest lista L, a kluczem lambda, która dla kolejnego elementu listy L (czyli tupli)
+# zwraca drugi element danej tupli.
+L_sorted = sorted(L, key = lambda x:x[1])
+```
+
+## STRING
 ### Zamiana elementów stringa
 ```python
 a = "abcdefg"            # do zmiennej a przypisz zostaje string 'abcdefg'
@@ -35,7 +83,7 @@ a_list[1] = 'X'         # zmodyfikuj zawartość listy pod indeksem 1
 a = "".join(a_lista)     # stwórz stringa a łącząc elementy listy a_list przy użyciu pustego separatora ""
 print(a)
 ```
-## List
+## LIST
 ### Lista niepowtarzalnych elementów
 ```python 
 A = [1,2,3,3,2,1,2,3]
@@ -83,7 +131,7 @@ L4 = ['Parzysta' if x%2 == 0 else 'Nieparzysta' for x in range(5)]
 L5 = [(x, x+10) for x in L]       # dwuelementowe tuple, które na indeksie 0 mają kolejny element z listy L
                                   # a na indeksie 1 ten sam element zwiększony o 10
 ```
-## Dictionary
+## DICTIONARY
 ### Poprawne tworzenie słowników
 Klucze słownika muszą być elementem niemutowalnym, a więc mogą być typu int, string lub tuple, ale nie mogą być listą lub innym słownikiem.
 ```python
@@ -100,7 +148,7 @@ D1 = {x:x % 2 == 0 for x in L}
 # pary klucz:wartość, gdzie kluczem są elementy z listy L a wartościami 
 # True lub False, w zależności od tego czy dany klucz jest podzielny przez 2
 ```
-## Use cases
+## USE CASES
 ### Palindrom
 ```python
 #1
@@ -145,10 +193,7 @@ print(is_palindrome("anakonda"))
 - `bytes` – konwersja ciągu na bajty,  
 - `bytearray` – mutowalny wariant bytes,  
 - `memoryview` – dostęp do wewnętrznych danych obiektów obsługujących bufory protokołów.  
-### \_\_init\_\_  
-Jest to metoda specjalna wywoływana automatycznie podczas po utworzeniu instancji klasy. Dzięki niej możliwe jest na przykład doczytanie kodu czy automatycznie dodanie atrybutów zawsze, gdy tworzony będzie nowy obiekt lub instancja. Pozwala także odróżnić metody i atrybuty klasy od lokalnych zmiennych.  
-### lambda  
-Lambda w Pythonie to funkcja, która może przyjąć każdą liczbę argumentów, ale mieć tylko jedno wyrażenie. Co ważne, jest to funkcja anonimowa, a zatem nie jest powiązana z żadnym identyfikatorem. Pozwala wyeliminować funkcję zainicjowane na potrzeby funkcji wyższego rzędu i przekazać jej parametry  
+
 ### Kopiowanie obiektów  
 W Pythonie kopiowanie nie odbywa się z użyciem operatora  `=`. Wówczas jedynie tworzymy powiązanie istniejącym już obiektem a docelową nazwą zmiennej. Zamiast wspomnianego operatora, w Pythonie wykorzystuje się moduł copy. Mamy dzięki niemu dwie możliwości kopiowania: płytkie i głębokie. W pierwszym przypadku tworzy się bitową kopię 1:1, zaś głęboka kopia pozwala na re kursywne kopiowanie wszystkich wartości. Składnia:  
 ```python  
@@ -169,3 +214,5 @@ Tablice w Pythonie są homogeniczne. Oznacza to, że zawierają dane tylko i wy�
 `PYTHONPATH` to zmienna środowiskowa pozwalająca wskazać dodatkowe lokalizacje, z których Python będzie mógł zaciągnąć moduły i paczki.  
 ### PEP8  
 PEP 8 to opracowany jeszcze w 2001 r. dokument, w którym opisane zostały najlepsze praktyki w zakresie pisania czytelnego kodu w Pythonie. Stanowi część oficjalnej dokumentacji języka. Stanowi on powszechnie respektowaną normę i w zasadzie stanowi lekturę obowiązkową dla każdego, kto chce programować w Pythonie. Z treścią dokumentu zapoznać się można na  [oficjalnej stronie Pythona](https://www.python.org/dev/peps/pep-0008/#introduction).
+### \_\_init\_\_  
+Jest to metoda specjalna wywoływana automatycznie podczas po utworzeniu instancji klasy. Dzięki niej możliwe jest na przykład doczytanie kodu czy automatycznie dodanie atrybutów zawsze, gdy tworzony będzie nowy obiekt lub instancja. Pozwala także odróżnić metody i atrybuty klasy od lokalnych zmiennych.  

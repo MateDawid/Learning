@@ -1,4 +1,4 @@
-
+# **PYTHON**
 ## SPIS TREŚCI
 * [String](#String)
 	* [Zamiana elementów stringa](#Zamiana-elementów-stringa)
@@ -23,7 +23,7 @@
 	* [Różnica między listą i tablicą](#Różnica-między-listą-i-tablicą)
 	* [PYTHONPATH](#PYTHONPATH)
 	* [PEP8](#PEP8)
-# **PYTHON**  
+
 ## String
 ### Zamiana elementów stringa
 ```python

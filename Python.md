@@ -9,6 +9,8 @@
 * [LIST](#LIST)
 	* [Lista niepowtarzalnych elementów](#Lista-niepowtarzalnych-elementów)
 	* [Różnice między listą, a krotką](#Różnice-między-listą,-a-krotką)
+	* [Różnice między listą, a tablicą](#Różnice-między-listą,-a-tablicą)
+	* [Kopiowanie list](#Kopiowanie-list)
 	* [Odwrócenie listy](#Odwrócenie-listy)
 	* [List comprehension](#List-comprehension)
 * [DICTIONARY](#DICTIONARY)
@@ -104,6 +106,20 @@ T = (4, 5, 6, False, ['x', 'y'])
 L[2] = 'trzy'   # modyfikacja zawartości listy - operacja legalna
 T[2] = 'sześć'  # próba modyfikacji zawartości tupli - operacja zabroniona, skutkuje TypeError
 ```
+### Różnice między listą, a tablicą  
+Tablice w Pythonie są homogeniczne. Oznacza to, że zawierają dane tylko i wyłącznie jednego typu. W przypadku list nie ma tego ograniczenia i swobodnie można wewnątrz nich zawrzeć np. liczby i stringi. Warto wspomnieć, że homogeniczne listy zużywają znacznie mniej pamięci.  
+### Kopiowanie list
+W Pythonie kopiowanie nie odbywa się z użyciem operatora  `=`. Wówczas jedynie tworzymy powiązanie między istniejącym już obiektem a docelową nazwą zmiennej. Zamiast wspomnianego operatora, w Pythonie wykorzystuje się moduł copy. Mamy dzięki niemu dwie możliwości kopiowania: płytkie i głębokie. W pierwszym przypadku tworzy się bitową kopię 1:1, zaś głęboka kopia pozwala na rekursywne kopiowanie wszystkich wartości. Składnia:  
+```python  
+list_1 = [1, 2, 3]  
+list_2 = copy(list_1) # płytkie kopiowanie  
+list_3 = deepcopy(list_1) # głębokie kopiowanie
+
+A = [1,2,3,4,5]         # do zmiennej A przypisujemy REFERENCJĘ do przechowywanej w pamięci listy
+B = A                   # do zmiennej B przepisujemy REFERENCJĘ do listy przechowywanej pod zmienną A.
+C = A[:] # C = list(A)  # do zmiennej C przypisujemy KOPIĘ listy przechowywanej pod zmienną A
+B[0] = 111              # zmieniamy pierwszy element listy, na który wskazują zarówno zmienne B jak i A
+```  
 ### Odwrócenie listy
 ```python
 languages = ['Python', 'Java', 'C#', 'Ruby']

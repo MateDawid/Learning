@@ -8,6 +8,7 @@
 	* [Uruchamianie aplikacji](#Uruchamianie-aplikacji)
 	* [Pierwsza migracja](#Pierwsza-migracja)
 	* [Tworzenie superusera](#Tworzenie-superusera)
+
 ##PRZYGOTOWANIE PROJEKTU
 ###Virtual Environment
 Przed rozpoczęciem nowego projektu konieczne jest założenie wirtualnego środowiska.

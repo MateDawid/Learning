@@ -1,34 +1,78 @@
 # **PYTHON**
 ## SPIS TREŚCI
+* [WŁAŚCIWOŚCI JĘZYKA](#WŁAŚCIWOŚCI-JĘZYKA)
+	* [Przestrzenie nazw](#Przestrzenie-nazw)
+	* [Różnica między modułem i paczką](#Różnica-między-modułem-i-paczką)
+	* [Zakresy](#Zakresy)
+	* [Typy wbudowane](#Typy-wbudowane)
+	* [PYTHONPATH](#PYTHONPATH)
+	* [PEP8](#PEP8)
 * [SYNTAX](#SYNTAX)
 	* [Różnica między 'is', a '=='](#Różnica-między-'is',-a-'==')
 	* [Porównania łańcuchowe](#Porównania-łańcuchowe)
 	* [lambda](#lambda)
+	* [map i filter](#map-i-filter)
+	* [Dekoratory](#Dekoratory)
+	* [Generatory](#Generatory)
 * [STRING](#STRING)
 	* [Zamiana elementów stringa](#Zamiana-elementów-stringa)
 * [LIST](#LIST)
 	* [Lista niepowtarzalnych elementów](#Lista-niepowtarzalnych-elementów)
-	* [Różnice między listą, a krotką](#Różnice-między-listą,-a-krotką)
-	* [Różnice między listą, a tablicą](#Różnice-między-listą,-a-tablicą)
+	* [Różnice między listą i krotką](#Różnice-między-listą-i-krotką)
+	* [Różnice między listą i tablicą](#Różnice-między-listą-i-tablicą)
 	* [Kopiowanie list](#Kopiowanie-list)
 	* [Odwrócenie listy](#Odwrócenie-listy)
 	* [List comprehension](#List-comprehension)
 * [DICTIONARY](#DICTIONARY)
 	* [Poprawne tworzenie słowników](#Poprawne-tworzenie-słowników)
 	* [Dict comprehension](#Dict-comprehension)
+* [KLASY](#KLASY)
+	* [init](#init)
 * [USE CASES](#USE-CASES)
 	* [Palindrom](#Palindrom)
-* [DO ROZŁOŻENIA](#DO-ROZŁOŻENIA)
-	* [Typy wbudowane](#Typy-wbudowane)
-	* [Kopiowanie obiektów](#Kopiowanie-obiektów)
-	* [Zakresy](#Zakresy)
-	* [Przestrzenie nazw](#Przestrzenie-nazw)
-	* [Różnica między modułem i paczką](#Różnica-między-modułem-i-paczką)
-	* [Różnica między listą i tablicą](#Różnica-między-listą-i-tablicą)
-	* [PYTHONPATH](#PYTHONPATH)
-	* [PEP8](#PEP8)
-	* [\_\_init\_\_](#\_\_init\_\_)
+	* [Ciąg Fibonacciego](#Ciąg-Fibonacciego)
+	* [Tworzenie plików](#Tworzenie-plików)
 
+## WŁAŚCIWOŚCI JĘZYKA
+### Przestrzenie nazw  
+W pewnym sensie powiązane z zakresami są przestrzenie nazw. Są to zakresy zapewniające nam to, że nazwa danego obiektu będzie unikalna i że można z nich będzie korzystać bez ryzyka wystąpienia jakichkolwiek konfliktów. To swojego rodzaju zbiór nazw i definicji, które mogą mieć zastosowanie lokalne (podobnie jak zakresy, w obrębie funkcji), ale także globalnie, które określają nazwy dla całego kodu, zaimportowanych paczek. W Pythonie funkcjonują także wbudowane przestrzenie nazw kluczowych funkcji w tym języku, dzięki którym możemy mieć pewność, że utworzony przez nas obiekt nie będzie w konflikcie z którąkolwiek z wbudowanych funkcji Pythona.  
+### Różnica między modułem i paczką  
+Zarówno moduły jak i paczki wykorzystywane są do modularyzacji kodu, co przekłada się na jego łatwość w utrzymaniu i ułatwia pracę z omówionymi już zakresami. Moduły są plikami zawierający zestaw zdefiniowanych instrukcji, klas i zmiennych. Można zaimportować zarówno całe moduły, jak i ich części.  
+Paczka w Pythonie zazwyczaj składa się z kilku modułów. Jest ona jednak na tyle przydatna, że określa dla nich przestrzenie nazw i eliminuje konflikty pomiędzy poszczególnymi modułami.  
+### Zakresy  
+Zakresy, czy też scope’y, w Pythonie nie różnią się od tego, co znamy z innych języków programowania. Scope to blok kodu, w którym działa dany obiekt i tylko w nim jest dostępny. Na przykład lokalny zakres odnosi się do wszystkich obiektów w danej funkcji, zaś zakres globalny będzie zawierał wszystkie obiekty w całym kodzie.  
+```python
+x = 10             # zmienna globalna
+
+def f():
+    global x       # słowo global informuje Pythona, że poprzez zmienną x będziemy odnosić się do zmiennej globalnej
+    x = 111        # zmiana wartości przypisanej do zmiennej globalnej
+    y = 12         # zmienna lokalna (przestaje istnieć po zakończeniu wykonywania funkcji)
+    print(x, y)
+
+f()                # uruchomienie funkcji wydrukuje zmienną globalną x i zmienna lokalną y
+print(x)           # drukuje zmienną globalną x
+```
+###   Typy wbudowane  
+- `str` – string, tekstowy typ danych,  
+- `int` – liczba,  
+- `float` – liczba zmiennoprzecinkowa,  
+- `complex` – liczba zespolona,  
+- `list` – lista  
+- `tuple` – kortka  
+- `range` – zakres, liczby naturalne stanowiące szereg arytmetyczny,  
+- `dict` – słownik,  
+- `set` – zbiór,  
+- `frozenset` – zbiór niemutowalny,  
+- `bool` – logika boolowska,  
+- `bytes` – konwersja ciągu na bajty,  
+- `bytearray` – mutowalny wariant bytes,  
+- `memoryview` – dostęp do wewnętrznych danych obiektów obsługujących bufory protokołów.  
+
+### PYTHONPATH  
+`PYTHONPATH` to zmienna środowiskowa pozwalająca wskazać dodatkowe lokalizacje, z których Python będzie mógł zaciągnąć moduły i paczki.  
+### PEP8  
+PEP 8 to opracowany jeszcze w 2001 r. dokument, w którym opisane zostały najlepsze praktyki w zakresie pisania czytelnego kodu w Pythonie. Stanowi część oficjalnej dokumentacji języka. Stanowi on powszechnie respektowaną normę i w zasadzie stanowi lekturę obowiązkową dla każdego, kto chce programować w Pythonie. Z treścią dokumentu zapoznać się można na  [oficjalnej stronie Pythona](https://www.python.org/dev/peps/pep-0008/#introduction).
 ## SYNTAX
 ### Różnica między 'is', a '=='
 ```python
@@ -55,6 +99,14 @@ print(False is False)
 print(True is False)
 print(False is False is False) # (False is False) and (False is False) -> (True) and (True) -> True
 print(1 < 3 == 5)              # (1 < 3) and (3 == 5) -> (True) and (False) -> False
+
+print(1 is not True in [1,2,3]) # ->
+# (1 is not True) and (True in [1,2,3]) # ->
+# (True) and (True) -> True
+
+# różne wyniki dla operatorów "is not" oraz "!=" !
+print(1 is not True)
+print(1 != True)
 ```
 Wszystkie porównania łańcuchowe w Pythonie traktowane są wg tego samego schematu: porównanie rozbijane jest na dwuelementowe podgrupy połączone operatorem 'and' Przykładowo, porównanie czteroelementowe zostanie potraktowane następująco:
 ```python
@@ -73,7 +125,53 @@ L = [('Anna',82), ('Robert',33), ('Arthur',40), ('John',56)]
 # zwraca drugi element danej tupli.
 L_sorted = sorted(L, key = lambda x:x[1])
 ```
+### map i filter
+```python
+names = ['jan kot', 18, 'ANNA KRÓL', 'jÓzef BYK', ['nie', 'wasza','sprawa'], 'ROBERT wąŻ']
 
+# filter(funkcja,sekwencja)
+# elementy z listy names przekazywane są do lambdy, która sprawdza czy ich typ to string
+# jeśli tak, to element zostaje dodany do listy names_cleaned
+names_cleaned = list(filter(lambda x:type(x) is str, names))
+
+# map(funkcja,sekwencja)
+# elementy z listy names_cleaned przekazane są do lambdy
+# która najpierw zamienia wszystkie litery danego stringa na małe,
+# a następnie pierwsza literę każdego słowa zmienia na dużą
+# tak zmodyfikowany string zostaje dodany do listy names_corrected
+names_corrected = list(map(lambda x: x.lower().title(), names_cleaned))
+```
+### Dekoratory
+```python
+def add_stars(function):     # definicja dekoratora niczym nie różni się od definicji zwykłej funkcji
+    def decorated_function():   # wewnątrz dekoratowa tworzymy WEWNĘTRZNĄ funkcję, w której udekorujemy funkcję pobraną jako argument
+        print("***")             # dekorowanie funkcji
+        function()               # wywołanie funkcji będącej argumentem dekoratora
+        print("***")             # dekorowanie funkcji
+    return decorated_function    # zwrócenie funkcji WEWNĘTRZNEJ, w której udekorowano funkcję będącą argumentem dekoratora
+
+@add_stars                       # zapis @add_stars BEZPOŚREDNIO nad definicją funkcji f() powoduje, że funkcja f() zostaje udekorowana
+def f():                         # definicja funkcji f()
+    print("Cześć, jestem f()")
+```
+### Generatory
+```python
+def get_next_even():                   # definicja generatora wygląda jak definicja zwykłej funkcji
+    for n in range(2,20,2):            # range tworzący zakres od 2 do 20, przesuwając się o 2
+        yield n                        # słowo yield informuje interpreter, że ta funkcja będzie generatorem
+
+z = get_next_even()                    # tworzenie obiektu generatora
+
+for i in range(10):                    # pętla for wykonująca się 10 razy
+    print(next(z))                     # która za kazdym razem drukuje kolejną wartość zwróconą z obiektu genratora z
+
+y = ('a' * n for n in range(5))        # generator expression - wyrażenie generatorowe
+                                       # tworzy generator, który będzie zwracał kolejne wielokrotności stringa 'a'
+                                       # zakresie od 0 do 4
+
+for i in range(5):                     # wypisanie kolejnych wartości zwróconych przez obiekt genratora y
+    print(next(y))
+```
 ## STRING
 ### Zamiana elementów stringa
 ```python
@@ -99,14 +197,14 @@ print(B)
 B = list(set(A))
 print(B)
 ```
-### Różnice między listą, a krotką
+### Różnice między listą i krotką
 ```python
 L = [1, 2, 3, True, (1, 2)]
 T = (4, 5, 6, False, ['x', 'y'])
 L[2] = 'trzy'   # modyfikacja zawartości listy - operacja legalna
 T[2] = 'sześć'  # próba modyfikacji zawartości tupli - operacja zabroniona, skutkuje TypeError
 ```
-### Różnice między listą, a tablicą  
+### Różnice między listą i tablicą  
 Tablice w Pythonie są homogeniczne. Oznacza to, że zawierają dane tylko i wyłącznie jednego typu. W przypadku list nie ma tego ograniczenia i swobodnie można wewnątrz nich zawrzeć np. liczby i stringi. Warto wspomnieć, że homogeniczne listy zużywają znacznie mniej pamięci.  
 ### Kopiowanie list
 W Pythonie kopiowanie nie odbywa się z użyciem operatora  `=`. Wówczas jedynie tworzymy powiązanie między istniejącym już obiektem a docelową nazwą zmiennej. Zamiast wspomnianego operatora, w Pythonie wykorzystuje się moduł copy. Mamy dzięki niemu dwie możliwości kopiowania: płytkie i głębokie. W pierwszym przypadku tworzy się bitową kopię 1:1, zaś głęboka kopia pozwala na rekursywne kopiowanie wszystkich wartości. Składnia:  
@@ -164,6 +262,21 @@ D1 = {x:x % 2 == 0 for x in L}
 # pary klucz:wartość, gdzie kluczem są elementy z listy L a wartościami 
 # True lub False, w zależności od tego czy dany klucz jest podzielny przez 2
 ```
+## KLASY
+### init 
+Metoda specjalna \_\_init__ wywoływana automatycznie podczas po utworzeniu instancji klasy. Dzięki niej możliwe jest na przykład doczytanie kodu czy automatycznie dodanie atrybutów zawsze, gdy tworzony będzie nowy obiekt lub instancja. Pozwala także odróżnić metody i atrybuty klasy od lokalnych zmiennych. 
+```python
+class Dog:                               # tworzenie klasy Pies
+    def __init__(self, name, breed):     # konstruktor klasy pobierający imię i rasę
+        self.name = name                 # tworzenie pól klasy i przypisywanie do nich wartości podanych w konstruktorze
+        self.breed = breed               # tworzenie pól klasy i przypisywanie do nich wartości podanych w konstruktorze
+
+small_dog = Dog("Pikuś", 'ratler')    # tworzenie obiektu klasy Pies, z parametrami konstruktora "Pikuś" i 'ratler'
+big_dog = Dog("Killer", 'doberman')   # tworzenie obiektu klasy Pies, z parametrami konstruktora "Killer" i 'doberman'
+
+print(small_dog.name, small_dog.breed)    # wydrukowanie atrybutów obiektów
+print(big_dog.imie, big_dog.breed)        # wydrukowanie atrybutów obiektów
+```
 ## USE CASES
 ### Palindrom
 ```python
@@ -193,42 +306,33 @@ def is_palindrome(word):
 print(is_palindrome("kajak"))
 print(is_palindrome("anakonda"))
 ```
-## DO ROZŁOŻENIA
-###   Typy wbudowane  
-- `str` – string, tekstowy typ danych,  
-- `int` – liczba,  
-- `float` – liczba zmiennoprzecinkowa,  
-- `complex` – liczba zespolona,  
-- `list` – lista  
-- `tuple` – kortka  
-- `range` – zakres, liczby naturalne stanowiące szereg arytmetyczny,  
-- `dict` – słownik,  
-- `set` – zbiór,  
-- `frozenset` – zbiór niemutowalny,  
-- `bool` – logika boolowska,  
-- `bytes` – konwersja ciągu na bajty,  
-- `bytearray` – mutowalny wariant bytes,  
-- `memoryview` – dostęp do wewnętrznych danych obiektów obsługujących bufory protokołów.  
+### Ciąg Fibonacciego
+```python
+# kolejny element ciągu: 0   1   2   3   4   5   6    7   8   9  10
+# wartość dla elementu:  0   1   1   2   3   5   8   13  21  34  55
 
-### Kopiowanie obiektów  
-W Pythonie kopiowanie nie odbywa się z użyciem operatora  `=`. Wówczas jedynie tworzymy powiązanie istniejącym już obiektem a docelową nazwą zmiennej. Zamiast wspomnianego operatora, w Pythonie wykorzystuje się moduł copy. Mamy dzięki niemu dwie możliwości kopiowania: płytkie i głębokie. W pierwszym przypadku tworzy się bitową kopię 1:1, zaś głęboka kopia pozwala na re kursywne kopiowanie wszystkich wartości. Składnia:  
-```python  
-list_1 = [1, 2, 3]  
-list_2 = copy(list_1) # płytkie kopiowanie  
-list_3 = deepcopy(list_1) # głębokie kopiowanie  
-```  
-### Zakresy  
-Zakresy, czy też scope’y, w Pythonie nie różnią się od tego, co znamy z innych języków programowania. Scope to blok kodu, w którym działa dany obiekt i tylko w nim jest dostępny. Na przykład lokalny zakres odnosi się do wszystkich obiektów w danej funkcji, zaś zakres globalny będzie zawierał wszystkie obiekty w całym kodzie.  
-### Przestrzenie nazw  
-W pewnym sensie powiązane z zakresami są przestrzenie nazw. Są to zakresy zapewniające nam to, że nazwa danego obiektu będzie unikalna i że można z nich będzie korzystać bez ryzyka wystąpienia jakichkolwiek konfliktów. To swojego rodzaju zbiór nazw i definicji, które mogą mieć zastosowanie lokalne (podobnie jak zakresy, w obrębie funkcji), ale także globalnie, które określają nazwy dla całego kodu, zaimportowanych paczek. W Pythonie funkcjonują także wbudowane przestrzenie nazw kluczowych funkcji w tym języku, dzięki którym możemy mieć pewność, że utworzony przez nas obiekt nie będzie w konflikcie z którąkolwiek z wbudowanych funkcji Pythona.  
-### Różnica między modułem i paczką  
-Zarówno moduły jak i paczki wykorzystywane są do modularyzacji kodu, co przekłada się na jego łatwość w utrzymaniu i ułatwia pracę z omówionymi już zakresami. Moduły są plikami zawierający zestaw zdefiniowanych instrukcji, klas i zmiennych. Można zaimportować zarówno całe moduły, jak i ich części.  
-Paczka w Pythonie zazwyczaj składa się z kilku modułów. Jest ona jednak na tyle przydatna, że określa dla nich przestrzenie nazw i eliminuje konflikty pomiędzy poszczególnymi modułami.  
-### Różnica między listą i tablicą  
-Tablice w Pythonie są homogeniczne. Oznacza to, że zawierają dane tylko i wyłącznie jednego typu. W przypadku list nie ma tego ograniczenia i swobodnie można wewnątrz nich zawrzeć np. liczby i stringi. Warto wspomnieć, że homogeniczne listy zużywają znacznie mniej pamięci.  
-### PYTHONPATH  
-`PYTHONPATH` to zmienna środowiskowa pozwalająca wskazać dodatkowe lokalizacje, z których Python będzie mógł zaciągnąć moduły i paczki.  
-### PEP8  
-PEP 8 to opracowany jeszcze w 2001 r. dokument, w którym opisane zostały najlepsze praktyki w zakresie pisania czytelnego kodu w Pythonie. Stanowi część oficjalnej dokumentacji języka. Stanowi on powszechnie respektowaną normę i w zasadzie stanowi lekturę obowiązkową dla każdego, kto chce programować w Pythonie. Z treścią dokumentu zapoznać się można na  [oficjalnej stronie Pythona](https://www.python.org/dev/peps/pep-0008/#introduction).
-### \_\_init\_\_  
-Jest to metoda specjalna wywoływana automatycznie podczas po utworzeniu instancji klasy. Dzięki niej możliwe jest na przykład doczytanie kodu czy automatycznie dodanie atrybutów zawsze, gdy tworzony będzie nowy obiekt lub instancja. Pozwala także odróżnić metody i atrybuty klasy od lokalnych zmiennych.  
+def fibonacci_l(n): # O(n)
+    p, d = 0, 1              # inicjalizacja zmiennych p-pierwsza, d-druga
+    for _ in range(n):       # _ - oznacza, że nie potrzebujemy zmiennej do przechowywania kolejnej wartości z range, chcemy tylko aby pętla wykonała się n razy
+        p, d = d, p + d      # jednoczesne aktualizowanie zawartości zmiennych p i d, aby przypisać do nich wartości z poprzedniego obiegu pętli
+    return p
+
+print(fibonacci_l(8))
+
+def fibonacci_r(n): # O(2 ^ n)
+    if n <= 1:               # każda funkcja rekurencyjna musi mieć warunek, który powoduje returna bez kolejnego wywołania rekurencji
+        return n             # tu tym warunkiem jest sytuacja gdy szukamy wartości dla zerowego lub pierwszego elementu ciągu Fibonacciego
+    return fibonacci_r(n - 1) + fibonacci_r(n - 2)  # dla każdego elementu innego niż zerowy lub pierwszy, funkcja wywołuje samą siebie
+                             # aby policzyć dwa poprzednie wyrazy ciągu i dodać je do siebie
+print(fibonacci_r(10))
+```
+### Tworzenie plików
+```python
+with open('file.txt', 'w') as f:    # otwórz plik 'file.txt' w wersji do zapisu ('w' od write), nadaj mu alias f
+    for n in range(1, 101):             # dla kolejnych liczb z zakresu od 1 do 100
+        f.write(str(n) + '\n')          # wpisz do pliku stringa utworzonego na podstawie liczby oraz znak nowej linii '\n'
+
+with open('file.txt', 'r') as f:    # otwórz plik 'file.txt' w wersji do odczytu ('r' od read), nadaj mu alias f
+    file_lines = f.readlines()             # do listy file_lines wpisz kolejne linijki przeczytane z pliku 'file.txt'
+                                        # każda linijka będzie osobnym elementem listy
+```

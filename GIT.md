@@ -6,17 +6,27 @@
 	* [git init](#git-init)
 	* [git remote](#git-remote)
 	* [git clone](#git-clone)
-	* [git pull](#git-pull)
 	* [git status](#git-status)
+	* [git log](#git-log)
+	* [git branch](#git-branch)
+	* [git add](#git-add)
+	* [git commit](#git-commit)
 	* [git push](#git-push)
+	* [git pull](#git-pull)
+	* [git fetch](#git-fetch)
+	* [git checkout](#git-checkout)
+	* [git reset](#git-reset)
+	* [git merge](#git-merge)
+	* [git rebase](#git-rebase)
+* [DOBRE PRAKTYKI](#DOBRE-PRAKTYKI)
+	* [rebase czy merge?](#rebase-czy-merge?)
 
 ##  DEFINICJE
 `GIT` - rozproszony system kontroli wersji
 `remote` - centralne repozytorium
 `local` - lokalne repozytorium
-branch
-commit
-stage
+`working directory` - kod, nad którym wciąż pracujemy znajduje się w tym obszarze. Aby przenieść go do staging area, należy użyć komendy **git add**
+`staging area` - przestrzeń, w której znajdują się pliki, które planujemy dodać do commita. Jest to krok pośredni między pracą nad plikiem, a wysłaniem do go centralnego repozytorium
 
 ##   KOMENDY
 ### git config
@@ -37,18 +47,77 @@ Klonowanie repozytorium z podanego linka
 ```bash
 git clone "<remote_repository_url>"
 ```
+### git status
+Stan aktualnego brancha w porównaniu do ostatniego commita
+```bash
+git status
+```
+### git log
+Historia commitów na aktualnym branchu (od najnowszego do najstarszego)
+```bash
+git log
+```
+### git branch
+Lista branchy w lokalnym repozytorium oraz wyświetlenia nazwy aktualnego brancha
+```bash
+git branch
+```
+### git add
+Dodanie plików do z working directory do staging area,
+```bash
+git add <nazwa_pliku> [<kolejne_nazwy_plików>]
+git add --all
+```
+### git commit
+Dodanie plików do z working directory do staging area,
+```bash
+git commit -m "<nazwa_commita>"// tworzy commit z nadaną nazwą
+git commit -am "<nazwa_commita>" // dodaje wszystkie ZMIENIONE pliki na staging i tworzy commit z nadaną nazwą. NOWE pliki należy dodać do commita ręcznie przy użyciu git add
+```
+### git push
+Wypychanie zmian na aktualnym branchu z lokalnego repozytorium do repozytorium centralnego 
+```bash
+git push
+```
 ### git pull
 Aktualizowanie lokalnego repozytorium o nowe commity z repozytorium centralnego z aktualnego brancha 
 ```bash
 git pull
 ```
-### git status
+### git fetch
+Aktualizowanie lokalnego repozytorium o nowe branche powstałe w repozytorium zewnętrznym
 ```bash
-git status
+git fetch
+```
+### git checkout
+```bash
+git checkout <nazwa_brancha> // przełączenie się na inną, istniejącą gałąź
+git checkout  -b "<nazwa_brancha>" // stworzenie nowego brancha na bazie aktualnego brancha i przełączenie się na niego
+git checkout - // przełączenie się na wcześniejszy branch
+git checkout <nazwa_pliku> // zresetowanie zawartości brancha do tej, z ostatniego commita
 ```
 
-### git push
-Wypychanie zmian na aktualnym branchu z lokalnego repozytorium do repozytorium centralnego 
+### git reset
 ```bash
-git push
+git reset --hard // cofnięcie gałęzi do stanu z ostatniego commita
+```
+### git merge
+Ta komenda łączy wszystkie zmiany powstałe we wskazanej w komendzie gałęzi w jeden wspólny commit (merge commit) i dołącza je do brancha, na którym obecnie się znajdujemy, jako najnowszy commit.
+```bash
+git merge <nazwa-brancha>
+```
+
+### git rebase
+Komenda zaciąga historię commitów oraz zmiany ze wskazanego brancha, a zmiany, które commity, które zostały w międzyczasie utworzone na obecnej gałęzi przesunięte są w historii commitów jako najnowsze
+```bash
+git rebase <nazwa-brancha>
+```
+##   DOBRE PRAKTYKI
+### rebase czy merge?
+Aby zachować liniową historię commitów najlepiej zastosować podany zestaw komend przed zmergowaniem zmian na branch master. Mergując zmiany bez wcześniejszego wykonania rebase'a  tworzymy tzw. merge commita, który burzy liniową strukturę historii commitów i tworzy w niej rozgałęzienia, które trudniej potem rozwiązać.
+```bash
+git checkout feature-branch // przeniesienie na aktualnego brancha
+git rebase master           // zaciągnięcie historii zmian z mastera do aktualnego brancha
+git checkout master         // przeniesienie na aktualnego brancha
+git merge feature-branch    // dodanie zmian z feature-brancha na branch master
 ```

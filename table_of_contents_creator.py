@@ -54,5 +54,5 @@ class TableGenerator:
 
 
 if __name__ == '__main__':
-    file_path = 'GIT.md'
+    file_path = 'Docker.md'
     TableGenerator(file_path).generate()

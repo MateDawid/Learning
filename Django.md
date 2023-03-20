@@ -58,3 +58,127 @@ Warto również założyć konto superusera, aby uzyskać możliwość logowania
 ```commandline
 python manage.py createsuperuser
 ```
+## DODAWANIE NOWEGO WIDOKU (VIEW)
+W celu dodania nowego widoku konieczne jest utworzenie jego definicji w views.py oraz określenie w urls.py endpointu pod jakim ten widok będzie dostępny. Konieczne jest dodanie zawartości pliku urls.py zawartego w danym module do url.py projektu.
+```python
+# module/views.py
+ from django.shortcuts import render
+ from django.http import HttpResponse
+
+ def index(request):
+     return HttpResponse("Hello, world!")
+```
+```python
+# module/urls.py
+ from django.urls import path
+ from . import views
+
+ urlpatterns = [
+     path("", views.index, name="index")
+ ]
+```
+```python
+# project.urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('module/', include("module.urls"))
+]
+```
+
+## FORMULARZE
+### Podstawowe formularze
+```python
+# module/forms.py
+from django import forms
+
+class NewTaskForm(forms.Form):
+    task = forms.CharField(label="New Task")
+```
+```python
+# module/views.py
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+
+def add(request):
+    if request.method == "POST":
+        form = NewTaskForm(request.POST)
+        if form.is_valid():
+            task = form.cleaned_data["task"]
+			# some logic for collected task
+            return HttpResponseRedirect(reverse("tasks:index"))
+        else:
+            # Rendering invalid form with adnotations about errors
+            return render(request, "tasks/add.html", {
+                "form": form
+            })
+    return render(request, "tasks/add.html", {
+        "form": NewTaskForm()
+    })
+```
+```html
+{% extends "module/layout.html" %}
+
+{% block body %}
+    <h1>Add Task:</h1>
+    <form action="{% url 'module:add' %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit">
+    </form>
+    <a href="{% url 'module:index' %}">View Tasks</a>
+{% endblock %}
+```
+## SESJA
+```python
+# module/views.py
+def index(request):
+    # Check if there already exists a "tasks" key in our session
+    if "tasks" not in request.session:
+        # If not, create a new list in session
+        request.session["tasks"] = []
+    return render(request, "tasks/index.html", {
+        "tasks": request.session["tasks"]
+    })
+```
+## LOGIN / LOGOUT
+```python
+# module.urls.py
+...
+
+urlpatterns = [
+    path('', views.index, name="index"),
+    path("login", views.login_view, name="login"),
+    path("logout", views.logout_view, name="logout")
+]
+```
+## Login
+```python
+# module/views.py
+from django.contrib.auth import authenticate, login, logout
+
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "module/login.html", {
+                "message": "Invalid Credentials"
+            })
+    return render(request, "module/login.html")
+```
+## Logout
+```python
+# module/views.py
+def logout_view(request):
+    logout(request)
+    return render(request, "module/login.html", {
+                "message": "Logged Out"
+            })
+```

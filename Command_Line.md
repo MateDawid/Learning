@@ -1,15 +1,5 @@
+
 # **COMMAND LINE**
-## SPIS TREŚCI
-* [UNIX COMMANDS](#UNIX-COMMANDS)
-	* [pwd](#pwd)
-	* [ls](#ls)
-	* [mkdir](#mkdir)
-	* [cd](#cd)
-	* [touch](#touch)
-	* [cp](#cp)
-	* [mv](#mv)
-	* [rm](#rm)
-	* [cat](#cat)
 ## UNIX COMMANDS
 ### pwd
 Komenda zwracająca katalog, w którym obecnie się znajdujemy (rozwinięcie skrótu - Print Working Directory).

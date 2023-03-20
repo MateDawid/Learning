@@ -1,38 +1,4 @@
 # **PYTHON**
-## SPIS TREŚCI
-* [WŁAŚCIWOŚCI JĘZYKA](#WŁAŚCIWOŚCI-JĘZYKA)
-	* [Przestrzenie nazw](#Przestrzenie-nazw)
-	* [Różnica między modułem i paczką](#Różnica-między-modułem-i-paczką)
-	* [Zakresy](#Zakresy)
-	* [Typy wbudowane](#Typy-wbudowane)
-	* [PYTHONPATH](#PYTHONPATH)
-	* [PEP8](#PEP8)
-* [SYNTAX](#SYNTAX)
-	* [Różnica między 'is', a '=='](#Różnica-między-'is',-a-'==')
-	* [Porównania łańcuchowe](#Porównania-łańcuchowe)
-	* [lambda](#lambda)
-	* [map i filter](#map-i-filter)
-	* [Dekoratory](#Dekoratory)
-	* [Generatory](#Generatory)
-* [STRING](#STRING)
-	* [Zamiana elementów stringa](#Zamiana-elementów-stringa)
-* [LIST](#LIST)
-	* [Lista niepowtarzalnych elementów](#Lista-niepowtarzalnych-elementów)
-	* [Różnice między listą i krotką](#Różnice-między-listą-i-krotką)
-	* [Różnice między listą i tablicą](#Różnice-między-listą-i-tablicą)
-	* [Kopiowanie list](#Kopiowanie-list)
-	* [Odwrócenie listy](#Odwrócenie-listy)
-	* [List comprehension](#List-comprehension)
-* [DICTIONARY](#DICTIONARY)
-	* [Poprawne tworzenie słowników](#Poprawne-tworzenie-słowników)
-	* [Dict comprehension](#Dict-comprehension)
-* [KLASY](#KLASY)
-	* [init](#init)
-* [USE CASES](#USE-CASES)
-	* [Palindrom](#Palindrom)
-	* [Ciąg Fibonacciego](#Ciąg-Fibonacciego)
-	* [Tworzenie plików](#Tworzenie-plików)
-
 ## WŁAŚCIWOŚCI JĘZYKA
 ### Przestrzenie nazw  
 W pewnym sensie powiązane z zakresami są przestrzenie nazw. Są to zakresy zapewniające nam to, że nazwa danego obiektu będzie unikalna i że można z nich będzie korzystać bez ryzyka wystąpienia jakichkolwiek konfliktów. To swojego rodzaju zbiór nazw i definicji, które mogą mieć zastosowanie lokalne (podobnie jak zakresy, w obrębie funkcji), ale także globalnie, które określają nazwy dla całego kodu, zaimportowanych paczek. W Pythonie funkcjonują także wbudowane przestrzenie nazw kluczowych funkcji w tym języku, dzięki którym możemy mieć pewność, że utworzony przez nas obiekt nie będzie w konflikcie z którąkolwiek z wbudowanych funkcji Pythona.  

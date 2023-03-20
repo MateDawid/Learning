@@ -1,30 +1,5 @@
+
 # **GIT**
-## SPIS TREŚCI
-* [DEFINICJE](#DEFINICJE)
-* [KOMENDY](#KOMENDY)
-	* [git config](#git-config)
-	* [git init](#git-init)
-	* [git remote](#git-remote)
-	* [git clone](#git-clone)
-	* [git status](#git-status)
-	* [git log](#git-log)
-	* [git branch](#git-branch)
-	* [git add](#git-add)
-	* [git commit](#git-commit)
-	* [git push](#git-push)
-	* [git pull](#git-pull)
-	* [git fetch](#git-fetch)
-	* [git checkout](#git-checkout)
-	* [git reset](#git-reset)
-	* [git merge](#git-merge)
-	* [git rebase](#git-rebase)
-* [INTERAKTYWNY REBASE](#INTERAKTYWNY-REBASE)
-	* [Uruchomienie interaktywnego rebase](#Uruchomienie-interaktywnego-rebase)
-	* [Zmiana nazwy commita](#Zmiana-nazwy-commita)
-	* [Łączenie commitów](#Łączenie-commitów)
-* [DOBRE PRAKTYKI](#DOBRE-PRAKTYKI)
-	* [rebase czy merge?](#rebase-czy-merge?)
-  
 ##  DEFINICJE  
 `GIT` - rozproszony system kontroli wersji  
 `remote (origin)` - centralne repozytorium  

@@ -1,29 +1,5 @@
+
 # **DOCKER**  
-## SPIS TREŚCI  
-* [PODSTAWOWE INFORMACJE](#PODSTAWOWE-INFORMACJE)  
-   * [IMAGE](#IMAGE)  
-   * [CONTAINER](#CONTAINER)  
-* [URUCHAMIANIE, USUWANIE, ZATRZYMYWANIE KONTENERA](#URUCHAMIANIE,-USUWANIE,-ZATRZYMYWANIE-KONTENERA)  
-   * [docker container run](#docker-container-run)  
-   * [docker container ls](#docker-container-ls)  
-   * [docker container stop](#docker-container-stop)  
-   * [docker container start](#docker-container-start)  
-   * [docker container rm](#docker-container-rm)  
-   * [docker container logs](#docker-container-logs)  
-* [MONITORING KONTENERÓW](#MONITORING-KONTENERÓW)  
-   * [docker container top](#docker-container-top)  
-   * [docker container inspect](#docker-container-inspect)  
-   * [docker container stats](#docker-container-stats)  
-* [URUCHAMIANIE KOMEND W KONTENERZE PRZEZ TERMINAL](#URUCHAMIANIE-KOMEND-W-KONTENERZE-PRZEZ-TERMINAL)  
-   * [KOMENDY](#KOMENDY)  
-   * [PRZYKŁAD - NOWO URUCHOMIONY KONTENER](#PRZYKŁAD---NOWO-URUCHOMIONY-KONTENER)  
-   * [PRZYKŁAD - ISTNIEJĄCY, NIEURUCHOMIONY KONTENER](#PRZYKŁAD---ISTNIEJĄCY,-NIEURUCHOMIONY-KONTENER)  
-   * [PRZYKŁAD - URUCHOMIONY KONTENER](#PRZYKŁAD---URUCHOMIONY-KONTENER)  
-* [OBRAZY](#OBRAZY)  
-   * [POBRANIE OBRAZU Z PODANYM TAGIEM](#POBRANIE-OBRAZU-Z-PODANYM-TAGIEM)  
-   * [STWORZENIE WŁASNEGO OBRAZU Z INNEGO OBRAZU](#STWORZENIE-WŁASNEGO-OBRAZU-Z-INNEGO-OBRAZU)  
-   * [PUSHOWANIE OBRAZU NA SERWER](#PUSHOWANIE-OBRAZU-NA-SERWER)  
-   * [COMMITOWANIE ZMIAN W OBRAZIE](#COMMITOWANIE-ZMIAN-W-OBRAZIE)  
 ## PODSTAWOWE INFORMACJE  
 ### IMAGE  
 Image Dockerowy jest wzorem/templatem dla poszczególnych kontenerów. Zdefiniowany jest w Dockerfile.  
@@ -182,3 +158,126 @@ EXAMPLE:
 docker container commit 5d9f888sfasl7 myuser/myubuntu:curl  
 ```  
 Żeby zatwierdzić lokalne zmiany w obrazie należy wykonać commit na podobnej zasadzie jak przy używaniu GIT-a. Po zacommitowaniu zmian należy wykonać metodę push jak wyżej, aby potwierdzone zmiany trafiły na serwer z nowym tagiem.
+
+## DOCKERFILE
+### PODSTAWA OBRAZU
+Klauzula **FROM** specyfikuje obraz, z którego nowo budowany obraz będzie korzystał. 
+```commandline 
+FROM alpine:3.8
+...
+```  
+```commandline 
+FROM --platform=linux/amd64 python:3.8.13-bullseye
+...
+```  
+### WYKONYWANIE KOMEND
+Klauzula **RUN** pozwala na wykonywanie komend wewnątrz obrazu. Każdorazowe wykonanie klauzuli **RUN** tworzy nową warstwę w obrazie. Znak \ pozwala na oddzielenie poszczególnych komend, aby zostały wykonane w pojedynczej warstwie.
+```commandline 
+RUN apt-get update && apt-get -y upgrade  \  
+&& apt-get -y install  apt-transport-https\  
+curl\  
+gettext \  
+nginx \  
+``` 
+### KOPIOWANIE PLIKÓW
+Klauzula **COPY** pozwala na przekopiowanie wskazanych na hoście plików do obrazu.
+```commandline 
+COPY <HOST FILE OR DIR> <IMAGE FILE OR DIR>
+
+EXAMPLE:
+COPY ./my_app/ /app/my_app/
+``` 
+
+### BUDOWANIE OBRAZU
+```commandline 
+docker image build
+``` 
+## PRZECHOWYWANIE DANYCH
+### VOLUMES
+Volume to przestrzeń w kontenerze, gdzie mogą być wykonywane trwałe operacje na plikach, które będą widoczne nawet po usunięciu kontenera. Aby określić ścieżkę do volume'a należy użyć klauzuli **VOLUME** w Dockerfile:
+```commandline 
+VOLUME [<PATH 1>, ... <PATH n>]
+``` 
+Przykład:
+```commandline 
+VOLUME ["/appdata"]
+``` 
+Aby sprawdzić, istniejące volume'y należy użyć komendy poniżej. Zwrócone zostaną dane o driverze i nazwie volume'a.
+```commandline 
+docker volume ls
+``` 
+Aby uruchomić nowy kontener z wykorzystaniem istniejącego volume'a należy użyć flagi **mount**:
+```commandline 
+docker container run ... --mount 'src=<VOLUME_NAME>, dst=<VOLUME_PATH>' ...
+``` 
+**VOLUME_NAME** to nazwa volume'a pobrana z komendy *docker volume ls*, natomiast **VOLUME_PATH** to ścieżka zdefiniowana przez nas w Dockerfile'u.
+
+### BIND MOUNTS
+Podłączenie konkretnego folderu z używanego hosta do obraz (np. konkretnej ścieżki do folderu na komputerze, gdzie kontener jest uruchomiony lokalnie).
+```commandline 
+docker container run ... <HOST_PATH>:<CONTAINER_PATH> ...
+``` 
+**HOST_PATH** to ścieżka, z której mają zostać załadowane pliki współdzielone z kontenerem. **CONTAINER_PATH** to ścieżka w kontenerze, do której mają zostać załadowane pliki ze ścieżki hosta. 
+
+Synchronizacja działa w dwie strony. Jeżli plik zostanie utworzony w kontenerze, to również zostanie przeniesiony do hosta.
+
+## DOCKER COMPOSE
+Plik *docker-compose.yaml* pozwala na zdefiniowanie zależności między kontenerami, wolumenami i sieciami w uporządkowany sposób. 
+### PLIK
+Schemat pliku:
+```dockerfile
+version: '3.7'
+
+services: # definicja kontenerów (odpowiednik docker container run)
+	servicename1: # nazwa serwisu (np. elasticsearch), będzie to także DNS serwisu w sieci
+		image: # nazwa obrazu którego użyć do uruchomienia kontenera (opcjonalny w przypadku użycia build)
+		environment: # zmienne środowiskowe przekazywane do kontenera przy jego uruchomieniu
+			KEY: value
+			KEY2: value2
+			# - KEY=value
+			# - KEY2=value2
+		env_file: # zmienne środowiskowe z pliku
+			- a.env
+		command: # nadpisanie domyślnego polecenia kontenera/obrazu
+		volumes: # odpowiednik -v z docker run (wsparcie zarówno starszej jak i nowszej składni)
+	servicename2: # kolejny serwis
+
+volumes: # definicja wolumenu (docker volume create)
+
+networks: # definicja sieci (docker network create)
+``` 
+
+Przykładowe zastosowanie docker-compose do uruchomienia obrazu Elasticsearch.
+```dockerfile
+version: '3.7'
+
+# docker container run -p 9200:9200 -e cluster.name=kursdockera -v $(pwd)/esdata:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+
+services:
+	elasticsearch:
+		container_name: elasticsearch
+		image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+		volumes:
+			- ./esdata:/usr/share/elasticsearch/data
+		environment:
+			- cluster.name=kursdockera
+		ports:
+			- 9200:9200
+```
+### KOMENDY
+```commandline 
+docker compose up
+``` 
+Tworzy wszystkie sieci, wolumeny, uruchamia wszystkie kontenery.
+```commandline 
+docker compose ps
+``` 
+Lista uruchomionych kontenerów w docker-compose.
+```commandline 
+docker compose stop
+``` 
+Zastopowanie wszystkich kontenerów.
+```commandline 
+docker compose down
+``` 
+Zatrzymanie i usunięcie konterów, usunięcie sieci.

@@ -154,7 +154,7 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout")
 ]
 ```
-## Login
+### Login
 ```python
 # module/views.py
 from django.contrib.auth import authenticate, login, logout
@@ -173,7 +173,7 @@ def login_view(request):
             })
     return render(request, "module/login.html")
 ```
-## Logout
+### Logout
 ```python
 # module/views.py
 def logout_view(request):

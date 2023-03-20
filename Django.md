@@ -1,13 +1,5 @@
+
 # **DJANGO**
-## SPIS TREŚCI
-* [PRZYGOTOWANIE PROJEKTU](#PRZYGOTOWANIE-PROJEKTU)
-	* [Virtual Environment](#Virtual-Environment)
-	* [Instalacja Django](#Instalacja-Django)
-	* [Tworzenie projektu Django](#Tworzenie-projektu-Django)
-	* [Dodanie nowego modułu](#Dodanie-nowego-modułu)
-	* [Uruchamianie aplikacji](#Uruchamianie-aplikacji)
-	* [Pierwsza migracja](#Pierwsza-migracja)
-	* [Tworzenie superusera](#Tworzenie-superusera)
 ## PRZYGOTOWANIE PROJEKTU
 ### Virtual Environment
 Przed rozpoczęciem nowego projektu konieczne jest założenie wirtualnego środowiska.

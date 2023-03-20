@@ -4,10 +4,9 @@
 Funkcje można zdefiniować na kilka sposobów:
 * Funkcja nazwana
 ```javascript
-function test(a, b)
-    {
-        return a + b;
-    }
+function test(a, b){
+	return a + b;
+}
 ```
 * Funkcja anonimowa
 
@@ -16,7 +15,7 @@ Funkcję można również zdefiniować "w locie" - będzie ona wtedy wykorzystyw
 let form = document.querySelector('form')
 form.addEventListener('submit', function(e) {
 		console.log('Submitted');
-    });
+});
 ```
 ### querySelector
 Pozwala na wyszukiwanie elementów DOM na bazie podanego query

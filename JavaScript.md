@@ -15,6 +15,11 @@ let counter = 1;
 ```
 const PI = 3.14;
 ```
+### Formatowanie stringów
+```javascript
+let number = 1
+let formattedString = `Number: ${number}`
+```
 ### JavaScript Object
 Struktura podobna do słowników w Pythonie. Przykład użycia:
 ```javascript

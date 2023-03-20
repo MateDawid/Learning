@@ -10,7 +10,8 @@
 ##   KOMENDY  
 ### git config  
 ```bash  
-git config --global user.name "<username>"git config --global user.email "<email>"
+git config --global user.name "<username>"
+git config --global user.email "<email>"
 ```  
 ### git init  
 ```bash  
@@ -43,12 +44,14 @@ git branch
 ### git add  
 Dodanie plików do z working directory do staging area,  
 ```bash  
-git add <nazwa_pliku> [<kolejne_nazwy_plików>]git add --all
+git add <nazwa_pliku> [<kolejne_nazwy_plików>]
+git add --all
 ```  
 ### git commit  
 Dodanie plików do z working directory do staging area,  
 ```bash  
-git commit -m "<nazwa_commita>"   // tworzy commit z nadaną nazwągit commit -am "<nazwa_commita>"  // dodaje wszystkie ZMIENIONE pliki na staging i tworzy commit z nadaną nazwą. NOWE pliki należy dodać do commita ręcznie przy użyciu git add
+git commit -m "<nazwa_commita>"   // tworzy commit z nadaną nazwą
+git commit -am "<nazwa_commita>"  // dodaje wszystkie ZMIENIONE pliki na staging i tworzy commit z nadaną nazwą. NOWE pliki należy dodać do commita ręcznie przy użyciu git add
 ```  
 ### git push  
 Wypychanie zmian na aktualnym branchu z lokalnego repozytorium do repozytorium centralnego   
@@ -68,7 +71,9 @@ git fetch
 ```  
 ### git checkout  
 ```bash  
-git checkout <nazwa_brancha>        // przełączenie się na inną, istniejącą gałąźgit checkout  -b "<nazwa_brancha>"  // stworzenie nowego brancha na bazie aktualnego brancha i przełączenie się na niegogit checkout -                      // przełączenie się na wcześniej używanego brancha
+git checkout <nazwa_brancha>        // przełączenie się na inną, istniejącą gałąź
+git checkout  -b "<nazwa_brancha>"  // stworzenie nowego brancha na bazie aktualnego brancha i przełączenie się na niego
+git checkout -                      // przełączenie się na wcześniej używanego brancha
 git checkout <nazwa_pliku>          // zresetowanie zawartości brancha do tej, z ostatniego commita
 ```  
   

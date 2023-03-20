@@ -1,12 +1,22 @@
 # **JavaScript**
 ## SKŁADNIA
 ### Funkcje
-Funkcje można zdefiniować na kilka sposobów
+Funkcje można zdefiniować na kilka sposobów:
+* Funkcja nazwana
 ```javascript
 function test(a, b)
     {
         return a + b;
     }
+```
+* Funkcja anonimowa
+
+Funkcję można również zdefiniować "w locie" - będzie ona wtedy wykorzystywana jedynie w miejscu jej zdefiniowania. Poniżej przykład użycia anonimowej funkcji w definicji eventListenera.
+```javascript
+let form = document.querySelector('form')
+form.addEventListener('submit', function(e) {
+		console.log('Submitted');
+    });
 ```
 ### querySelector
 Pozwala na wyszukiwanie elementów DOM na bazie podanego query
@@ -28,6 +38,6 @@ document.querySelector('#name').addEventListener('click', function()
 ### Operacje na stylu elementu
 ```javascript
 // Zmiana koloru tła elementu o tagu "body" na czerwony
-let body= document.querySelector('body');
+let body = document.querySelector('body');
 body.style.backgroundColor = 'red';
 ```

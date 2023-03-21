@@ -1,3 +1,4 @@
+
 # **PYTHON**
 ## WŁAŚCIWOŚCI JĘZYKA
 ### Przestrzenie nazw  
@@ -301,4 +302,32 @@ with open('file.txt', 'w') as f:    # otwórz plik 'file.txt' w wersji do zapisu
 with open('file.txt', 'r') as f:    # otwórz plik 'file.txt' w wersji do odczytu ('r' od read), nadaj mu alias f
     file_lines = f.readlines()             # do listy file_lines wpisz kolejne linijki przeczytane z pliku 'file.txt'
                                         # każda linijka będzie osobnym elementem listy
+```
+## TESTY
+### assert
+```python
+def square(x):
+    return x * x
+
+assert square(10) == 20
+
+""" Output:
+Traceback (most recent call last):
+  File "assert.py", line 4, in <module>
+    assert square(10) == 20
+AssertionError
+"""
+```
+### Biblioteka unittest
+```python
+# Import the unittest library and our function
+import unittest
+
+class Tests(unittest.TestCase):
+
+    def test_1(self):
+        self.assertEqual(1, 1)
+
+if __name__ == "__main__":
+    unittest.main()
 ```

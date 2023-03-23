@@ -331,3 +331,80 @@ class Tests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 ```
+## KONTENERY DANYCH
+### ARRAY
+Struktura danych przypominająca działaniem array stosowany np. w C i służy między innymi do komunikacji z softem pisanym w tym języku. 
+```python
+import array
+
+# Konieczne zadeklarowanie typu zmiennych.
+example = array.array('b')
+```
+### ChainMap
+Struktura umożliwiająca połączenie dwóch słowników. W przypadku, gdy w którymś ze składowych słowników zajdzie jakaś zmiana, będzie ona uwzględniona w obiekcie ChainMap.
+```python
+from collections import ChainMap
+
+d1 = {'color': 'red'}
+d2 = {'pet': 'cat'}
+
+d = dict(ChainMap(d1, d2))  # {'color': 'red', 'pet': 'cat'}
+
+maps = d,maps # lista słowników w kolejności, w jakiej zostały dodane[{'color': 'red'}, {'pet': 'cat'}]
+```
+Przy próbie podania wartości dla już istniejącego klucza w ChainMap pozostanie pierwotna wartość.
+
+### Counter
+Zlicza ilość wystąpień elementów w sekwencji.
+```python
+from collections import Counter
+
+c = Counter('abbac') 
+# Counter({'a': 2, 'b': 2, 'c': 1})
+
+c['x'] 
+# Zwraca 0 zamiast wyjątku
+
+c.most_common() 
+# Zwraca posortowaną listę od najczęściej występującego elementu
+# [('a', 2), ('b', 2), ('c', 1)]
+```
+### defaultdict
+Pozwala na uproszczenie i przyspieszenie kodu, którego celem jest np. budowa słownika. Przykładowo - poniżej kod, którego celem jest zbudowanie słownika, gdzie kluczem jest długość imienia, a wartością - lista podanych w sekwencji imion.
+```python
+names_by_length = {}
+for name in ('bob', 'alice', 'max', 'adam', 'eve'):
+	key = len(name)
+	if key not in names_by_length:
+		names_by_length[key] = []
+	names_by_length[key].append(name)
+	
+# names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
+```
+Ten sam efekt można uzyskać używając defaultdict.
+
+```python
+from collections import defaultdict
+
+names_by_length = defaultdict(list)
+# argument "list" oznacza, że przy próbie wyciągnięcia danych dla nieistniejącego klucza zostanie utworzona pusta lista
+
+for name in ('bob', 'alice', 'max', 'adam', 'eve'):
+	names_by_length[key].append(name)
+	
+# names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
+```
+### OrderedDict
+Słownik zachowujący porządek wstawianych kluczy.
+```python
+from collections import OrderedDict
+
+row = OrderedDict()
+row['id'] = '123'
+row['firstName'] = 'Jan'
+row['lastName'] = 'Kowalski'
+
+list(row.items())
+# Poszczególne elementy słownika są zachowana w kolejności, w jakiej zostały dodane
+# [('id', '123'), ('firstName', 'Jan'), ('lastName', 'Kowalski')]
+```

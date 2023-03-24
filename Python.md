@@ -395,7 +395,7 @@ for name in ('bob', 'alice', 'max', 'adam', 'eve'):
 # names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
 ```
 ### OrderedDict
-Słownik zachowujący porządek wstawianych kluczy.
+Słownik zachowujący porządek wstawianych kluczy. Wykorzystuje wewnętrznie listę dwukierunkową.
 ```python
 from collections import OrderedDict
 
@@ -407,4 +407,75 @@ row['lastName'] = 'Kowalski'
 list(row.items())
 # Poszczególne elementy słownika są zachowana w kolejności, w jakiej zostały dodane
 # [('id', '123'), ('firstName', 'Jan'), ('lastName', 'Kowalski')]
+```
+### deque
+Nazwa to skrót od "double ended queue". Wykorzystuje wewnętrznie listę dwukierunkową. Deque może służyć np. do składowania historii operacji. 
+Dla określonej liczby elementów deque zachowuje ich kolejność przy użyciu wskaźnika początkowego i końcowego. Przy dodaniu nowego elementu wskaźnik końcowy wskazuje na nowy element, za to wskaźnik początkowy przenosi się na następujący po dotychczasowym elemencie początkowym.
+```python
+from collections import deque
+
+history = deque(maxlen=3)
+# maxlen określa maksymalną długość kolejki
+
+text = "Houston we have a problem"
+for word in text.split():
+	history.append(word)
+
+# W czasie iteracji zmienna history będzie zawierać zawsze 3 elementy, gdzie dodanie nowego elementu będzie usuwać pierwszy element z listy, jeżeli będzie ona miała długość równą maxlen
+
+history.popleft()
+# Usuwa element z lewej (początkowej) strony kolejki
+history.appendleft('not')
+# Dodaje element na początku kolejki
+```
+### namedtuple
+Namedtuple to po prostu tuple z nazwanymi polami
+```python
+import collections import namedtuple
+
+p = 1, 2
+Point = namedtuple('Point', ['x', 'y'])
+Point(*p)
+# Point(x=1, x=2)
+d = {'x': 3, 'y': 4}
+Point(**d)
+# Point(x=3, x=4)
+Point(x=5, y=6)
+# Point(x=5, x=6)
+```
+### enum
+
+Moduł pozwalający na tworzenie typów wyliczeniowych.
+```python
+from enum import Enum
+
+class Season(Enum):
+	SPRING = 1
+	SUMMER = 2
+	AUTUMN = 3
+	WINTER = 4
+
+# printing enum member as string
+Season.SPRING
+# Season.SPRING
+
+# printing name of enum member using "name" keyword
+print(Season.SPRING.name)
+# SPRING
+
+# printing value of enum member using "value" keyword
+print(Season.SPRING.value)
+# 1
+
+# printing the type of enum member using type()
+print(type(Season.SPRING))
+# <enum 'Season'>
+
+# printing enum member as repr
+print(repr(Season.SPRING))
+# <Season.SPRING: 1>
+
+# printing all enum member using "list" keyword
+print(list(Season))
+# [<Season.SPRING: 1>, <Season.SUMMER: 2>, <Season.AUTUMN: 3>, <Season.WINTER: 4>]
 ```

@@ -479,3 +479,262 @@ print(repr(Season.SPRING))
 print(list(Season))
 # [<Season.SPRING: 1>, <Season.SUMMER: 2>, <Season.AUTUMN: 3>, <Season.WINTER: 4>]
 ```
+## ITERACJA
+### ITERABLE
+Kompozyt zdolny do zwracania swoich elementów w pętli for. Są to np. typy sekwencyjne (listy, krotki, stringi), dict, set, file, itp.
+```python
+class Iterable:
+	def __getitem__(self, key):
+		(...)
+	def __len__(self):
+		return (...)
+
+iterable[123]
+iterable['foobar']
+```
+Dla bardziej skomplikowanej logiki iterowania definiuje się metodę **\_\_iter\_\_**
+```python
+class Iterable:
+	(...)
+	def __iter__(self):
+		return Iterator(...)
+
+# Wywołanie metody __iter__ obiektu Iterable w celu utworzenia iteratora 
+iterator = iter(iterable)
+```
+
+### ITERATOR
+Hermetyzuje strategię sekwencyjnego dostępu do elementów kompozytu, bez względu na rzeczywistą ich organizację. Jego zadanie polega na dostarczaniu kolejnych elementów według ustalonego wzorca.
+```python
+class Iterator:
+	def __next__(self):
+		return (...)
+	def __iter__(self):
+		return self # Obiekt iteratora musi mieć zdefiniowaną metodę __iter__, gdzie zwraca samego siebie
+
+iterator = iter(iterable)
+
+# Wywoływanie kolejnych elementów.
+element_1 = next(iterator)
+element_2 = next(iterator)
+```
+Gdy nie ma już obiektów do pobrania, przy kolejnej próbie użycia funkcji **next** wystąpi wyjątek *StopIteration*.
+
+Iterator można utworzyć również z "wartownikiem", będącym wartością przerywającą iterację.
+
+```python
+# iterator = iter(callable, sentinel)
+
+def function():
+	return random.randrange(10)
+
+list(iter(function, 5))
+```
+### GENERATORY
+Generator to inny rodzaj iteratora. Używając kluczowego słowa **yield** wyciągamy następną wartość dostarczoną przez generator, po czym zapamiętuje on swój stan aż do kolejnego jego wywołania przez pętlę lub funkcję **next**. Jednym z benefitów generatorów może być tzw. separation of concernes, czyli oddzielenie iteracji od logiki przetwarzania pojedynczego elementu. 
+
+```python
+def create_generator(start, stop, step):
+	x = start
+	while x < stop:
+		yield x # Słowo kluczowe przekształcające funkcję w generator
+		x += step
+		
+generator = create_generator(0, 10, 2.5)
+# Logika zawarta w funkcji generatora wykonuje się dopiero po zastosowaniu funkcji next() lub w czasie iteracji w pętli
+
+# next(generator)
+for value in generator:
+	print(value)
+```
+Generator można również zdefiniować używając tzw. Generator Comprehensions.
+```python
+(x**2 for x in range(10) if x % 2 == 0)
+```
+Jako praktyczny przykład zastosowania generatora można podać operacje na plikach, gdzie logika przetwarzania poszczególnych wierszy, jest oddzielona od in filtrowania, za które odpowiada generator.
+```python
+def exclude_comments(fp):
+	for line in fp:
+		if not line.startswith('#'):
+			yield line
+
+with open('filename') as fp:
+	for line in exclude_comments(fp):
+		process(line)
+```
+Generatory wykorzystują tzw. leniwą ewaluację, która pozwala strumieniowo przetwarzać duże ilości danych bez konieczności wczytywania ich w całości do pamięci.
+### itertools
+Wbudowany w Pythona moduł do obsługi iteracji. Składa się na iteratory nieskończone, kombinatoryczne i pozostałe.
+
+#### Iteratory nieskończone
+```python 
+from itertools import *
+
+# Kolejne wartości liczbowe
+for i in count(10, 1):
+	print(i)
+
+# 10
+# 11
+# 12
+# ...
+
+# Kolejne wartości z listy podawane cyklicznie
+for i in cycle(['spring', 'summer', 'fall', 'winter']):
+	print(i)
+
+# Powtórzenie tej samej wartości podaną ilość razy, lub w nieskończoność
+for i in repeat('hello', 3):
+	print(i)
+```
+####  Iteratory kombinatoryczne
+##### product
+Iloczyn kartezjański dwóch lub więcej zbiorów (wszystkie możliwe kombinacje wartości).
+```python 
+from itertools import *
+
+
+colors = {'black', 'white'}
+sizes = {'S', 'M', 'L', 'XL'}
+materials = {'cotton', 'polyester', 'lycra'}
+
+for color, size, material in product(colors, sizes, materials):
+	print(color, size, material)
+	# black S lycra
+	# black S cotton
+	# ...
+	# black M lycra
+	# ...
+	# white S lycra
+	...
+
+# Kombinacja kilku wartości z tego samego zakresu
+list(product(range(10), repeat=4))
+# [(0, 0, 0, 0),
+# (0, 0, 0, 1),
+...
+# (9, 9, 9, 9)]
+```
+##### permutations
+Możliwe permutacje dla podanego zbioru (możliwe kolejności obiektów w zbiorze).
+```python 
+from itertools import *
+
+horses = {'Coco', 'Dolly', 'Duke', 'Gypsy', 'Star'}
+
+for outcome in permutations(horses):
+	for i, horse in enumerate(outcome, 1):
+		print(i, horse)
+	print()
+
+# 1 Duke
+# 2 Coco
+# 3 Star
+# 4 Dolly
+# 5 Gypsy
+# 
+# 1 Duke
+# 2 Coco
+...
+```
+Możliwe jest również uzyskanie n-elementowych wariacji bez powtórzeń - tutaj w celu uzyskania pierwszych trzech miejsc na podium.
+```python 
+from itertools import *
+
+horses = {'Coco', 'Dolly', 'Duke', 'Gypsy', 'Star'}
+
+for outcome in permutations(horses, 3):
+	for i, horse in enumerate(outcome, 1):
+		print(i, horse)
+	print()
+# 1 Duke
+# 2 Coco
+# 3 Star
+...
+```
+##### combinations
+n-elementowe unikalne podzbiory bez względu na kolejność elementów.
+```python 
+from itertools import *
+
+horses = {'Coco', 'Dolly', 'Duke', 'Gypsy', 'Star'}
+
+for outcome in combinations(horses, 3):
+	print(outcome)
+# 1 Duke
+# 2 Coco
+# 3 Star
+...
+```
+####  Iteratory pozostałe
+##### chain
+Pozwala na iterowanie po kilku sekwencjach na raz. Po wyczerpaniu elementów w sekwencji chain przechodzi do pobierania elementów z kolejnej z nich.
+
+```python 
+from itertools import *
+
+a = [1, 2, 3]
+b = ['lorem', 'ipsum']
+c = list('abcd')
+
+for x in chain(a, b, c):
+	print(x)
+```
+##### zip
+Wbudowana funcja, pozwalająca na iterowanie po kilku listach jednocześnie. Ilość wynikowych elementów determinuje długość najkrótszej z sekwencji.
+```python 
+from itertools import *
+
+a = [1, 2, 3]
+b = ['lorem', 'ipsum']
+c = list('abcd')
+
+for x in zip(a, b, c):
+	print(x)
+
+# (1, 'lorem', 'a')
+# (2, 'ipsum', 'b')
+```
+Sekwencje tak utworzonych tupli można też odpakować przy użyciu zip.
+```python 
+from itertools import *
+
+zipped = [(1, 'a'), (2, 'b')]
+x, y = zip(*zipped)
+print(x)
+print(y)
+# (1, 2)
+# ('a', 'b')
+```
+##### groupby
+Pozwala na grupowanie danych po wskazanym kluczu
+```python 
+from itertools import *
+
+expenses = [
+	(500, 'ZUS', 'firma'),
+	(100, 'księgowa', 'firma'),
+	(400, 'OC', 'samochód'),
+	(60, 'kino', 'rozrywka'),
+	(200, 'paliwo', 'samochód'),
+	(700, 'drukarka', 'firma'),
+]
+
+category = lambda x: x[-1]
+
+for key, values in groupby(sorted(expenses, key=category), key=category):
+	print(key, list(values))
+
+# firma [(500, 'ZUS', 'firma'), ...]
+# rozrywka [...]
+# samochód [...]
+```
+##### islice
+Pozwala na uzyskanie wycinka z iteratora.
+```python 
+from itertools import *
+
+it = range(int(1e6))
+# Wycinek 10 pierwszych elementów z iteratora it zawierającego milion elementów
+list(islice(it, 10)
+```

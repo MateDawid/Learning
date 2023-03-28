@@ -738,3 +738,97 @@ it = range(int(1e6))
 # Wycinek 10 pierwszych elementów z iteratora it zawierającego milion elementów
 list(islice(it, 10)
 ```
+### Sortowanie
+W Pythonie dane można posortować na dwa sposoby używając wbudowanych mechanizmów.
+```python 
+[2, 1, 3].sort() # sortuje istniejącą listę
+sorted([2, 1, 3]) # tworzy posortowaną kopię podanej listy
+```
+W celu ułatwienia przekazywania klucza sortowania do metody sorted można posłużyć się modułem operator.
+#### operator.itemgetter
+```python 
+from operator import *
+
+people = [
+	('Jan', 'Kowalski'),
+	('Anna', 'Woźniak'),
+	('Anna', 'Nowak')
+]
+
+sorted(people, key=itemgetter(0, 1)) # itemgetter wyciąga elementy z kolejno z indeksów 0 i 1 w formie krotki dla każdego z obiektów listy people. Lista jest posortowana najpierw względem pierwszej podanej wartości, a następnie drugiej
+```
+#### operator.attrgetter
+```python 
+from operator import *
+from collections import namedtuple
+
+Person = namedtuple('Person', 'first_name last_name')
+
+people = [
+	Person('Jan', 'Kowalski'),
+	Person('Anna', 'Woźniak'),
+	Person('Anna', 'Nowak')
+]
+
+sorted(people, key=attrgetter('first_name', 'last_name')) # attrgetter wyciąga atrybuty kolejno 'first_name' i 'last_name' i sortuje listę obiektów na ich podstawie
+```
+#### operator.methodcaller
+```python 
+from operator import *
+from collections import namedtuple
+
+class Person(namedtuple('Person', 'first_name last_name')):
+	def get_length(self):
+		return len(str(self))
+
+people = [
+	Person('Jan', 'Kowalski'),
+	Person('Anna', 'Woźniak'),
+	Person('Anna', 'Nowak')
+]
+
+sorted(people, key=methodcaller('get_length')) # methodcaller sortuje listę na podstawie wartości zwróconych przez metodę, której nazwa przekazana jest w argumencie
+```
+## Programowanie funkcyjne
+### Funkcje wyższego rzędu (Higher order functions)
+#### map
+Wykonuje wskazaną funkcję na każdym elemencie podanej sekwencji i zwraca listę wyników tej funkcji
+```python 
+# Zwraca iterator pozycji poszczególnych elementów stringa w Unicode
+map(ord, 'zażółć gęślą jaźń') 
+```
+#### filter
+Filtruje sekwencje bazując podanej funkcji.
+```python 
+filter(str.isupper, 'Hello World') 
+```
+#### functools.reduce
+Iteruje po elementach sekwencji i redukuje ją do pojedynczej wartości.
+**Przykład 1: Sumowanie liczb**
+```python
+import operator
+from functools import reduce
+ 
+numbers = [42, 15, 2, 33]
+
+# Pierwsza wartość funkcji to tzw. akumulator, na którym wykonywane są operacje bazujące na drugim argumencie
+def f(subtotal, number):
+	return subtotal + number
+
+#reduce(f, numbers)
+reduce(operator.add, numbers)
+```
+**Przykład 2: Grupowanie liczb parzystych i nieparzystych**
+```python
+import operator
+from functools import reduce
+ 
+numbers = [42, 15, 2, 33]
+
+def f(grouped, number):
+	key = 'even' if number % 2 == 0 else 'odd'
+	grouped[key].append(number)
+	return grouped
+
+reduce(f, numbers, {'even': [], 'odd': []})
+```

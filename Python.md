@@ -832,3 +832,80 @@ def f(grouped, number):
 
 reduce(f, numbers, {'even': [], 'odd': []})
 ```
+### Funkcje zagnieżdżone
+Jako, że funkcje to typ pierwszoklasowy, można je bez ograniczeń zagnieżdżać. Stosowanie funkcji zagnieżdżonych umożliwia ukrywanie implementacji. Funkcja zagnieżdżona ma zasięg lokalny, przez co ma bezpośredni dostęp do argumentów przekazanych do funkcji nadrzędnej.  
+```python
+def selection_sort(items):
+
+	def recursive(items, i):
+		
+		def min_index(i):
+			return items.index(items[i:], i)
+		
+		def swap(i, j):
+			items[i], items[j] = items[j], items[i]
+		
+		if i < len(items):
+			j = min_index(i)
+			swap(i, j)
+			selection_sort(items, i + 1)
+	
+	recursive(items, 0)
+
+items = ['bob', 'alice', 'max']
+selection_sort(items) 
+```
+### Zasięg zmiennych
+Wartości zmiennych wyszukiwane są w kolejności LEGB - local, enclosed, global, built-in.
+```python
+%reset -f
+
+x = 'global'
+
+def outer():
+	x = 'enclosed'
+	def inner():
+		x = 'local'
+		print(x)
+	inner()
+	print(x)
+
+outer()
+print(x)
+
+# local
+# enclosed
+# global
+```
+### Domknięcia
+Zapamiętuje wartości tzw. zmiennych wolnych (nonlocal) w swoim zasięgu leksykalnym. Domknięcia pozwalają dołączać pewien stan do funkcji, a także metody manipulowania tym stanem, jak np, ze zmienną color i metodą set_color z przykładu poniżej. Domknięcia są stosowane np. przy tworzeniu dekoratorów.
+```python
+def tag(name):
+	color = 'black'
+	def wrap(text):
+		return f'<{name} style="color: {color}">{text}</{name}>'
+	def set_color(value):
+		nonlocal color
+		color = value
+	wrap.set_color = set_color
+	return wrap
+p = tag('p)
+p('Python')
+```
+
+### Funkcje cząstkowe
+Funkcje wykonujące działanie innej funkcji, ale z mniejszą wymaganą do podania liczbą argumentów.
+
+```python
+from functools import partial
+
+def quadratic(x, a, b, c):
+	return a*x**2 + b*x + c
+
+# Funkcja cząstkowa - zapis 1
+def y(x):
+	return quadratic(x, 3, 1, -4)
+
+# Funkcja cząstkowa - zapis 2
+y = partial(quadratic, a=3, b=1, c=-4)
+```

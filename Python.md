@@ -381,7 +381,7 @@ for name in ('bob', 'alice', 'max', 'adam', 'eve'):
 	
 # names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
 ```
-Ten sam efekt można uzyskać używając defaultdict.
+Ten sam efekt można uzyskać używając defaultdict. W przypadku, gdy kod sięga do słownika przy użyciu nieistniejącego klucza wykonywana jest funkcja podana jako argument przy inicjalizacji defaultdicta (w tym przypadku funkcja list()).
 
 ```python
 from collections import defaultdict
@@ -390,7 +390,7 @@ names_by_length = defaultdict(list)
 # argument "list" oznacza, że przy próbie wyciągnięcia danych dla nieistniejącego klucza zostanie utworzona pusta lista
 
 for name in ('bob', 'alice', 'max', 'adam', 'eve'):
-	names_by_length[key].append(name)
+	names_by_length[len(name)].append(name)
 	
 # names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
 ```
@@ -908,4 +908,67 @@ def y(x):
 
 # Funkcja cząstkowa - zapis 2
 y = partial(quadratic, a=3, b=1, c=-4)
+```
+## PROGRAMOWANIE OBIEKTOWE
+### Kopiowanie obiektów
+Kopiowanie obiektów może odbywać się w sposób płytki i głęboki. W przypadku kopiowania płytkiego mutowalne elementy nie są rzeczywistą kopią pierwotnych elementów, ale kopią referencji do tych obiektów w pamięci
+```python
+import copy
+
+x = [1, [2, 3]]
+# shallow copy - płytkie kopiowanie
+# y = x[:]
+# y = list(x)
+y = copy.copy(x)
+
+y.append(5)
+# x = [1, [2,3]]
+# y = [1, [2,3], 5]
+
+y[1].append(5)
+# Jako, że lista jest mutowalna, to po dodaniu do niej elementu w jednej z list, element ten jest widoczny w obu kopiach listy
+# x = [1, [2, 3, 4]]
+# x = [1, [2, 3, 4], 5] 
+```
+Rozwiązaniem powyższego problemu może być użycie deepcopy, które rekurencyjnie kopiuje kolejne elementy z drzewa obiektu (nie ich referencje, jak w przypadku mutowalnych obiektów przy płytkim kopiowaniu).
+
+```python
+import copy
+
+x = [1, [2, 3]]
+# deep copy - głębokie kopiowanie
+y = copy.deepcopy(x)
+
+y[1].append(5)
+# x = [1, [2, 3]]
+# x = [1, [2, 3, 4]] 
+```
+### Klasy abstrakcyjne
+Użycie klas abstrakcyjnych pozwala na wymuszenie zaimplementowania wszystkich abstrakcyjnych metod w klasach pochodnych od abstrakcyjnej klasy bazowej.
+
+```python
+import abc
+import json
+
+class Plugin(metaclass=abc.ABCMeta):
+	"""Abstract base for plugins."""
+	
+	@abc.abstractmethod
+	def load(self, path)
+		"""Return a dict with values from the given file."""
+	
+	@abc.abstractmethod
+	def save(self, data, path)
+		"""Serialize data and save it to the given file."""
+
+
+class JsonPlugin(Plugin):
+
+	def load(self, path):
+		with open(path) as fp:
+			return json.load(fp)
+	
+	def save(self, data, path):
+		with open(path, 'w') as fp:
+			json.dump(data, fp, indent=4, sort_keys=True)
 ```

@@ -1,12 +1,12 @@
 
 # **PYTHON**
-## WŁAŚCIWOŚCI JĘZYKA
-### Przestrzenie nazw  
+## 1. WŁAŚCIWOŚCI JĘZYKA
+### 1.1. Przestrzenie nazw  
 W pewnym sensie powiązane z zakresami są przestrzenie nazw. Są to zakresy zapewniające nam to, że nazwa danego obiektu będzie unikalna i że można z nich będzie korzystać bez ryzyka wystąpienia jakichkolwiek konfliktów. To swojego rodzaju zbiór nazw i definicji, które mogą mieć zastosowanie lokalne (podobnie jak zakresy, w obrębie funkcji), ale także globalnie, które określają nazwy dla całego kodu, zaimportowanych paczek. W Pythonie funkcjonują także wbudowane przestrzenie nazw kluczowych funkcji w tym języku, dzięki którym możemy mieć pewność, że utworzony przez nas obiekt nie będzie w konflikcie z którąkolwiek z wbudowanych funkcji Pythona.  
-### Różnica między modułem i paczką  
+### 1.2. Różnica między modułem i paczką  
 Zarówno moduły jak i paczki wykorzystywane są do modularyzacji kodu, co przekłada się na jego łatwość w utrzymaniu i ułatwia pracę z omówionymi już zakresami. Moduły są plikami zawierający zestaw zdefiniowanych instrukcji, klas i zmiennych. Można zaimportować zarówno całe moduły, jak i ich części.  
 Paczka w Pythonie zazwyczaj składa się z kilku modułów. Jest ona jednak na tyle przydatna, że określa dla nich przestrzenie nazw i eliminuje konflikty pomiędzy poszczególnymi modułami.  
-### Zakresy  
+### 1.3. Zakresy  
 Zakresy, czy też scope’y, w Pythonie nie różnią się od tego, co znamy z innych języków programowania. Scope to blok kodu, w którym działa dany obiekt i tylko w nim jest dostępny. Na przykład lokalny zakres odnosi się do wszystkich obiektów w danej funkcji, zaś zakres globalny będzie zawierał wszystkie obiekty w całym kodzie.  
 ```python
 x = 10             # zmienna globalna
@@ -20,7 +20,7 @@ def f():
 f()                # uruchomienie funkcji wydrukuje zmienną globalną x i zmienna lokalną y
 print(x)           # drukuje zmienną globalną x
 ```
-###   Typy wbudowane  
+###   1.4. Typy wbudowane  
 - `str` – string, tekstowy typ danych,  
 - `int` – liczba,  
 - `float` – liczba zmiennoprzecinkowa,  
@@ -36,12 +36,12 @@ print(x)           # drukuje zmienną globalną x
 - `bytearray` – mutowalny wariant bytes,  
 - `memoryview` – dostęp do wewnętrznych danych obiektów obsługujących bufory protokołów.  
 
-### PYTHONPATH  
+### 1.5. PYTHONPATH  
 `PYTHONPATH` to zmienna środowiskowa pozwalająca wskazać dodatkowe lokalizacje, z których Python będzie mógł zaciągnąć moduły i paczki.  
-### PEP8  
+### 1.6. PEP8  
 PEP 8 to opracowany jeszcze w 2001 r. dokument, w którym opisane zostały najlepsze praktyki w zakresie pisania czytelnego kodu w Pythonie. Stanowi część oficjalnej dokumentacji języka. Stanowi on powszechnie respektowaną normę i w zasadzie stanowi lekturę obowiązkową dla każdego, kto chce programować w Pythonie. Z treścią dokumentu zapoznać się można na  [oficjalnej stronie Pythona](https://www.python.org/dev/peps/pep-0008/#introduction).
-## SYNTAX
-### Różnica między 'is', a '=='
+## 2. SYNTAX
+### 2.1. Różnica między 'is', a '=='
 ```python
 print(1 == True) # == to operator porównania wartości
 print(1 is True) # is to operator porównania identyczności/tożsamości
@@ -60,7 +60,7 @@ b = 'abc'                    # i przypisanych do innych zmiennych a i b
 print(a == b)                  # porównanie wartości stringów a i b
 print(a is b)                  # porównanie identyczności/tożsamości stringów a i b
 ```
-### Porównania łańcuchowe
+### 2.2. Porównania łańcuchowe
 ```python
 print(False is False)
 print(True is False)
@@ -80,7 +80,7 @@ Wszystkie porównania łańcuchowe w Pythonie traktowane są wg tego samego sche
 A is B == C > D  -> (A is B) and (B == C) and (C > D)
 ```
  Analogicznie postępujemy dla pięciu i więcej elementów.
-### lambda  
+### 2.3. lambda  
 Lambda w Pythonie to funkcja, która może przyjąć każdą liczbę argumentów, ale mieć tylko jedno wyrażenie. Co ważne, jest to funkcja anonimowa, a zatem nie jest powiązana z żadnym identyfikatorem. Pozwala wyeliminować funkcję zainicjowane na potrzeby funkcji wyższego rzędu i przekazać jej parametry.
 ```python
 # lambda argument : wyrażenie
@@ -92,7 +92,7 @@ L = [('Anna',82), ('Robert',33), ('Arthur',40), ('John',56)]
 # zwraca drugi element danej tupli.
 L_sorted = sorted(L, key = lambda x:x[1])
 ```
-### map i filter
+### 2.4. map i filter
 ```python
 names = ['jan kot', 18, 'ANNA KRÓL', 'jÓzef BYK', ['nie', 'wasza','sprawa'], 'ROBERT wąŻ']
 
@@ -108,7 +108,7 @@ names_cleaned = list(filter(lambda x:type(x) is str, names))
 # tak zmodyfikowany string zostaje dodany do listy names_corrected
 names_corrected = list(map(lambda x: x.lower().title(), names_cleaned))
 ```
-### Dekoratory
+### 2.5. Dekoratory
 ```python
 def add_stars(function):     # definicja dekoratora niczym nie różni się od definicji zwykłej funkcji
     def decorated_function():   # wewnątrz dekoratowa tworzymy WEWNĘTRZNĄ funkcję, w której udekorujemy funkcję pobraną jako argument
@@ -121,7 +121,7 @@ def add_stars(function):     # definicja dekoratora niczym nie różni się od d
 def f():                         # definicja funkcji f()
     print("Cześć, jestem f()")
 ```
-### Generatory
+### 2.6. Generatory
 ```python
 def get_next_even():                   # definicja generatora wygląda jak definicja zwykłej funkcji
     for n in range(2,20,2):            # range tworzący zakres od 2 do 20, przesuwając się o 2
@@ -139,8 +139,8 @@ y = ('a' * n for n in range(5))        # generator expression - wyrażenie gener
 for i in range(5):                     # wypisanie kolejnych wartości zwróconych przez obiekt genratora y
     print(next(y))
 ```
-## STRING
-### Zamiana elementów stringa
+## 3. STRING
+### 3.1. Zamiana elementów stringa
 ```python
 a = "abcdefg"            # do zmiennej a przypisz zostaje string 'abcdefg'
 print(a[1])              # wydrukuj element znajdujący się pod indeksem 1 w stringu a
@@ -150,8 +150,8 @@ a_list[1] = 'X'         # zmodyfikuj zawartość listy pod indeksem 1
 a = "".join(a_lista)     # stwórz stringa a łącząc elementy listy a_list przy użyciu pustego separatora ""
 print(a)
 ```
-## LIST
-### Lista niepowtarzalnych elementów
+## 4. LIST
+### 4.1. Lista niepowtarzalnych elementów
 ```python 
 A = [1,2,3,3,2,1,2,3]
 # rozwiązanie 1
@@ -164,16 +164,16 @@ print(B)
 B = list(set(A))
 print(B)
 ```
-### Różnice między listą i krotką
+### 4.2. Różnice między listą i krotką
 ```python
 L = [1, 2, 3, True, (1, 2)]
 T = (4, 5, 6, False, ['x', 'y'])
 L[2] = 'trzy'   # modyfikacja zawartości listy - operacja legalna
 T[2] = 'sześć'  # próba modyfikacji zawartości tupli - operacja zabroniona, skutkuje TypeError
 ```
-### Różnice między listą i tablicą  
+### 4.3. Różnice między listą i tablicą  
 Tablice w Pythonie są homogeniczne. Oznacza to, że zawierają dane tylko i wyłącznie jednego typu. W przypadku list nie ma tego ograniczenia i swobodnie można wewnątrz nich zawrzeć np. liczby i stringi. Warto wspomnieć, że homogeniczne listy zużywają znacznie mniej pamięci.  
-### Kopiowanie list
+### 4.4. Kopiowanie list
 W Pythonie kopiowanie nie odbywa się z użyciem operatora  `=`. Wówczas jedynie tworzymy powiązanie między istniejącym już obiektem a docelową nazwą zmiennej. Zamiast wspomnianego operatora, w Pythonie wykorzystuje się moduł copy. Mamy dzięki niemu dwie możliwości kopiowania: płytkie i głębokie. W pierwszym przypadku tworzy się bitową kopię 1:1, zaś głęboka kopia pozwala na rekursywne kopiowanie wszystkich wartości. Składnia:  
 ```python  
 list_1 = [1, 2, 3]  
@@ -185,7 +185,7 @@ B = A                   # do zmiennej B przepisujemy REFERENCJĘ do listy przech
 C = A[:] # C = list(A)  # do zmiennej C przypisujemy KOPIĘ listy przechowywanej pod zmienną A
 B[0] = 111              # zmieniamy pierwszy element listy, na który wskazują zarówno zmienne B jak i A
 ```  
-### Odwrócenie listy
+### 4.5. Odwrócenie listy
 ```python
 languages = ['Python', 'Java', 'C#', 'Ruby']
 # 1
@@ -200,7 +200,7 @@ reversed_languages = []                  # stworz pusta liste reversed_languages
 for language in languages:                   # dla kolejnego jezyka w liscie languages
     reversed_languages.insert(0,language)   # umiesc ten jezyk na indeksie zerowym listy reversed_languages
 ```
-### List comprehension
+### 4.6. List comprehension
 ```python
 L = [1,2,3,4,5,6]
 L1 = [x for x in range(5)]        # elementy z zakresu od 0 do 4
@@ -212,8 +212,8 @@ L4 = ['Parzysta' if x%2 == 0 else 'Nieparzysta' for x in range(5)]
 L5 = [(x, x+10) for x in L]       # dwuelementowe tuple, które na indeksie 0 mają kolejny element z listy L
                                   # a na indeksie 1 ten sam element zwiększony o 10
 ```
-## DICTIONARY
-### Poprawne tworzenie słowników
+## 5. DICTIONARY
+### 5.1. Poprawne tworzenie słowników
 Klucze słownika muszą być elementem niemutowalnym, a więc mogą być typu int, string lub tuple, ale nie mogą być listą lub innym słownikiem.
 ```python
 A = {1: 1, 2: 4, 3: 9}
@@ -222,15 +222,15 @@ B = {'imie': 'Anna', 'nazwisko': 'Kowalska'}
 D = {(4, 5): [16, 25]}
 # E = {{1:2}: 'jeden_dwa'}  # słownik jako element mutowalny równiez nie może być kluczem!
 ```
-### Dict comprehension
+### 5.2. Dict comprehension
 ```python
 L = [1,2,3,4,5,6]
 D1 = {x:x % 2 == 0 for x in L}   
 # pary klucz:wartość, gdzie kluczem są elementy z listy L a wartościami 
 # True lub False, w zależności od tego czy dany klucz jest podzielny przez 2
 ```
-## KLASY
-### init 
+## 6. KLASY
+### 6.1. init 
 Metoda specjalna \_\_init__ wywoływana automatycznie podczas po utworzeniu instancji klasy. Dzięki niej możliwe jest na przykład doczytanie kodu czy automatycznie dodanie atrybutów zawsze, gdy tworzony będzie nowy obiekt lub instancja. Pozwala także odróżnić metody i atrybuty klasy od lokalnych zmiennych. 
 ```python
 class Dog:                               # tworzenie klasy Pies
@@ -244,8 +244,8 @@ big_dog = Dog("Killer", 'doberman')   # tworzenie obiektu klasy Pies, z parametr
 print(small_dog.name, small_dog.breed)    # wydrukowanie atrybutów obiektów
 print(big_dog.imie, big_dog.breed)        # wydrukowanie atrybutów obiektów
 ```
-## USE CASES
-### Palindrom
+## 7. USE CASES
+### 7.1. Palindrom
 ```python
 #1
 def is_palindrome(word):
@@ -273,7 +273,7 @@ def is_palindrome(word):
 print(is_palindrome("kajak"))
 print(is_palindrome("anakonda"))
 ```
-### Ciąg Fibonacciego
+### 7.2. Ciąg Fibonacciego
 ```python
 # kolejny element ciągu: 0   1   2   3   4   5   6    7   8   9  10
 # wartość dla elementu:  0   1   1   2   3   5   8   13  21  34  55
@@ -293,7 +293,7 @@ def fibonacci_r(n): # O(2 ^ n)
                              # aby policzyć dwa poprzednie wyrazy ciągu i dodać je do siebie
 print(fibonacci_r(10))
 ```
-### Tworzenie plików
+### 7.3. Tworzenie plików
 ```python
 with open('file.txt', 'w') as f:    # otwórz plik 'file.txt' w wersji do zapisu ('w' od write), nadaj mu alias f
     for n in range(1, 101):             # dla kolejnych liczb z zakresu od 1 do 100
@@ -303,8 +303,8 @@ with open('file.txt', 'r') as f:    # otwórz plik 'file.txt' w wersji do odczyt
     file_lines = f.readlines()             # do listy file_lines wpisz kolejne linijki przeczytane z pliku 'file.txt'
                                         # każda linijka będzie osobnym elementem listy
 ```
-## TESTY
-### assert
+## 8. TESTY
+### 8.1. assert
 ```python
 def square(x):
     return x * x
@@ -318,7 +318,7 @@ Traceback (most recent call last):
 AssertionError
 """
 ```
-### Biblioteka unittest
+### 8.2. Biblioteka unittest
 ```python
 # Import the unittest library and our function
 import unittest
@@ -331,8 +331,8 @@ class Tests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 ```
-## KONTENERY DANYCH
-### ARRAY
+## 9. KONTENERY DANYCH
+### 9.1. Array
 Struktura danych przypominająca działaniem array stosowany np. w C i służy między innymi do komunikacji z softem pisanym w tym języku. 
 ```python
 import array
@@ -340,7 +340,7 @@ import array
 # Konieczne zadeklarowanie typu zmiennych.
 example = array.array('b')
 ```
-### ChainMap
+### 9.2. ChainMap
 Struktura umożliwiająca połączenie dwóch słowników. W przypadku, gdy w którymś ze składowych słowników zajdzie jakaś zmiana, będzie ona uwzględniona w obiekcie ChainMap.
 ```python
 from collections import ChainMap
@@ -354,7 +354,7 @@ maps = d,maps # lista słowników w kolejności, w jakiej zostały dodane[{'colo
 ```
 Przy próbie podania wartości dla już istniejącego klucza w ChainMap pozostanie pierwotna wartość.
 
-### Counter
+### 9.3. Counter
 Zlicza ilość wystąpień elementów w sekwencji.
 ```python
 from collections import Counter
@@ -369,7 +369,7 @@ c.most_common()
 # Zwraca posortowaną listę od najczęściej występującego elementu
 # [('a', 2), ('b', 2), ('c', 1)]
 ```
-### defaultdict
+### 9.4. defaultdict
 Pozwala na uproszczenie i przyspieszenie kodu, którego celem jest np. budowa słownika. Przykładowo - poniżej kod, którego celem jest zbudowanie słownika, gdzie kluczem jest długość imienia, a wartością - lista podanych w sekwencji imion.
 ```python
 names_by_length = {}
@@ -394,7 +394,7 @@ for name in ('bob', 'alice', 'max', 'adam', 'eve'):
 	
 # names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
 ```
-### OrderedDict
+### 9.5. OrderedDict
 Słownik zachowujący porządek wstawianych kluczy. Wykorzystuje wewnętrznie listę dwukierunkową.
 ```python
 from collections import OrderedDict
@@ -408,7 +408,7 @@ list(row.items())
 # Poszczególne elementy słownika są zachowana w kolejności, w jakiej zostały dodane
 # [('id', '123'), ('firstName', 'Jan'), ('lastName', 'Kowalski')]
 ```
-### deque
+### 9.6. deque
 Nazwa to skrót od "double ended queue". Wykorzystuje wewnętrznie listę dwukierunkową. Deque może służyć np. do składowania historii operacji. 
 Dla określonej liczby elementów deque zachowuje ich kolejność przy użyciu wskaźnika początkowego i końcowego. Przy dodaniu nowego elementu wskaźnik końcowy wskazuje na nowy element, za to wskaźnik początkowy przenosi się na następujący po dotychczasowym elemencie początkowym.
 ```python
@@ -428,7 +428,7 @@ history.popleft()
 history.appendleft('not')
 # Dodaje element na początku kolejki
 ```
-### namedtuple
+### 9.7. namedtuple
 Namedtuple to po prostu tuple z nazwanymi polami
 ```python
 import collections import namedtuple
@@ -443,7 +443,7 @@ Point(**d)
 Point(x=5, y=6)
 # Point(x=5, x=6)
 ```
-### enum
+### 9.8. enum
 
 Moduł pozwalający na tworzenie typów wyliczeniowych.
 ```python
@@ -479,8 +479,8 @@ print(repr(Season.SPRING))
 print(list(Season))
 # [<Season.SPRING: 1>, <Season.SUMMER: 2>, <Season.AUTUMN: 3>, <Season.WINTER: 4>]
 ```
-## ITERACJA
-### ITERABLE
+## 10. ITERACJA
+### 10.1. Iterable
 Kompozyt zdolny do zwracania swoich elementów w pętli for. Są to np. typy sekwencyjne (listy, krotki, stringi), dict, set, file, itp.
 ```python
 class Iterable:
@@ -503,7 +503,7 @@ class Iterable:
 iterator = iter(iterable)
 ```
 
-### ITERATOR
+### 10.2. Iterator
 Hermetyzuje strategię sekwencyjnego dostępu do elementów kompozytu, bez względu na rzeczywistą ich organizację. Jego zadanie polega na dostarczaniu kolejnych elementów według ustalonego wzorca.
 ```python
 class Iterator:
@@ -530,7 +530,7 @@ def function():
 
 list(iter(function, 5))
 ```
-### GENERATORY
+### 10.3 Generatory
 Generator to inny rodzaj iteratora. Używając kluczowego słowa **yield** wyciągamy następną wartość dostarczoną przez generator, po czym zapamiętuje on swój stan aż do kolejnego jego wywołania przez pętlę lub funkcję **next**. Jednym z benefitów generatorów może być tzw. separation of concernes, czyli oddzielenie iteracji od logiki przetwarzania pojedynczego elementu. 
 
 ```python
@@ -563,10 +563,10 @@ with open('filename') as fp:
 		process(line)
 ```
 Generatory wykorzystują tzw. leniwą ewaluację, która pozwala strumieniowo przetwarzać duże ilości danych bez konieczności wczytywania ich w całości do pamięci.
-### itertools
+### 10.4. itertools
 Wbudowany w Pythona moduł do obsługi iteracji. Składa się na iteratory nieskończone, kombinatoryczne i pozostałe.
 
-#### Iteratory nieskończone
+#### 10.4.1. Iteratory nieskończone
 ```python 
 from itertools import *
 
@@ -587,8 +587,8 @@ for i in cycle(['spring', 'summer', 'fall', 'winter']):
 for i in repeat('hello', 3):
 	print(i)
 ```
-####  Iteratory kombinatoryczne
-##### product
+####  10.4.2. Iteratory kombinatoryczne
+##### 10.4.2.1. product
 Iloczyn kartezjański dwóch lub więcej zbiorów (wszystkie możliwe kombinacje wartości).
 ```python 
 from itertools import *
@@ -615,7 +615,7 @@ list(product(range(10), repeat=4))
 ...
 # (9, 9, 9, 9)]
 ```
-##### permutations
+##### 10.4.2.2. permutations
 Możliwe permutacje dla podanego zbioru (możliwe kolejności obiektów w zbiorze).
 ```python 
 from itertools import *
@@ -652,7 +652,7 @@ for outcome in permutations(horses, 3):
 # 3 Star
 ...
 ```
-##### combinations
+##### 10.4.2.3. combinations
 n-elementowe unikalne podzbiory bez względu na kolejność elementów.
 ```python 
 from itertools import *
@@ -666,8 +666,8 @@ for outcome in combinations(horses, 3):
 # 3 Star
 ...
 ```
-####  Iteratory pozostałe
-##### chain
+####  10.4.3. Iteratory pozostałe
+##### 10.4.3.1. chain
 Pozwala na iterowanie po kilku sekwencjach na raz. Po wyczerpaniu elementów w sekwencji chain przechodzi do pobierania elementów z kolejnej z nich.
 
 ```python 
@@ -680,7 +680,7 @@ c = list('abcd')
 for x in chain(a, b, c):
 	print(x)
 ```
-##### zip
+##### 10.4.3.2. zip
 Wbudowana funcja, pozwalająca na iterowanie po kilku listach jednocześnie. Ilość wynikowych elementów determinuje długość najkrótszej z sekwencji.
 ```python 
 from itertools import *
@@ -706,7 +706,7 @@ print(y)
 # (1, 2)
 # ('a', 'b')
 ```
-##### groupby
+##### 10.4.3.3. groupby
 Pozwala na grupowanie danych po wskazanym kluczu
 ```python 
 from itertools import *
@@ -729,7 +729,7 @@ for key, values in groupby(sorted(expenses, key=category), key=category):
 # rozrywka [...]
 # samochód [...]
 ```
-##### islice
+##### 10.4.3.4. islice
 Pozwala na uzyskanie wycinka z iteratora.
 ```python 
 from itertools import *
@@ -738,14 +738,14 @@ it = range(int(1e6))
 # Wycinek 10 pierwszych elementów z iteratora it zawierającego milion elementów
 list(islice(it, 10)
 ```
-### Sortowanie
+### 10.5. Sortowanie
 W Pythonie dane można posortować na dwa sposoby używając wbudowanych mechanizmów.
 ```python 
 [2, 1, 3].sort() # sortuje istniejącą listę
 sorted([2, 1, 3]) # tworzy posortowaną kopię podanej listy
 ```
 W celu ułatwienia przekazywania klucza sortowania do metody sorted można posłużyć się modułem operator.
-#### operator.itemgetter
+#### 10.5.1.  operator.itemgetter
 ```python 
 from operator import *
 
@@ -757,7 +757,7 @@ people = [
 
 sorted(people, key=itemgetter(0, 1)) # itemgetter wyciąga elementy z kolejno z indeksów 0 i 1 w formie krotki dla każdego z obiektów listy people. Lista jest posortowana najpierw względem pierwszej podanej wartości, a następnie drugiej
 ```
-#### operator.attrgetter
+#### 10.5.2. operator.attrgetter
 ```python 
 from operator import *
 from collections import namedtuple
@@ -772,7 +772,7 @@ people = [
 
 sorted(people, key=attrgetter('first_name', 'last_name')) # attrgetter wyciąga atrybuty kolejno 'first_name' i 'last_name' i sortuje listę obiektów na ich podstawie
 ```
-#### operator.methodcaller
+#### 10.5.3. operator.methodcaller
 ```python 
 from operator import *
 from collections import namedtuple
@@ -789,20 +789,20 @@ people = [
 
 sorted(people, key=methodcaller('get_length')) # methodcaller sortuje listę na podstawie wartości zwróconych przez metodę, której nazwa przekazana jest w argumencie
 ```
-## Programowanie funkcyjne
-### Funkcje wyższego rzędu (Higher order functions)
-#### map
+## 11. Programowanie funkcyjne
+### 11.1. Funkcje wyższego rzędu (Higher order functions)
+#### 11.1.1. map
 Wykonuje wskazaną funkcję na każdym elemencie podanej sekwencji i zwraca listę wyników tej funkcji
 ```python 
 # Zwraca iterator pozycji poszczególnych elementów stringa w Unicode
 map(ord, 'zażółć gęślą jaźń') 
 ```
-#### filter
+#### 11.1.2. filter
 Filtruje sekwencje bazując podanej funkcji.
 ```python 
 filter(str.isupper, 'Hello World') 
 ```
-#### functools.reduce
+#### 11.1.3. functools.reduce
 Iteruje po elementach sekwencji i redukuje ją do pojedynczej wartości.
 **Przykład 1: Sumowanie liczb**
 ```python
@@ -832,7 +832,7 @@ def f(grouped, number):
 
 reduce(f, numbers, {'even': [], 'odd': []})
 ```
-### Funkcje zagnieżdżone
+### 11.2. Funkcje zagnieżdżone
 Jako, że funkcje to typ pierwszoklasowy, można je bez ograniczeń zagnieżdżać. Stosowanie funkcji zagnieżdżonych umożliwia ukrywanie implementacji. Funkcja zagnieżdżona ma zasięg lokalny, przez co ma bezpośredni dostęp do argumentów przekazanych do funkcji nadrzędnej.  
 ```python
 def selection_sort(items):
@@ -855,7 +855,7 @@ def selection_sort(items):
 items = ['bob', 'alice', 'max']
 selection_sort(items) 
 ```
-### Zasięg zmiennych
+### 11.3. Zasięg zmiennych
 Wartości zmiennych wyszukiwane są w kolejności LEGB - local, enclosed, global, built-in.
 ```python
 %reset -f
@@ -877,7 +877,7 @@ print(x)
 # enclosed
 # global
 ```
-### Domknięcia
+### 11.4. Domknięcia
 Zapamiętuje wartości tzw. zmiennych wolnych (nonlocal) w swoim zasięgu leksykalnym. Domknięcia pozwalają dołączać pewien stan do funkcji, a także metody manipulowania tym stanem, jak np, ze zmienną color i metodą set_color z przykładu poniżej. Domknięcia są stosowane np. przy tworzeniu dekoratorów.
 ```python
 def tag(name):
@@ -889,11 +889,11 @@ def tag(name):
 		color = value
 	wrap.set_color = set_color
 	return wrap
-p = tag('p)
+p = tag('p')
 p('Python')
 ```
 
-### Funkcje cząstkowe
+### 11.5. Funkcje cząstkowe
 Funkcje wykonujące działanie innej funkcji, ale z mniejszą wymaganą do podania liczbą argumentów.
 
 ```python
@@ -909,8 +909,8 @@ def y(x):
 # Funkcja cząstkowa - zapis 2
 y = partial(quadratic, a=3, b=1, c=-4)
 ```
-## PROGRAMOWANIE OBIEKTOWE
-### Kopiowanie obiektów
+## 12. PROGRAMOWANIE OBIEKTOWE
+### 12.1. Kopiowanie obiektów
 Kopiowanie obiektów może odbywać się w sposób płytki i głęboki. W przypadku kopiowania płytkiego mutowalne elementy nie są rzeczywistą kopią pierwotnych elementów, ale kopią referencji do tych obiektów w pamięci
 ```python
 import copy
@@ -943,7 +943,7 @@ y[1].append(5)
 # x = [1, [2, 3]]
 # x = [1, [2, 3, 4]] 
 ```
-### Klasy abstrakcyjne
+### 12.2. Klasy abstrakcyjne
 Użycie klas abstrakcyjnych pozwala na wymuszenie zaimplementowania wszystkich abstrakcyjnych metod w klasach pochodnych od abstrakcyjnej klasy bazowej.
 
 ```python
@@ -972,7 +972,7 @@ class JsonPlugin(Plugin):
 		with open(path, 'w') as fp:
 			json.dump(data, fp, indent=4, sort_keys=True)
 ```
-### Przeciążanie funkcji
+### 12.3. Przeciążanie funkcji
 Python nie obsługuje przeciążania funkcji i metod, ale można za to dostosować działanie funkcji w zależności od przyjętych przez nią argumentów. Najprościej zrobić to przez użycie isinstance, ale jest to antywzorzec. Zamiast tego można wykorzystać metodę singledispatch.
 ```python
 from functools import singledispatch
@@ -1003,7 +1003,7 @@ def add(x, y):
 def add(x, y):
 	return f'{x} + {y}'
 ```
-### Przeciążanie operatorów
+### 12.4. Przeciążanie operatorów
 Przykład przeciążania operatora dodawania i dodawania prawostronnego klasy namedtuple.
 
 ```python
@@ -1020,7 +1020,7 @@ class Vector(namedtuple('Vector', 'x y'):
 		return self + other
 ```
 
-#### __repr__ i __str__
+#### 12.4.1. __repr__ i __str__
 Metoda \_\_str__ powinna zwracać reprezentację obiektu do czytania przez ludzi, natomiast metoda \_\_repr__ powinna zawierać zapis (najlepiej kod Pythona) umożliwiający odtworzenie danego obiektu po wklejeniu do funkcji eval.
 ```python
 class Vector:
@@ -1037,8 +1037,8 @@ a = Vector(3, -4)
 str(a) # 'A vector of 3, -4'
 b = eval(repr(a)) # Nowa instancja wektora Vector(3, -4)
 ```
-### Metody
-#### Metody klasowe
+### 12.5. Metody
+#### 12.5.1. Metody klasowe
 Metoda klasowa to taka, która zawiera odwołanie nie do konkretnej instancji obiektu, ale do samej klasy. Może być wywoływana bez inicjowania obiektu.
 ```python
 from collections import namedtuple
@@ -1064,7 +1064,7 @@ class Color(namedtuple('Color', 'r g b')):
 
 Color.monaco_blue() # zwraca obiekt z metody klasowej Color(0.2, 0.5, 0.75)
 ```
-#### Metody statyczne
+#### 12.5.2. Metody statyczne
 Nie posiadają odniesienia ani do danego obiektu, ani do samej klasy - zachowują się bardziej jak zwykłe funkcje, niż metody. Z optymalizacyjnego punktu widzenia nie są one dobrym rozwiązaniem, ponieważ wiążę się z dodatkowym kosztem ze względu na przeglądanie przez Pythona przestrzeni nazw w trakcie działania programu. Jedynym logicznym zastosowaniem @staticmethod jest ich pogrupowanie pod jedną, wspólną przestrzenią nazw klasy
 ```python
 from collections import namedtuple

@@ -972,3 +972,121 @@ class JsonPlugin(Plugin):
 		with open(path, 'w') as fp:
 			json.dump(data, fp, indent=4, sort_keys=True)
 ```
+### Przeciążanie funkcji
+Python nie obsługuje przeciążania funkcji i metod, ale można za to dostosować działanie funkcji w zależności od przyjętych przez nią argumentów. Najprościej zrobić to przez użycie isinstance, ale jest to antywzorzec. Zamiast tego można wykorzystać metodę singledispatch.
+```python
+from functools import singledispatch
+
+# Zdefiniowanie wzorca funkcji
+@singledispatch
+def pretty_print(x):
+	print(x)
+
+# Zarejestrowanie specjalnego działania funkcji po podaniu jej listy oraz tupli jako argumentu
+@pretty_print.register(list)
+@pretty_print.register(tuple)
+def _(items):
+	for i, value in enumerate(items):
+		print(f'[{i}] = {value}')
+```
+
+Powyższe rozwiązanie nie zadziała dla metod w klasie oraz nie obsługuje więcej niż jednego argumentu. Aby rozwiązać ten drugi problem można skorzystać z zewnętrznej biblioteki multipledispatch.
+
+```python
+from multipledispatch import dispatch
+
+@dispatch(int, int)
+def add(x, y):
+	return x + y
+
+@dispatch(object, object)
+def add(x, y):
+	return f'{x} + {y}'
+```
+### Przeciążanie operatorów
+Przykład przeciążania operatora dodawania i dodawania prawostronnego klasy namedtuple.
+
+```python
+from collections import namedtuple
+
+class Vector(namedtuple('Vector', 'x y'):
+	def __add__(self, other):
+		if isinstance(other, Vector):
+			return Vector(*map(sum, zip(self, other)))
+		elif isinstance(other, int):
+			return Vector(self.x + other, self.y + other)
+	
+	def __radd__(self, other):
+		return self + other
+```
+
+#### __repr__ i __str__
+Metoda \_\_str__ powinna zwracać reprezentację obiektu do czytania przez ludzi, natomiast metoda \_\_repr__ powinna zawierać zapis (najlepiej kod Pythona) umożliwiający odtworzenie danego obiektu po wklejeniu do funkcji eval.
+```python
+class Vector:
+	def __init__(self, x, y)
+		self.x, self.y = x, y
+	
+	def __str__(self):
+		return f'A vector of {self.x}, {self.y}'
+	
+	def __repr__(self):
+		return f'Vector({self.x}, {self.y})'
+
+a = Vector(3, -4)
+str(a) # 'A vector of 3, -4'
+b = eval(repr(a)) # Nowa instancja wektora Vector(3, -4)
+```
+### Metody
+#### Metody klasowe
+Metoda klasowa to taka, która zawiera odwołanie nie do konkretnej instancji obiektu, ale do samej klasy. Może być wywoływana bez inicjowania obiektu.
+```python
+from collections import namedtuple
+from IPython.display import SVG, display
+
+
+class Color(namedtuple('Color', 'r g b')):
+	@classmethod
+	def monaco_blue(cls):
+		return cls(0.2, 0.5, 0.75)
+		
+	@classmethod
+	def exotic_red(cls):
+		return cls(1, 0, 0)
+	
+	def draw(self):
+		r, g, b = [int(x*100) for x in self]
+		display(SVG(f'''\
+			<svg>
+				<rect width="100" height="100" style="fill:rgb({r}%, {g}%, {b}%)"/>
+			</svg>
+		'''))
+
+Color.monaco_blue() # zwraca obiekt z metody klasowej Color(0.2, 0.5, 0.75)
+```
+#### Metody statyczne
+Nie posiadają odniesienia ani do danego obiektu, ani do samej klasy - zachowują się bardziej jak zwykłe funkcje, niż metody. Z optymalizacyjnego punktu widzenia nie są one dobrym rozwiązaniem, ponieważ wiążę się z dodatkowym kosztem ze względu na przeglądanie przez Pythona przestrzeni nazw w trakcie działania programu. Jedynym logicznym zastosowaniem @staticmethod jest ich pogrupowanie pod jedną, wspólną przestrzenią nazw klasy
+```python
+from collections import namedtuple
+from IPython.display import SVG, display
+
+
+class Color(namedtuple('Color', 'r g b')):
+	@staticmethod
+	def blend(color1, color2, alpha=0.5)
+		return color1*alpha + color2*(1-alpha)
+		
+	def draw(self):
+		r, g, b = [int(x*100) for x in self]
+		display(SVG(f'''\
+			<svg>
+				<rect width="100" height="100" style="fill:rgb({r}%, {g}%, {b}%)"/>
+			</svg>
+		'''))
+	
+	def __mul__(self, scalar):
+		return Color(*[x*scalar for x in self])
+	
+	def __add__(self, other):
+		return Color(*[sum(x) for x in zip(self, other)])
+```

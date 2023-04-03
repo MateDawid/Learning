@@ -1091,7 +1091,7 @@ class Color(namedtuple('Color', 'r g b')):
 		return Color(*[sum(x) for x in zip(self, other)])
 ```
 
-#### 12.6. @property
+### 12.6. @property
 Dekorator @property, pozwala na utworzenie właściwości obiektu, do której dostęp można uzyskać przy użyciu kropki, tak samo jak do atrybutów definiowanych w konstruktorze. Właściwości obiektu są jednak możliwe do nadpisania tylko po zdefiniowaniu settera.
 ```python
 class Person:

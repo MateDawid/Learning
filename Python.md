@@ -212,6 +212,18 @@ L4 = ['Parzysta' if x%2 == 0 else 'Nieparzysta' for x in range(5)]
 L5 = [(x, x+10) for x in L]       # dwuelementowe tuple, które na indeksie 0 mają kolejny element z listy L
                                   # a na indeksie 1 ten sam element zwiększony o 10
 ```
+### 4.7. Zagnieżdżone List Comprehension
+```python
+# 2-D List
+matrix = [[1, 2, 3], [4, 5], [6, 7, 8, 9]]
+  
+# Nested List Comprehension to flatten a given 2-D matrix
+flatten_matrix = [val for sublist in matrix for val in sublist]
+
+# [val
+# for sublist in matrix
+# for val in sublist]
+```
 ## 5. DICTIONARY
 ### 5.1. Poprawne tworzenie słowników
 Klucze słownika muszą być elementem niemutowalnym, a więc mogą być typu int, string lub tuple, ale nie mogą być listą lub innym słownikiem.

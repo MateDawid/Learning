@@ -1251,7 +1251,7 @@ with logging() as value:
 	print('The value is:', value)
 ```
 Instrukcja yield dzieli zawiesza działanie funkcji i dzieli ją na dwie części. Pierwsza część odpowiada instrukcji \_\_enter__, w której dokonuje się inicjalizacji. Druga część (za yield) odpowiada za to instukcji \_\_exit__. Konieczne jest opakowanie słówa kluczowego yield blokiem try/finally, ponieważ w innym razie, w przypadku wystąpienia wyjątku nie doszłoby do "zamknięcia" menedżera kontekstu.
-### 13.2. Deskryptor
+### 13.3. Deskryptor
 Można go sobie wyobrazić jako property wielokrotnego użytku, które może być wykorzystywane w wielu klasach. Zgodnie z definicją, jest to klasa definiująca jedną z trzech magicznych metod: \_\_get__, \_\_set__, \_\_delete__. Występują szczególne przypadki: 
 * data descriptor - definiuje wszystkie trzy metody
 * non data descriptor - definiuje tylko metodę \_\_get__. Pozwalają na leniwą inicjalizację atrybutów w klasie
@@ -1295,3 +1295,97 @@ class Person:
 		self._name = name
 		self._married = married
 ``` 
+### 13.4. \_\_new__
+Metoda magiczna wywoływana przed \_\_init__. Jest to metoda klasowa zwracająca nowy obiekt klasy. Poniżej przykład definicji Singletona.
+```python
+class Singleton:
+	instance = None
+	def __new__(cls):
+		if Singleton.instance is None:
+			Singleton.instance = super().__new__(cls)
+		return Singleton.instance
+
+a = Singleton()
+b = Singleton()
+
+a is b, id(a) == id(b) # (True, True), obie zmienne wskazują na tę samą instancję obiektu
+```
+### 13.5. Metaklasy
+Najprostszym przykładem metaklasy jest type - jest on metaklasą dla wszystkich podstawowych (i nie tylko) typów w Pythonie np. int, float itp. Używając type można także zdefiniować nową klasę. Poniżej przykład zdefiniowania metaklasy przy użyciu funkcji.
+```python
+def n_tuple(name, bases, attrs, n):
+	def __new__(cls, *args):
+		if len(args) != n:
+			raise TypeError(f'expected {n} but got {len(args)} arguments')
+		return tuple(args)
+	return type(f'Tuple {n}', (tuple,), {'__new__': __new__})
+
+class Point(metaclass=n_tuple, n=2):
+	pass
+
+Point(1, 2)
+```
+Metaklasę można również zdefiniować przy użyciu klasy.
+```python
+class Meta(type):
+	def __new__(cls, name, bases, dct):
+		x = super().__new__(cls, name, bases, dct)
+		x.attr = 100
+		return x
+
+class Foo(metaclass=Meta):
+	pass
+
+Foo.attr # 100
+```
+### 13.6. Dataclass
+Chcąc uniknąć żmudnego definiowania klas można zastosować mechanizm dataclass. W wyniku takiego zabiegu można zastąpić taką typową klasę:
+```python
+class Person:
+	def __init__(self, name, age, married=False):
+		self.name = name
+		self.age = age
+		self.married = married
+```
+Taką klasą:
+```python
+def dataclass(cls):
+	def __init__(self, *args, **kwargs):
+		# Zapisanie w kwargs argumentów przekazanych przez args zmapowanych przy użyciu cls.__annotations__
+		kwargs.update(zip(cls.__annotations__, args))
+		# Zapisanie zaktualizowanych kwargs w słowniku obiektu
+		self.__dict__.update(kwargs)
+	cls.__init__ = __init__
+	return cls
+
+
+@dataclass
+class Person:
+	# Zdefiniowane w ten sposób zmienne to adnotacje, do których dostęp można uzyskać przez zmienną __annotations__ w obiekcie klasy
+	name: str
+	age: int
+	married: bool = False
+```
+Od Pythona 3.7. dostępny jest bardziej rozbudowany dekorator spełniający tę samą funkcję, dlatego finalnie taka klasa wyglądałaby tak:
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Person:
+	# Zdefiniowane w ten sposób zmienne to adnotacje, do których dostęp można uzyskać przez zmienną __annotations__ w obiekcie klasy
+	name: str
+	age: int
+	married: bool = False
+```
+Domyślnie klasy udekorowane przez @dataclass są mutowalne, natomiast w celu "zamrożenia" ich wartości stosuje się następujący zapis:
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Person:
+	# Zdefiniowane w ten sposób zmienne to adnotacje, do których dostęp można uzyskać przez zmienną __annotations__ w obiekcie klasy
+	name: str
+	age: int
+	married: bool = False
+```
+## 14. PROGRAMOWANIE WSPÓŁBIEŻNE

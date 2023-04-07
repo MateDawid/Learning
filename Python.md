@@ -1389,7 +1389,7 @@ class Person:
 	married: bool = False
 ```
 ## 14. PROGRAMOWANIE WSPÓŁBIEŻNE
-### Obsługa wątków
+### 14.1. Obsługa wątków
 Do obsługi wątków w Pythonie służy zapożyczony z Javy moduł threading.
 ```python
 import threading

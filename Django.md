@@ -1,7 +1,7 @@
 
 # **DJANGO**
-## PRZYGOTOWANIE PROJEKTU
-### Virtual Environment
+## 1. PRZYGOTOWANIE PROJEKTU
+### 1.1. Virtual Environment
 Przed rozpoczęciem nowego projektu konieczne jest założenie wirtualnego środowiska.
 ```commandline
 python -m virtualenv {nazwa-venv}
@@ -12,17 +12,17 @@ Aby uruchomić wirtualne środowisko należy użyć komendy:
 {nazwa-venv}/Scripts/activate
 ```
 
-### Instalacja Django
+### 1.2. Instalacja Django
 Aby zainstalować Django należy użyć komendy:
 ```commandline
 python -m pip install Django
 ```
-### Tworzenie projektu Django
+### 1.3. Tworzenie projektu Django
 Do utworzenia nowego projektu w Django należy użyć komendy:
 ```commandline
 django-admin startproject {nazwa-projektu}
 ```
-### Dodanie nowego modułu
+### 1.4. Dodanie nowego modułu
 Do dodania nowego modułu projektu służy komenda:
 ```commandline
 django-admin startapp {nazwa-modulu}
@@ -42,23 +42,23 @@ INSTALLED_APPS = [
 ]
 ```
 
-### Uruchamianie aplikacji
+### 1.5. Uruchamianie aplikacji
 Aby uruchomić aplikację na serwerze lokalnym należy będąc w folderze projektu użyć komendy:
 ```commandline
 python manage.py runserver
 ```
 
-### Pierwsza migracja
+### 1.6. Pierwsza migracja
 Po utworzeniu projektu konieczne jest wykonanie pierwszej migracji, w celu przygotowania bazy danych. Służy do tego komenda:
 ```commandline
 python manage.py migrate
 ```
-### Tworzenie superusera
+### 1.7. Tworzenie superusera
 Warto również założyć konto superusera, aby uzyskać możliwość logowania się w panelu administracyjnym.
 ```commandline
 python manage.py createsuperuser
 ```
-## DODAWANIE NOWEGO WIDOKU (VIEW)
+## 2. DODAWANIE NOWEGO WIDOKU (VIEW)
 W celu dodania nowego widoku konieczne jest utworzenie jego definicji w views.py oraz określenie w urls.py endpointu pod jakim ten widok będzie dostępny. Konieczne jest dodanie zawartości pliku urls.py zawartego w danym module do url.py projektu.
 ```python
 # module/views.py
@@ -88,8 +88,8 @@ urlpatterns = [
 ]
 ```
 
-## FORMULARZE
-### Podstawowe formularze
+## 3. FORMULARZE
+### 3.1. Podstawowe formularze
 ```python
 # module/forms.py
 from django import forms
@@ -131,7 +131,7 @@ def add(request):
     <a href="{% url 'module:index' %}">View Tasks</a>
 {% endblock %}
 ```
-## SESJA
+## 4. SESJA
 ```python
 # module/views.py
 def index(request):
@@ -143,7 +143,7 @@ def index(request):
         "tasks": request.session["tasks"]
     })
 ```
-## LOGIN / LOGOUT
+## 5. LOGIN / LOGOUT
 ```python
 # module.urls.py
 ...
@@ -154,7 +154,7 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout")
 ]
 ```
-### Login
+### 5.1. Login
 ```python
 # module/views.py
 from django.contrib.auth import authenticate, login, logout
@@ -173,7 +173,7 @@ def login_view(request):
             })
     return render(request, "module/login.html")
 ```
-### Logout
+### 5.2. Logout
 ```python
 # module/views.py
 def logout_view(request):
@@ -182,8 +182,8 @@ def logout_view(request):
                 "message": "Logged Out"
             })
 ```
-## TESTY
-### Testowanie modeli
+## 6. TESTY
+### 6.1. Testowanie modeli
 ```python
 from django.test import TestCase
 from .models import Flight, Airport, Passenger
@@ -210,7 +210,7 @@ class FlightTestCase(TestCase):
 	    a = Airport.objects.get(code="AAA")
 	    self.assertEqual(a.arrivals.count(), 1)
 ```
-### Testowanie przy użyciu Client
+### 6.2. Testowanie przy użyciu Client
 ```python
 ...
 class FlightTestCase(TestCase):

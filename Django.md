@@ -421,3 +421,65 @@ urlpatterns += [
     path('contact/', core_views.ContactAPIView.as_view()), # NEW URL
 ]
 ```
+### 7.5. Testowanie
+DRF zapewnia moduł wspierający testowanie napisanego API. W tym celu należy zaimportować klasę APITestCase z modułu rest_framework.test
+```python
+# tests.py
+
+from rest_framework.test import APITestCase  
+  
+class ContactTestCase(APITestCase):  
+    """  
+    Test suite for Contact 
+    """
+    pass
+```
+
+#### 7.5.1. setUp
+Zdefiniowanie metody setUp() w klasie dziedziczącej po klasie APITestCase pozwala sprawia, że kod, napisany w tej metodzie wykona się przed wykonaniem zestawu testów zdefiniowanym w klasie.
+
+```python
+# tests.py
+
+from rest_framework.test import APIClient  
+from rest_framework.test import APITestCase   
+
+
+class ContactTestCase(APITestCase):  
+    """  
+ Test suite for Contact """  
+  def setUp(self):  
+        self.client = APIClient()  
+        self.data = {  
+			"name": "Billy Smith",  
+			"message": "This is a test message",  
+			"email": "billysmith@test.com"  
+		}  
+        self.url = "/contact/"
+```
+#### 7.5.2. Tworzenie unit testów
+Testy tworzone są jako metody dla klasy dziedziczącej po APITestCase. Przykładowy unit test:
+```python
+from .models import Contact  
+from rest_framework.test import APIClient  
+from rest_framework.test import APITestCase  
+from rest_framework import status  
+  
+  
+class ContactTestCase(APITestCase):  
+	...    
+	def test_create_contact(self):  
+		'''  
+		test ContactViewSet create method 
+		'''  
+		data = self.data  
+		response = self.client.post(self.url, data)  
+		self.assertEqual(response.status_code, status.HTTP_200_OK)  
+		self.assertEqual(Contact.objects.count(), 1)  
+		self.assertEqual(Contact.objects.get().title, "Billy Smith")
+```
+#### 7.5.3. Uruchomienie testów
+Uruchomienie wszystkich istniejących w projekcie testów odbywa się poprzez uruchomienie komendy:
+```
+python manage.py test
+```

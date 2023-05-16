@@ -371,7 +371,6 @@ from rest_framework import views, status
 from rest_framework.response import Response
 
 
-
 class ContactAPIView(views.APIView):
     """
     A simple APIView for creating contact entires.
@@ -401,8 +400,32 @@ class ContactAPIView(views.APIView):
         except JSONDecodeError:
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
 ```
-### 7.4. Router oraz adresy URL
-W celu udostępnienia widoku trzeba przypisać go do konkretnego adresu URL. W tym celu do poprzednio przygotowanego w punkcie 7.1. zestawu adresów URL należy dodać kolejny adres i przypisać do niego utworzony widok.
+### 7.4. ViewSet
+Innym sposobem zdefiniowania endpointu jest użycie ViewSetu. Zwraca on określony w klasie queryset w oparciu o zdefiniowany serializer.
+```python 
+# views.py
+
+from .serializers import ItemSerializer
+from .models import Item 
+from rest_framework.permissions import IsAuthenticated  
+from rest_framework import viewsets 
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+
+class ItemViewSet(  
+		ListModelMixin,  
+		RetrieveModelMixin,  
+		viewsets.GenericViewSet  
+	):  
+	"""  
+	A simple ViewSet for listing or retrieving items. 
+	"""  
+	permission_classes = (IsAuthenticated,)  
+	queryset = Item.objects.all()  
+	serializer_class = ItemSerializer
+```
+
+### 7.5. Router oraz adresy URL
+W celu udostępnienia widoku trzeba przypisać go do konkretnego adresu URL. W tym celu do poprzednio przygotowanego w punkcie 7.1. zestawu adresów URL należy dodać kolejny adres i przypisać do niego utworzony widok. 
 ```python
 # urls.py
 
@@ -421,7 +444,18 @@ urlpatterns += [
     path('contact/', core_views.ContactAPIView.as_view()), # NEW URL
 ]
 ```
-### 7.5. Testowanie
+Jeżeli chcemy dodać url do obiektu ViewSet (np. dziedziczącego z GenericViewSet) należy go zarejestrować bezpośrednio w routerze.
+
+```python
+from ecommerce import views as ecommerce_views  
+from rest_framework import routers    
+  
+router = routers.DefaultRouter()  
+router.register(r'item', ecommerce_views.ItemViewSet, basename='item')  
+router.register(r'order', ecommerce_views.OrderViewSet, basename='order')
+```
+
+### 7.6. Testowanie
 DRF zapewnia moduł wspierający testowanie napisanego API. W tym celu należy zaimportować klasę APITestCase z modułu rest_framework.test
 ```python
 # tests.py
@@ -435,7 +469,7 @@ class ContactTestCase(APITestCase):
     pass
 ```
 
-#### 7.5.1. setUp
+#### 7.6.1. setUp
 Zdefiniowanie metody setUp() w klasie dziedziczącej po klasie APITestCase pozwala sprawia, że kod, napisany w tej metodzie wykona się przed wykonaniem zestawu testów zdefiniowanym w klasie.
 
 ```python
@@ -457,7 +491,7 @@ class ContactTestCase(APITestCase):
 		}  
         self.url = "/contact/"
 ```
-#### 7.5.2. Tworzenie unit testów
+#### 7.6.2. Tworzenie unit testów
 Testy tworzone są jako metody dla klasy dziedziczącej po APITestCase. Przykładowy unit test:
 ```python
 from .models import Contact  
@@ -478,7 +512,7 @@ class ContactTestCase(APITestCase):
 		self.assertEqual(Contact.objects.count(), 1)  
 		self.assertEqual(Contact.objects.get().title, "Billy Smith")
 ```
-#### 7.5.3. Uruchomienie testów
+#### 7.6.3. Uruchomienie testów
 Uruchomienie wszystkich istniejących w projekcie testów odbywa się poprzez uruchomienie komendy:
 ```
 python manage.py test

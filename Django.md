@@ -305,3 +305,119 @@ Utworzyć i wykonać migracje
 python manage.py makemigrations
 python manage.py migrate
 ```
+### 7.2. Serializer
+Serializer konwertuje dane takie jak querysety lub instancje modelów na podstawowe typy Pythona w celu renderowania ich jako JSON, XML lub inny typ. Serializer również deserializuje dane z JSON / XML na obiekty typowe dla Django. Odpowiada również za walidacje wprowadzanych danych.
+Przykładowy model:
+```python
+# models.py
+
+from django.db import models  
+from utils.model_abstracts import Model  
+from django_extensions.db.models import (  
+    TimeStampedModel,  
+  ActivatorModel,  
+  TitleDescriptionModel  
+)  
+  
+  
+class Contact(  
+    TimeStampedModel,  
+  ActivatorModel,  
+  TitleDescriptionModel,  
+  Model  
+):  
+    class Meta:  
+        verbose_name_plural = "Contacts"  
+  
+  email = models.EmailField(verbose_name="Email")  
+  
+    def __str__(self):  
+        return f'{self.title}'
+```
+Serializer dla modelu:
+```python
+# serializers.py
+
+from . import models  
+from rest_framework import serializers  
+from rest_framework.fields import CharField, EmailField  
+  
+  
+class ContactSerializer(serializers.ModelSerializer):  
+    name = CharField(source="title", required=True)  
+    message = CharField(source="description", required=True)  
+    email = EmailField(required=True)  
+  
+    class Meta:  
+        model = models.Contact  
+        fields = (  
+			'name',  
+			'email',  
+			'message'  
+		)
+```
+### 7.3. API View
+API view to odpowiednik podstawowego view z bazowego Django. Odpowiada za obsługę zapytań HTTP na odpowiadający widokowi adres.
+
+Przykładowy widok dla modelu i serializera z poprzedniego punktu:
+```python
+# views.py
+
+from json import JSONDecodeError
+from django.http import JsonResponse
+from .serializers import ContactSerializer
+from rest_framework.parsers import JSONParser
+from rest_framework import views, status
+from rest_framework.response import Response
+
+
+
+class ContactAPIView(views.APIView):
+    """
+    A simple APIView for creating contact entires.
+    """
+    serializer_class = ContactSerializer
+
+    def get_serializer_context(self):
+        return {
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self
+        }
+
+    def get_serializer(self, *args, **kwargs):
+        kwargs['context'] = self.get_serializer_context()
+        return self.serializer_class(*args, **kwargs)
+
+    def post(self, request):
+        try:
+            data = JSONParser().parse(request)
+            serializer = ContactSerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
+```
+### 7.4. Router oraz adresy URL
+W celu udostępnienia widoku trzeba przypisać go do konkretnego adresu URL. W tym celu do poprzednio przygotowanego w punkcie 7.1. zestawu adresów URL należy dodać kolejny adres i przypisać do niego utworzony widok.
+```python
+# urls.py
+
+from django.urls import path
+from django.contrib import admin
+from core import views as core_views
+from rest_framework import routers
+
+
+router = routers.DefaultRouter()
+
+urlpatterns = router.urls
+
+urlpatterns += [
+    path('admin/', admin.site.urls),
+    path('contact/', core_views.ContactAPIView.as_view()), # NEW URL
+]
+```

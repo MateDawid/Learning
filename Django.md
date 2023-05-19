@@ -305,8 +305,73 @@ Utworzyć i wykonać migracje
 python manage.py makemigrations
 python manage.py migrate
 ```
-### 7.2. Serializer
-Serializer konwertuje dane takie jak querysety lub instancje modelów na podstawowe typy Pythona w celu renderowania ich jako JSON, XML lub inny typ. Serializer również deserializuje dane z JSON / XML na obiekty typowe dla Django. Odpowiada również za walidacje wprowadzanych danych.
+### 7.2. Serializacja
+Serializacja danych odbywa się przy użyciu serializerów. Serializer konwertuje dane takie jak querysety lub instancje modelów na podstawowe typy Pythona w celu renderowania ich jako JSON, XML lub inny typ. Serializer również deserializuje dane z JSON / XML na obiekty typowe dla Django. Odpowiada również za walidacje wprowadzanych danych.
+
+#### 7.2.1. Serializer
+Wymaga zdefiniowania wszystkich pól, jakie mają być serializowane. Odpowiednik modelu Form z bazowego Django.
+
+Przykładowy model:
+```python
+# models.py
+
+from django.db import models  
+from pygments.lexers import get_all_lexers  
+from pygments.styles import get_all_styles  
+  
+LEXERS = [item for item in get_all_lexers() if item[1]]  
+LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])  
+STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])  
+  
+  
+class Snippet(models.Model):  
+    created = models.DateTimeField(auto_now_add=True)  
+    title = models.CharField(max_length=100, blank=True, default='')  
+    code = models.TextField()  
+    linenos = models.BooleanField(default=False)  
+    language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)  
+    style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)  
+  
+    class Meta:  
+        ordering = ['created']
+```
+Serializer dla modelu:
+```python
+# serializers.py
+
+from rest_framework import serializers  
+from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES  
+  
+  
+class SnippetSerializer(serializers.Serializer):  
+    id = serializers.IntegerField(read_only=True)  
+    title = serializers.CharField(required=False, allow_blank=True, max_length=100)  
+    code = serializers.CharField(style={'base_template': 'textarea.html'})  
+    linenos = serializers.BooleanField(required=False)  
+    language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')  
+    style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')  
+  
+    def create(self, validated_data):  
+		"""  
+		Create and return a new `Snippet` instance, given the validated data. 
+		"""  
+		return Snippet.objects.create(**validated_data)  
+  
+    def update(self, instance, validated_data):  
+		"""  
+		Update and return an existing `Snippet` instance, given the validated data. 
+		"""  
+		instance.title = validated_data.get('title', instance.title)  
+		instance.code = validated_data.get('code', instance.code)  
+		instance.linenos = validated_data.get('linenos', instance.linenos)  
+		instance.language = validated_data.get('language', instance.language)  
+		instance.style = validated_data.get('style', instance.style)  
+		instance.save()  
+		return instance
+```
+#### 7.2.2. ModelSerializer
+Korzysta ze wskazanych pól modelu zdefiniowanego w klasie Meta, możliwe jest jednak dodanie własnych danych. Odpowiednik modelu ModelForm z bazowego Django.
+
 Przykładowy model:
 ```python
 # models.py
@@ -356,8 +421,84 @@ class ContactSerializer(serializers.ModelSerializer):
 			'message'  
 		)
 ```
-### 7.3. API View
-API view to odpowiednik podstawowego view z bazowego Django. Odpowiada za obsługę zapytań HTTP na odpowiadający widokowi adres.
+#### 7.2.3. Proces serializacji i deserializacji
+Importujemy zdefiniowane w punkcie 7.2.1. model Snippet i jego serializer i tworzymy instancję obiektu.
+```python
+from snippets.models import Snippet
+from snippets.serializers import SnippetSerializer
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+
+snippet = Snippet(code='print("hello, world")\n')
+snippet.save()
+```
+Serializujemy instancję obiektu przekazując ją do obiektu serializera.
+```python
+serializer = SnippetSerializer(snippet)
+serializer.data
+# {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}
+```
+Słownik zawarty w zmiennej serializer.data serializujemy przy użyciu klasy JSONRenderer. Uzyskujemy obiekt w postaci bajtowej.
+```python
+content = JSONRenderer().render(serializer.data)
+content
+# b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
+```
+Taki obiekt można również zdeserializować z powrotem do postaci instancji obiektu modelu Django.
+```python
+import io
+
+stream = io.BytesIO(content)
+data = JSONParser().parse(stream)
+
+serializer = SnippetSerializer(data=data)
+serializer.is_valid()
+# True
+serializer.validated_data
+# OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+serializer.save()
+# <Snippet: Snippet object>
+```
+#### 7.2.4. Serializowanie querysetów
+Do obiektu serializera możliwe jest też przekazanie całego querysetu. W tym celu konieczne jest podanie parametru **many** z wartością **True**.
+```python
+serializer = SnippetSerializer(Snippet.objects.all(), many=True)
+serializer.data
+# [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+```
+
+### 7.3. Views
+#### 7.3.1. Podstawowy widok Django
+Odpowiednik podstawowego view z bazowego Django opartego na klasach.  Odpowiada za obsługę zapytań HTTP na odpowiadający widokowi adres. Przykład:
+```python
+# views.py
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from snippets.models import Snippet
+from snippets.serializers import SnippetSerializer
+
+
+@api_view(['GET', 'POST'])
+def snippet_list(request):
+    """
+    List all code snippets, or create a new snippet.
+    """
+    if request.method == 'GET':
+        snippets = Snippet.objects.all()
+        serializer = SnippetSerializer(snippets, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = SnippetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+#### 7.3.2. API View
+Odpowiednik podstawowego view z bazowego Django opartego na klasach. Odpowiada za obsługę zapytań HTTP na odpowiadający widokowi adres.
 
 Przykładowy widok dla modelu i serializera z poprzedniego punktu:
 ```python
@@ -400,7 +541,7 @@ class ContactAPIView(views.APIView):
         except JSONDecodeError:
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
 ```
-### 7.4. ViewSet
+#### 7.3.3. ViewSet
 Innym sposobem zdefiniowania endpointu jest użycie ViewSetu. Zwraca on określony w klasie queryset w oparciu o zdefiniowany serializer.
 ```python 
 # views.py
@@ -424,7 +565,7 @@ class ItemViewSet(
 	serializer_class = ItemSerializer
 ```
 
-### 7.5. Router oraz adresy URL
+### 7.4. Router oraz adresy URL
 W celu udostępnienia widoku trzeba przypisać go do konkretnego adresu URL. W tym celu do poprzednio przygotowanego w punkcie 7.1. zestawu adresów URL należy dodać kolejny adres i przypisać do niego utworzony widok. 
 ```python
 # urls.py
@@ -455,7 +596,7 @@ router.register(r'item', ecommerce_views.ItemViewSet, basename='item')
 router.register(r'order', ecommerce_views.OrderViewSet, basename='order')
 ```
 
-### 7.6. Testowanie
+### 7.5. Testowanie
 DRF zapewnia moduł wspierający testowanie napisanego API. W tym celu należy zaimportować klasę APITestCase z modułu rest_framework.test
 ```python
 # tests.py
@@ -469,7 +610,7 @@ class ContactTestCase(APITestCase):
     pass
 ```
 
-#### 7.6.1. setUp
+#### 7.5.1. setUp
 Zdefiniowanie metody setUp() w klasie dziedziczącej po klasie APITestCase pozwala sprawia, że kod, napisany w tej metodzie wykona się przed wykonaniem zestawu testów zdefiniowanym w klasie.
 
 ```python
@@ -491,7 +632,7 @@ class ContactTestCase(APITestCase):
 		}  
         self.url = "/contact/"
 ```
-#### 7.6.2. Tworzenie unit testów
+#### 7.5.2. Tworzenie unit testów
 Testy tworzone są jako metody dla klasy dziedziczącej po APITestCase. Przykładowy unit test:
 ```python
 from .models import Contact  
@@ -512,7 +653,7 @@ class ContactTestCase(APITestCase):
 		self.assertEqual(Contact.objects.count(), 1)  
 		self.assertEqual(Contact.objects.get().title, "Billy Smith")
 ```
-#### 7.6.3. Uruchomienie testów
+#### 7.5.3. Uruchomienie testów
 Uruchomienie wszystkich istniejących w projekcie testów odbywa się poprzez uruchomienie komendy:
 ```
 python manage.py test

@@ -541,7 +541,64 @@ class ContactAPIView(views.APIView):
         except JSONDecodeError:
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
 ```
-#### 7.3.3. ViewSet
+#### 7.3.3. Mixins
+W celu uproszczenia kodu możliwe jest wykorzystanie wbudowanych mixinów zapewniających typowe dla API funkcjonalności, którymi obudować można podstawowy widok bazujący na klasach. 
+
+```python
+from snippets.models import Snippet
+from snippets.serializers import SnippetSerializer
+from rest_framework import mixins
+from rest_framework import generics
+
+class SnippetList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+class SnippetDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+```
+Oba widoki bazują na GenericAPIView, który zapewnia podstawowe funkcjonalności widoku. 
+SnippetList wykorzystuje mixiny zapewniające funkcjonalności listy obiektów (ListModelMixin) oraz tworzenia nowego obiektu (CreateModelMixin).
+Za to SnippetDetail rozszerzony jest o pobieranie (RetrieveModelMixin), aktualizowanie (UpdateModelMixin) oraz usuwanie obiektów (DestroyModelMixin).
+#### 7.3.4. Generyczne klasowe widoki
+Widoki można uprościć jeszcze bardziej poprzez pominięcie użycia mixinów i wykorzystanie predefiniowanych generycznych widoków. W takiej sytuacji widoki zdefiniowane w punkcie 7.3.3. prezentują się następująco:
+```python
+from snippets.models import Snippet
+from snippets.serializers import SnippetSerializer
+from rest_framework import generics
+
+
+class SnippetList(generics.ListCreateAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+
+
+class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+```
+#### 7.3.5. ViewSet
 Innym sposobem zdefiniowania endpointu jest użycie ViewSetu. Zwraca on określony w klasie queryset w oparciu o zdefiniowany serializer.
 ```python 
 # views.py

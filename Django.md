@@ -599,7 +599,7 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SnippetSerializer
 ```
 #### 7.3.5. ViewSet
-Innym sposobem zdefiniowania endpointu jest użycie ViewSetu. Zwraca on określony w klasie queryset w oparciu o zdefiniowany serializer.
+W celu jeszcze większego uproszczenia kodu możliwe jest zastosowanie ViewSetu. Automatyzuje on mapowanie endpoitów na poszczególne adresy URL. Nie ma również potrzeby tworzyć osobnych widoków listy i pojedynczego elementu - oba warianty można obsłużyć viewsetem.
 ```python 
 # views.py
 

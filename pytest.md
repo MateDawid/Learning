@@ -215,7 +215,7 @@ def test_tweet_with_username(twitter):
     twitter.tweet('Test message')  
     assert twitter.tweets == [{'message': 'Test message', 'avatar': 'test'}]
 ```
-## Plik conftest.py
+## 11. Plik conftest.py
 Plik conftest.py to plik konfiguracyjny dla testów pytestowych, gdzie można np:
 *  Składować wielokrotnie używane fixtury, które będą automatycznie wykryte przez testy zdefiniowane w innych plikach.
 * Ustalić czynności, które mają zostać wykonane przed wszystkimi testami, np:

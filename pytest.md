@@ -135,10 +135,9 @@ def backend(tmpdir):
     temp_file.write('')  
     return temp_file
 ```
-## 8. Mockowanie
-W celu zastąpienia pewnych obiektów / systemów w ramach testowania wykorzystywane jest tzw. mockowanie. Proces ten polega na umieszczeniu "atrapy" domyślnie używanego obiektu, która przejmie jego funkcje w czasie testowania. 
-## 8.1. Monkey patching
-Jednym z rodzajów mockowania jest monkey patching. Metoda ta "nadpisuje" elementy programu np. funkcje innymi mechanizmami. Poniżej przyklad zastąpienia funkcji input.
+
+## 8. Monkey patching
+Monkey patching "nadpisuje" elementy programu np. funkcje innymi mechanizmami. Poniżej przyklad zastąpienia funkcji input.
 
 ```python
 from pay.order import LineItem, Order  
@@ -155,4 +154,73 @@ def test_pay_order(monkeypatch: MonkeyPatch) -> None:
     order = Order()  
     order.line_items.append(LineItem("Test", 100))  
     pay_order(order)
+```
+Do monkey patchingu można wykorzystać też funkcjonalność fixture'ów. Poniżej przykład zablokowania możliwości wykorzystania metody request. Parametr autouse wskazuje, że fixture ten będzie wykonany przed każdym testem.
+```python
+@pytest.fixture(autouse=True)  
+def no_requests(monkeypatch):  
+    monkeypatch.delattr('requests.sessions.Session.request')
+```
+## 9. Mockowanie
+W celu zastąpienia pewnych obiektów / systemów w ramach testowania wykorzystywane jest tzw. mockowanie. Proces ten polega na umieszczeniu "atrapy" domyślnie używanego obiektu, która przejmie jego funkcje w czasie testowania. Jest to bardziej zaawansowana forma monkey patchingu.
+## 9.1. Mockowanie z unittestem
+Możliwe jest użycie metody context managera patch z biblioteki unittest, który dla wskazanej funkcji zwraca określoną w zmiennej return_value wartość.
+```python
+from unittest.mock import patch
+
+def test_tweet_single_message(twitter):  
+    with patch('twitter.Twitter.get_user_avatar', return_value='test'):  
+        twitter.tweet('Test message')  
+        assert twitter.tweet_messages == ['Test message']
+```
+Podobnie można mockować metody klasy:
+```python
+def test_tweet_single_message(twitter):  
+    with patch.object(Twitter, 'get_user_avatar', return_value='test'):  
+        twitter.tweet('Test message')  
+        assert twitter.tweet_messages == ['Test message']
+```
+Do użycia patch, jak i patch.object można też użyć dekoratora. W takim przypadku mockowania klasy w ten sposób, zostanie ona przekazana do testu jako pierwszy argument (w tym przypadku avatar_mock):
+```python
+@patch.object(Twitter, 'get_user_avatar', return_value='test')  
+def test_tweet_single_message(avatar_mock, twitter):  
+    twitter.tweet('Test message')  
+    assert twitter.tweet_messages == ['Test message']
+```
+Możliwe jest również utworzenie mocka wewnątrz samego testu. Poniżej przykład nadpisania metody find_hashtags i ustawienie zwracanej przez nią wartości.
+```python
+from unittest.mock import Mock
+  
+def test_tweet_with_hashtag_mock(avatar_mock, twitter):  
+    twitter.find_hashtags = Mock()  
+    twitter.find_hashtags.return_value = ['first']  
+    twitter.tweet('Test #second')  
+    assert twitter.tweets[0]['hashtags'] == ['first']
+```
+Jeżeli chcemy zamockować metody magiczne Pythona to zamiast klasy Mock() konieczne jest użycie klasy MagicMock().
+```python
+from unittest.mock import MagicMock
+
+def test_twitter_version(twitter):  
+    twitter.version = MagicMock()  
+    twitter.version.__eq__.return_value = '2.0'  
+  assert twitter.version == '2.0'
+```
+## 10. Pominięcie testu
+Istnieje możliwość pominięcia testu w przypadku, gdy dla danych parametrów nie chcemy go wykonywać.
+```python
+def test_tweet_with_username(twitter):  
+    if twitter.username:  
+        pytest.skip()  
+    twitter.tweet('Test message')  
+    assert twitter.tweets == [{'message': 'Test message', 'avatar': 'test'}]
+```
+## Plik conftest.py
+Plik conftest.py to plik konfiguracyjny dla testów pytestowych, gdzie można np:
+*  Składować wielokrotnie używane fixtury, które będą automatycznie wykryte przez testy zdefiniowane w innych plikach.
+* Ustalić czynności, które mają zostać wykonane przed wszystkimi testami, np:
+```python
+def pytest_runtest_setup():  
+	# Funkcja wykonana przed każdym testem  
+	print('Start test')
 ```

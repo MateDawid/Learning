@@ -99,8 +99,12 @@ function App() {
 }
 ```
 **WAŻNE:** ważne zdefiniowanie atrybutu **key** w \<li> jako unikalnego identyfikatora dla elementu listy (np. id z bazy danych), ponieważ React wykorzystuje ten atrybut do operacji na wskazanym obiekcie.
-## 4. Hooks
-### 4.1. useState
+## 4. Renderowanie warunkowe
+Elementy mogą być wyświetlane lub nie w zależności od sprawdzanych warunków. Poza tradycyjną konstrukcją if / else możliwe jest użycie typowych dla JavaScriptu skrótów:
+* `{cond ? <A /> : <B />}`  => jeżeli `cond`, wyświetl `<A />`, w innym wypadku wyświetl `<B />`
+* `{cond && <A />}`  => jeżeli `cond`, wyświetl `<A />`, w innym wypadku nie wyświetlaj niczego
+## 5. Hooks
+### 5.1. useState
 Aby wykorzystać stan aplikacji i dynamiczne wyświetlanie jego zmian konieczne jest zaimportowanie hooka useState z biblioteki Reacta poprzez umieszczenie w pliku następującego polecenia:
 ```js
 import { useState } from 'react';
@@ -113,7 +117,7 @@ Zmienna **variable** to zmienna zawierająca bieżący stan aplikacji (w przykł
 ```js
 setVariable(1);
 ```
-#### 4.1.1. Stan pojedynczego komponentu
+#### 5.1.1. Stan pojedynczego komponentu
 Stan może być zapamiętany w kontekście pojedynczego komponentu. W tym celu zmienna stanu oraz odpowiadająca jej funkcja aktualizująca muszą zostać zadeklarowane wewnątrz definicji komponentu. Poniżej przykład wyświetlenia dwóch buttonów z osobnymi licznikami kliknięć.
 ```js
 import { useState } from 'react';  
@@ -142,7 +146,7 @@ function App() {
   );  
 }
 ```
-#### 4.1.2. Wspólny stan dla wielu komponentów
+#### 5.1.2. Wspólny stan dla wielu komponentów
 W celu współdzielenia stanu przez wiele komponentów konieczne jest umieszczenie definicji zmiennej zawierającej stan w komponencie zawierającym komponenty, które mają z tego wspólnego stanu korzystać. 
 Chcąc, aby w przykładzie z punktu 4.1.1. oba buttony aktualizowały jeden, wspólny licznik konieczny będzie następujący refactoring:
 ```js

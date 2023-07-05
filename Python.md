@@ -315,6 +315,29 @@ with open('file.txt', 'r') as f:    # otwórz plik 'file.txt' w wersji do odczyt
     file_lines = f.readlines()             # do listy file_lines wpisz kolejne linijki przeczytane z pliku 'file.txt'
                                         # każda linijka będzie osobnym elementem listy
 ```
+### 7.4. Wysyłanie maili
+```python
+import smtplib
+
+mail_from = 'Your automation system'
+mail_to = ['example@gmail.com', 'test@interia.pl']
+mail_subject = 'Test subject'
+mail_body = 'Test body'
+
+message = '''From: {}
+Subject: {}
+{}
+'''.format(mail_from, mail_subject, mail_body)
+
+user = 'user@gmail.com'
+password = 'abc123'
+
+server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+server.ehlo()
+server.login(user, password)
+server.sendmail(user, mail_to, message)
+server.close()
+```
 ## 8. TESTY
 ### 8.1. assert
 ```python

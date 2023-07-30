@@ -773,6 +773,21 @@ it = range(int(1e6))
 # Wycinek 10 pierwszych elementów z iteratora it zawierającego milion elementów
 list(islice(it, 10)
 ```
+##### 10.4.3.5. Inne metody
+* combinations_with_replacement
+* accumulate
+* count
+* cycle
+* chain
+* compress
+* dropwhile
+* filterfalse
+* product
+* repeat
+* starmap
+* takewhile
+* tee
+* zip_longest
 ### 10.5. Sortowanie
 W Pythonie dane można posortować na dwa sposoby używając wbudowanych mechanizmów.
 ```python 

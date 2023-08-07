@@ -30,6 +30,33 @@ import array
 # pierwszy parametr określa typ danych (tutaj float), drugi to lista wartości
 arr = array.array('f', (1.0, 1.5, 2.0, 2.5))
 ``` 
+### 4.1. Przesuwanie zer
+Zadanie polega na wyszukaniu w tablicy wszystkich zer i przesunięcie ich na sam koniec bez zmieniania kolejności pozostąłych elementów tablicy. 
+```python
+def move_zeros(a_list):
+	zero_index = 0
+	for index, n in enumerate(a_list):
+		if n != 0:
+			a_list[zero_index] = n
+			if zero_index != index:
+				a_list[index] = 0
+			zero_index += 1
+	return a_list
+
+a_list = [8, 0, 3, 0, 12] 
+move_zeros(a_list)
+print(a_list) #  [8, 3, 12, 0, 0]
+```
+## 5. Lista połączona
+Implementacja abstrakcyjnego typu danych listy. Pozwala na dodawanie, usuwanie oraz wyszukiwanie elementów. Elementy listy nie są indeksowane, ponieważ komputer nie przechowuje ich w jednym, ciągłym obszarze pamięci. Zamiast tego lista połączona stanowi łańcuch wierzchołków, z których każdy zawiera jakieś dane oraz adres następnego wierzchołka listy.
+* Wyszukiwanie elementu na liście połączonej wymaga w najgorszym wypadku przeszukania wszystkich elementów listy  - złożoność O(n).
+* Dodawanie i usuwanie elementów jest za to operacją o stałym czasie - złożoność O(1). 
+* Konieczność zapisywania wskaźników do kolejnych elementów zużywa zasoby systemowe, przez co listy połączone wymagają więcej pamięci niż tablice.
+* Listy połączone nie pozwalają na swobodny dostęp do elementów (odwołanie do dowolnego elementu w stałym czasie).
+### 5.1. Lista jednokierunkowa
+Typ listy połączonej, w której każdy wierzchołek zawiera tylko jeden wskaźnik - odwołujący się do następnego elementu listy.
+### 5.2. Lista dwukierunkowa (podwójnie połączona)
+Lista połączona, która zawiera dwa wskaźniki: jeden wskazuje na następny wierzchołek, a drugi na poprzedni.
 ## ?. Kolejki
 #### 2.1. Kolejka
 Podstawowy rodzaj kolejki, który wykorzystuje schemat FIFO (First in, first out). Działa na wzór kolejki np. na poczcie. Elementy mogą być dodawane na koniec kolejki i zdejmowane z jej początku.

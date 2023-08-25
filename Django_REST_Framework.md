@@ -420,8 +420,29 @@ router = routers.DefaultRouter()
 router.register(r'item', ecommerce_views.ItemViewSet, basename='item')  
 router.register(r'order', ecommerce_views.OrderViewSet, basename='order')
 ```
-
-## 5. Testowanie
+## 5. Permissions
+```python
+#permissions.py
+from rest_framework import permissions  
+  
+  
+class UpdateOwnProfile(permissions.BasePermission):  
+	"""Allow user to edit their own profile"""  
+	  
+	def has_object_permission(self, request, view, obj):  
+		"""Check user is trying to edit their own profile"""  
+		if request.method in permissions.SAFE_METHODS:  
+			return True  
+		return obj.id == request.user.id
+```
+```python
+# views.py
+class UserProfileViewSet(viewsets.ModelViewSet):  
+	"""Handle creating and updating profiles"""  
+	...
+	permission_classes = (permissions.UpdateOwnProfile,)  
+```
+## 6. Testowanie
 DRF zapewnia moduł wspierający testowanie napisanego API. W tym celu należy zaimportować klasę APITestCase z modułu rest_framework.test
 ```python
 # tests.py
@@ -435,7 +456,7 @@ class ContactTestCase(APITestCase):
     pass
 ```
 
-### 5.1. setUp
+### 6.1. setUp
 Zdefiniowanie metody setUp() w klasie dziedziczącej po klasie APITestCase pozwala sprawia, że kod, napisany w tej metodzie wykona się przed wykonaniem zestawu testów zdefiniowanym w klasie.
 
 ```python
@@ -457,7 +478,7 @@ class ContactTestCase(APITestCase):
 		}  
         self.url = "/contact/"
 ```
-### 5.2. Tworzenie unit testów
+### 6.2. Tworzenie unit testów
 Testy tworzone są jako metody dla klasy dziedziczącej po APITestCase. Przykładowy unit test:
 ```python
 from .models import Contact  
@@ -478,7 +499,7 @@ class ContactTestCase(APITestCase):
 		self.assertEqual(Contact.objects.count(), 1)  
 		self.assertEqual(Contact.objects.get().title, "Billy Smith")
 ```
-### 5.3. Uruchomienie testów
+### 6.3. Uruchomienie testów
 Uruchomienie wszystkich istniejących w projekcie testów odbywa się poprzez uruchomienie komendy:
 ```
 python manage.py test

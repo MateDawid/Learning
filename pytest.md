@@ -135,7 +135,14 @@ def backend(tmpdir):
     temp_file.write('')  
     return temp_file
 ```
-
+### 7.6. getfixturevalue
+Istnieje możliwość niepodawania fixture'a jako argumentu testu, ale wyciągnięcie go przy użyciu jego nazwy. Jest to przydatne w sytuacji, gdzie ten sam test chcemy wykonać dla różnych fixture'ów. Nie działa to jednak dobrze w przypadku sparametryzowanych fixture'ów.
+```python
+@pytest.mark.parametrize('file_type', ('zip_file', 'tar_file'))
+def test_file(self, file_type: str, request):
+	file = request.getfixturevalue(file_type)
+	...
+```
 ## 8. Monkey patching
 Monkey patching "nadpisuje" elementy programu np. funkcje innymi mechanizmami. Poniżej przyklad zastąpienia funkcji input.
 

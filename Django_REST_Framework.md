@@ -20,7 +20,7 @@ INSTALLED_APPS = [
   'django.contrib.sessions',  
   'django.contrib.messages',  
   'django.contrib.staticfiles',  
-  'django_extensions', #Great packaged to access abstract models  
+  'django_extensions', #Great package to access abstract models  
   'django_filters', #Used with DRF  
   'rest_framework', #DRF package  
 ]
@@ -234,7 +234,17 @@ serializer = SnippetSerializer(Snippet.objects.all(), many=True)
 serializer.data
 # [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 ```
-
+### 2.5. extra_kwargs
+Aby nadpisać niektóre właściwości dla poszczególnych pól można utworzyć zmienną extra_kwargs w klasie Meta serializera:
+```python
+class class UserSerializer(serializers.ModelSerializer):
+  class Meta:
+      ...
+      extra_kwargs = {'password': {
+          'write_only': True,  # password will be able to save in POST request, but won't be returned in response
+          'min_length': 5
+      }}
+```
 ## 3. Views
 ### 3.1. Podstawowy widok Django
 Odpowiednik podstawowego view z bazowego Django opartego na klasach.  Odpowiada za obsługę zapytań HTTP na odpowiadający widokowi adres. Przykład:
@@ -389,7 +399,72 @@ class ItemViewSet(
 	queryset = Item.objects.all()  
 	serializer_class = ItemSerializer
 ```
+### 3.6. Rodzaje ViewSetów
+Bazowy ViewSet"
+  ```python
+  class ViewSet(ViewSetMixin, views.APIView):
+      """
+      The base ViewSet class does not provide any actions by default.
+      """
+      pass
+  ```
+ GenericViewSet:
+  ```python
+  class GenericViewSet(ViewSetMixin, generics.GenericAPIView):
+      """
+      The GenericViewSet class does not provide any actions by default,
+      but does include the base set of generic view behavior, such as
+      the `get_object` and `get_queryset` methods.
+      """
+      pass
+  ```
+  ReadOnlyViewSet - pozwala jedynie na pobieranie danych, nie daje możliwości zmiany lub usunięcia.
+  ```python
+  class ReadOnlyModelViewSet(mixins.RetrieveModelMixin,
+                             mixins.ListModelMixin,
+                             GenericViewSet):
+      """
+      A viewset that provides default `list()` and `retrieve()` actions.
+      """
+      pass
+  ```
+  * ModelViewSet - pozwala na wszystkie możliwe operacje z zakresu CRUD.
+  ```python
+  class ModelViewSet(mixins.CreateModelMixin,
+                     mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
+                     mixins.ListModelMixin,
+                     GenericViewSet):
+      """
+      A viewset that provides default `create()`, `retrieve()`, `update()`,
+      `partial_update()`, `destroy()` and `list()` actions.
+      """
+      pass
+  ```
+### 3.7. Własna akcja w ViewSecie
+Aby utworzyć własny endpoint wewnątrz viewsetu, trzeba użyć dekoratora @action.
+```python
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
+
+class RecipeViewSet(viewsets.ModelViewSet):
+  ...
+    @action(methods=['POST'], detail=True, url_path='upload-image')
+    def upload_image(self, request, pk=None):
+        """Upload an image to recipe."""
+        recipe = self.get_object()
+        serializer = self.get_serializer(recipe, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+ 
 ## 4. Router oraz adresy URL
 W celu udostępnienia widoku trzeba przypisać go do konkretnego adresu URL. W tym celu do poprzednio przygotowanego w punkcie 7.1. zestawu adresów URL należy dodać kolejny adres i przypisać do niego utworzony widok. 
 ```python

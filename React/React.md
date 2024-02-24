@@ -106,8 +106,9 @@ Elementy mogą być wyświetlane lub nie w zależności od sprawdzanych warunkó
 ## 5. Hooks
 ### 5.1. useState
 Aby wykorzystać stan aplikacji i dynamiczne wyświetlanie jego zmian konieczne jest zaimportowanie hooka useState z biblioteki Reacta poprzez umieszczenie w pliku następującego polecenia:
+
 ```js
-import { useState } from 'react';
+import {useState} from 'React/React';
 ```
 Utworzenie zmiennej odzwierciedlającej stan w aplikacji odbywa się poprzez następującą definicję:
 ```js
@@ -119,31 +120,32 @@ setVariable(1);
 ```
 #### 5.1.1. Stan pojedynczego komponentu
 Stan może być zapamiętany w kontekście pojedynczego komponentu. W tym celu zmienna stanu oraz odpowiadająca jej funkcja aktualizująca muszą zostać zadeklarowane wewnątrz definicji komponentu. Poniżej przykład wyświetlenia dwóch buttonów z osobnymi licznikami kliknięć.
+
 ```js
-import { useState } from 'react';  
-  
-function MyButton() {  
-  const [count, setCount] = useState(0);  
-  
-  function handleClick() {  
-    setCount(count + 1);  
-  }  
-  
-  return (  
-    <button onClick={handleClick}>  
-      Clicked {count} times  
-    </button>  
-  );  
-}  
-  
-function App() {  
-  return (  
-    <div>  
-      <h1>Counters that update separately</h1>  
-      <MyButton />  
-      <MyButton />  
-    </div>  
-  );  
+import {useState} from 'React/React';
+
+function MyButton() {
+    const [count, setCount] = useState(0);
+
+    function handleClick() {
+        setCount(count + 1);
+    }
+
+    return (
+        <button onClick={handleClick}>
+            Clicked {count} times
+        </button>
+    );
+}
+
+function App() {
+    return (
+        <div>
+            <h1>Counters that update separately</h1>
+            <MyButton/>
+            <MyButton/>
+        </div>
+    );
 }
 ```
 #### 5.1.2. Wspólny stan dla wielu komponentów

@@ -74,3 +74,23 @@ def test_file(self, file_type: str, request):
 	file = request.getfixturevalue(file_type)
 	...
 ```
+## yield in fixture
+
+You can run part of a fixture before and part after a test using yield instead of return. For example:
+```python
+@pytest.fixture
+def some_fixture():
+    # do something before your test
+    yield # test runs here
+    # do something after your test
+```
+
+```python
+@pytest.fixture(autouse=True)
+def database():
+    _, file_name = tempfile.mkstemp()
+    os.environ["DATABASE_NAME"] = file_name
+    Article.create_table(database_name=file_name)
+    yield
+    os.unlink(file_name)
+```

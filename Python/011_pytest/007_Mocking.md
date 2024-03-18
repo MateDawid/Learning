@@ -1,6 +1,6 @@
 # Mockowanie
 W celu zastąpienia pewnych obiektów / systemów w ramach testowania wykorzystywane jest tzw. mockowanie. Proces ten polega na umieszczeniu "atrapy" domyślnie używanego obiektu, która przejmie jego funkcje w czasie testowania. Jest to bardziej zaawansowana forma monkey patchingu.
-## Mockowanie z unittestem
+## unittest
 Możliwe jest użycie metody context managera patch z biblioteki unittest, który dla wskazanej funkcji zwraca określoną w zmiennej return_value wartość.
 ```python
 from unittest.mock import patch
@@ -43,7 +43,8 @@ def test_twitter_version(twitter):
     twitter.version.__eq__.return_value = '2.0'  
   assert twitter.version == '2.0'
 ```
-## Specyfikacja dla Mocka
+**Specyfikacja dla Mocka**
+
 Żeby uniknąć zdefiniowania niechcianego parametru do obiektu Mock można przekazać listę dopuszczalnych parametrów.
 ```python
 >>> from unittest.mock import Mock
@@ -89,3 +90,74 @@ Traceback (most recent call last):
     raise AttributeError("Mock object has no attribute %r" % name)
 AttributeError: Mock object has no attribute 'create_event'
 ```
+## pytest
+
+### monkeypatch
+To use mocking in pytest pass ```monkeypatch``` argument in test arguments.
+
+```python
+import requests
+
+
+def get_my_ip():
+    response = requests.get(
+        'http://ipinfo.io/json'
+    )
+    return response.json()['ip']
+
+
+def test_get_my_ip(monkeypatch):
+    my_ip = '123.123.123.123'
+
+    class MockResponse:
+
+        def __init__(self, json_body):
+            self.json_body = json_body
+
+        def json(self):
+            return self.json_body
+
+    monkeypatch.setattr(
+        requests,
+        'get',
+        lambda *args, **kwargs: MockResponse({'ip': my_ip})
+    )
+
+    assert get_my_ip() == my_ip
+```
+What's happening here?
+
+We used pytest's monkeypatch fixture to replace all calls to the get method from the requests module with the lambda callback that always returns an instance of MockedResponse.
+
+We used an object because requests returns a Response object.
+
+### unittest.mock.create_autospec
+We can simplify the tests with the create_autospec method from the unittest.mock module. This method creates a mock object with the same properties and methods as the object passed as a parameter:
+
+```python
+from unittest import mock
+
+import requests
+from requests import Response
+
+
+def get_my_ip():
+    response = requests.get(
+        'http://ipinfo.io/json'
+    )
+    return response.json()['ip']
+
+
+def test_get_my_ip(monkeypatch):
+    my_ip = '123.123.123.123'
+    response = mock.create_autospec(Response)
+    response.json.return_value = {'ip': my_ip}
+
+    monkeypatch.setattr(
+        requests,
+        'get',
+        lambda *args, **kwargs: response
+    )
+
+    assert get_my_ip() == my_ip
+    ```

@@ -1,7 +1,6 @@
 # Caching in Django
 
 Source: https://testdriven.io/blog/django-caching
-Repo: https://github.com/MateDawid/course_Caching_in_Django
 
 ## Caching types
 
@@ -124,3 +123,10 @@ def object_post_delete_handler(sender, **kwargs):
 def object_post_save_handler(sender, **kwargs):
     cache.delete('objects')
 ```
+
+You may want to use the low-level cache API if you need to cache different:
+
+* Model objects that change at different intervals
+* Logged-in users' data separate from each other
+* External resources with heavy computing load
+* External API calls

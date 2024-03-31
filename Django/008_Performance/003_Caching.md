@@ -124,9 +124,25 @@ def object_post_save_handler(sender, **kwargs):
     cache.delete('objects')
 ```
 
-You may want to use the low-level cache API if you need to cache different:
+## Redis
 
-* Model objects that change at different intervals
-* Logged-in users' data separate from each other
-* External resources with heavy computing load
-* External API calls
+[Download](https://redis.io/download/) and install Redis.
+
+Once installed, in a new terminal window start the Redis server and make sure that it's running on its default port, 6379. The port number will be important when we tell Django how to communicate with Redis.
+
+```commandline
+redis-server
+```
+
+For Django to use Redis as a cache backend, the django-redis dependency is required. It's already been installed, so you just need to add the custom backend to the settings.py file:
+```python
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+```

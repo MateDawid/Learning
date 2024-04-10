@@ -34,3 +34,36 @@ When permissions are set to IsAuthenticatedOrReadOnly, the request must either h
 
 ## IsAdminUser
 
+Permissions set to IsAdminUser means that the request needs to have a user and that user must have is_staff set to True. This means that only admin users can see, add, change, or delete objects.
+
+## DjangoModelPermissions
+
+DjangoModelPermissions allows us to set any combination of permissions to each of the users separately. The permission then checks if the user is authenticated and if they have add, change, or delete user permissions on the model.
+```python
+from rest_framework import viewsets
+from rest_framework.permissions import DjangoModelPermissions
+
+from .models import Message
+from .serializers import MessageSerializer
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [DjangoModelPermissions]
+
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+```
+You need to set the permissions for the specific user or group:
+
+![003_DjangoModelPermissions.png](003_DjangoModelPermissions.png)
+
+## DjangoModelPermissionsOrAnonReadOnly
+
+DjangoModelPermissionsOrAnonReadOnly extends the DjangoModelPermissions and only changes one thing: It sets authenticated_users_only to False. 
+
+Anonymous users can see the objects but can't interact with them.
+
+## DjangoObjectPermissions
+
+While DjangoModelPermissions limits the user's permission for interacting with a model (all the instances), DjangoObjectPermissions limits the interaction to a single instance of the model (an object). To use DjangoObjectPermissions you'll need a permission backend that supports object-level permissions, like django-guardian.

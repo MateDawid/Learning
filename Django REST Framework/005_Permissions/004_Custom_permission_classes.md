@@ -58,3 +58,49 @@ class AuthorAllStaffAllButEditOrReadOnly(permissions.BasePermission):
 ```
 
 ## Permission based on object properties
+
+Let's say you want to restrict access to objects older than 10 minutes for everyone except superusers:
+
+```python
+# permissions.py
+
+from datetime import datetime, timedelta
+
+from django.utils import timezone
+from rest_framework import permissions
+
+class ExpiredObjectSuperuserOnly(permissions.BasePermission):
+
+    def object_expired(self, obj):
+        expired_on = timezone.make_aware(datetime.now() - timedelta(minutes=10))
+        return obj.created < expired_on
+
+    def has_object_permission(self, request, view, obj):
+
+        if self.object_expired(obj) and not request.user.is_superuser:
+            return False
+        else:
+            return True
+```
+
+## Custom error message
+
+![004_Error_message.png](004_Error_message.png)
+
+Take note of the error message. It's not very informative. The user has no idea why their access was denied. We can create a custom error message by adding a message attribute to our permission class:
+```python
+class ExpiredObjectSuperuserOnly(permissions.BasePermission):
+
+    message = "This object is expired." # custom error message
+
+    def object_expired(self, obj):
+        expired_on = timezone.make_aware(datetime.now() - timedelta(minutes=10))
+        return obj.created < expired_on
+
+    def has_object_permission(self, request, view, obj):
+
+        if self.object_expired(obj) and not request.user.is_superuser:
+            return False
+        else:
+            return True
+```

@@ -1,8 +1,16 @@
 # OAuth and OpenID
 
-Source: https://testdriven.io/blog/web-authentication-methods/#oauth-and-openid
+Source 1: https://testdriven.io/blog/web-authentication-methods/#oauth-and-openid
+Source 2: https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc
 
 ## Intro
+
+OpenID - used for authentication
+OAuth - used for authorization
+
+OAuth 2.0 is designed only for authorization, for granting access to data and features from one application to another. OpenID Connect (OIDC) is a thin layer that sits on top of OAuth 2.0 that adds login and profile information about the person who is logged in. Establishing a login session is often referred to as authentication, and information about the person logged in (i.e. the Resource Owner) is called identity. When an Authorization Server supports OIDC, it is sometimes called an identity provider, since it provides information about the Resource Owner back to the Client.
+
+OpenID Connect enables scenarios where one login can be used across multiple applications, also known as single sign-on (SSO). For example, an application could support SSO with social networking services such as Facebook or Twitter so that users can choose to leverage a login they already have and are comfortable using.
 
 OAuth/OAuth2 and OpenID are popular forms of authorization and authentication, respectively. They are used to implement social login, which is a form of single sign-on (SSO) using existing information from a social networking service such as Facebook, Twitter, or Google, to sign in to a third-party website instead of creating a new login account specifically for that website.
 

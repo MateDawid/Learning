@@ -2,6 +2,33 @@
 
 Source: https://emcarrio.medium.com/business-logic-in-a-django-project-a25abc64718c
 
+## Shortly
+
+In Django, business logic should live in:
+
+* Services - functions, that mostly take care of writing things to the database.
+* Selectors - functions, that mostly take care of fetching things from the database.
+* Model properties (with some exceptions).
+* Model clean method for additional validations (with some exceptions).
+
+In Django, business logic should not live in:
+
+* APIs and Views.
+* Serializers and Forms.
+* Form tags.
+* Model save method.
+* Custom managers or querysets.
+* Signals.
+
+Model properties vs selectors:
+
+* If the property spans multiple relations, it should better be a selector.
+* If the property is non-trivial & can easily cause N + 1 queries problem, when serialized, it should better be a selector.
+
+The general idea is to "separate concerns" so those concerns can be maintainable / testable.
+
+## In detail
+
 >As a rule-of-thumb, your application logic should live in modules that aren’t Django-specific modules (eg not in views.py, models.py or forms.py). If I had my way, Django would create an empty business_logic.py in each new app to encourage this.
 
 Just be careful of not taking too much away from your models or you will be left with anemic domain models. Only business logic is meant to leave, the domain logic like validations, calculations, etc are already at home.

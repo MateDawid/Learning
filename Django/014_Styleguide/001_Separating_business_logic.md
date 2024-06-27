@@ -1,6 +1,8 @@
 # Separating business logic
 
-Source: https://emcarrio.medium.com/business-logic-in-a-django-project-a25abc64718c
+Sources: 
+* https://emcarrio.medium.com/business-logic-in-a-django-project-a25abc64718c
+* https://github.com/HackSoftware/Django-Styleguide
 
 ## Shortly
 

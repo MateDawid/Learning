@@ -2,7 +2,7 @@
 Aby wykorzystać stan aplikacji i dynamiczne wyświetlanie jego zmian konieczne jest zaimportowanie hooka useState z biblioteki Reacta poprzez umieszczenie w pliku następującego polecenia:
 
 ```js
-import {useState} from 'React/React';
+import {useState} from 'Notes/React/React';
 ```
 Utworzenie zmiennej odzwierciedlającej stan w aplikacji odbywa się poprzez następującą definicję:
 ```js
@@ -16,7 +16,7 @@ setVariable(1);
 Stan może być zapamiętany w kontekście pojedynczego komponentu. W tym celu zmienna stanu oraz odpowiadająca jej funkcja aktualizująca muszą zostać zadeklarowane wewnątrz definicji komponentu. Poniżej przykład wyświetlenia dwóch buttonów z osobnymi licznikami kliknięć.
 
 ```js
-import {useState} from 'React/React';
+import {useState} from 'Notes/React/React';
 
 function MyButton() {
     const [count, setCount] = useState(0);

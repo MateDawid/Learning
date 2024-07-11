@@ -1,6 +1,8 @@
 # tracemalloc
 
-Source: https://tech.buzzfeed.com/finding-and-fixing-memory-leaks-in-python-413ce4266e7d
+Sources: 
+* https://tech.buzzfeed.com/finding-and-fixing-memory-leaks-in-python-413ce4266e7d
+* https://www.fugue.co/blog/diagnosing-and-fixing-memory-leaks-in-python.html
 
 ## Basics
 In the case of memory a well-behaved service will use memory and free memory. It performs like this chart reporting on the memory used over a three-month period.

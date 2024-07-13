@@ -3,6 +3,7 @@
 Source: 
 * https://www.hacksoft.io/blog/improve-your-tests-django-fakes-and-factories#fakes
 * https://www.hacksoft.io/blog/improve-your-tests-django-fakes-and-factories-advanced-usage
+* https://youtu.be/-C-XNHAJF-c?si=5viLbeVKRLgn8zXD
 
 ## Creating Factories
 
@@ -315,3 +316,12 @@ The moral of the story is - whenever you see a pattern emerging, create addition
 ## Other topics
 
 ![](003_Factories.png)
+
+## Traits
+
+![](003_Factories_traits.png)
+
+## SubFactory vs RelatedFactory
+
+![](003_Factories_sub_vs_related.png)
+![](003_Factories_4.png)

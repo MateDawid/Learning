@@ -2,6 +2,7 @@
 Sources:
 1. https://docs.djangoproject.com/en/5.0/ref/models/querysets/#when-querysets-are-evaluated
 2. https://docs.djangoproject.com/en/5.0/topics/db/queries/#caching-and-querysets
+3. https://www.hacksoft.io/blog/django-orm-under-the-hood-iterables
 
 ## When QuerySets are evaluated
 ### Iteration
@@ -93,3 +94,81 @@ bool(queryset)
 entry in queryset
 list(queryset)
 ```
+
+## QuerySet as a generator vs QuerySet as an iterable
+
+* The QuerySet is immutable - chaining methods to our queryset doesn't modify the original queryset - it creates a new one.
+* The QuerySet is a generator when you iterate over it for the first time - when you start iterating over the queryset, internally it executes a SELECT query and yields the DB rows shaped into the desired Python data structure.
+* The QuerySet is an iterable - once we've iterated over the queryset once, the queryset puts the DB result into a cache. On every subsequent iteration, we'll use the cached objects. This prevents us from unwanted queries duplication.
+
+```python
+users = User.objects.all()  # Creates a queryset
+
+hacksoft_users = users.filter(email__icontains='@hacksoft.io') # Creates a new queryset
+
+for user in hacksoft_users:  # Makes SELECT query and yields the result
+    pass
+
+for user in hacksoft_users:  # Just yields the cached result
+    pass
+```
+
+Based on the unique querysets first iterations, the code above makes 1 SELECT query.
+
+## Cache implementation
+```python
+class QuerySet:
+    ...
+    def _fetch_all(self):
+        if self._result_cache is None:
+            self._result_cache = list(self._iterable_class(self))
+        # ... more code to handle prefetched relations
+
+    def __iter__(self):
+        self._fetch_all()
+        return iter(self._result_cache)
+```
+
+## Iterable classes
+Let's focus on the QuerySet._iterable_class and see what it does with the SELECT query's data.
+
+The _iterable_class has two functions:
+
+* calls the SQL compiler to execute SELECT query
+* puts the raw database data (a list of tuples) into ORM objects(.all), dictionaries(.values) or tuples(.values_list) and return it
+
+We have the following types of "iterable classes" that comes from the Django ORM:
+
+* ModelIterable - used by .all and yields ORM objects
+* ValuesIterable - set when .values is called and yields dictionaries
+* ValuesListIterable, NamedValuesListIterable and FlatValuesListIterable - set when .values_list is called (we have 3 iterable classes here since values_list returns different formats depending on the named and flat arguments)
+
+```python
+class ValuesIterable(BaseIterable):
+    def __iter__(self):
+        queryset = self.queryset
+        query = queryset.query
+        compiler = query.get_compiler(queryset.db)
+
+        names = [
+            *query.extra_select,
+            *query.values_select,
+            *query.annotation_select,
+        ]
+        indexes = range(len(names))
+        for row in compiler.results_iter(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size):
+            yield {names[i]: row[i] for i in indexes}
+```
+
+## Methods chaining and order of execution
+The order of the method chaining is not always the same as the order of execution.
+We could categorize the QuerySet methods into 2 categories:
+
+* Methods that modify the SQL query - filter/ exclude/ annotate/ only / etc. They are "executed" into the database when it runs the SQL query.
+* Methods that define the data structure - all/ values / values_list/etc. They're executed in our Django app (by iterating over the iterable class and modifying the data)
+
+The ORM allows us to chain the same methods in almost any order. But, no matter the order of chaining, the order of execution will always be:
+
+1. Execute the methods that are modifying the SQL query
+2. Run the query in the database
+3. Execute the methods that define the data structure

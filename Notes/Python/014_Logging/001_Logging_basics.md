@@ -1,6 +1,8 @@
 # Logging basics
 
-Source: https://www.samyakinfo.tech/blog/logging-in-python
+Sources: 
+* https://www.samyakinfo.tech/blog/logging-in-python
+* https://realpython.com/python-logging/
 
 Logging is the process of recording information about the execution of a program. This information, known as log messages, includes details about the application's state, error messages, warnings, and other relevant data.
 

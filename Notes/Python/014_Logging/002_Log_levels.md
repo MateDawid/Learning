@@ -1,6 +1,8 @@
 # Log levels
 
-Source: https://www.samyakinfo.tech/blog/logging-in-python#understanding-log-levels
+Sources: 
+* https://www.samyakinfo.tech/blog/logging-in-python
+* https://realpython.com/python-logging/
 
 `DEBUG`: The lowest log level, used for detailed information during development and debugging. Typically not used in a production environment.
 

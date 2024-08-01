@@ -1,6 +1,8 @@
 # Log handlers
 
-Source: https://www.samyakinfo.tech/blog/logging-in-python#log-handlers
+Sources: 
+* https://www.samyakinfo.tech/blog/logging-in-python
+* https://realpython.com/python-logging/
 
 Log handlers in Python's logging module determine where log messages should go once they are created. Handlers are responsible for routing log messages to specific destinations, such as the console, files, email, or external services. In this part, we'll explore the concept of log handlers and how to use them effectively.
 

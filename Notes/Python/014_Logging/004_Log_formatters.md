@@ -1,6 +1,8 @@
 # Log Formatters
 
-Source: https://www.samyakinfo.tech/blog/logging-in-python#log-formatters
+Sources: 
+* https://www.samyakinfo.tech/blog/logging-in-python
+* https://realpython.com/python-logging/
 
 A log formatter is an object responsible for specifying the layout of log records. It determines how the information within a log message should be presented. Python's logging module provides a Formatter class that allows developers to create custom formatting rules.
 

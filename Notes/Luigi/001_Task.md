@@ -11,7 +11,10 @@ A Luigi task is where the execution of your pipeline and the definition of each 
 import luigi
 
 class HelloLuigi(luigi.Task):
-
+    
+    # def requires(self):
+    #     return RequiredTask()
+    
     def output(self):
         return luigi.LocalTarget('hello-luigi.txt')
 

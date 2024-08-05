@@ -1,6 +1,17 @@
 # Luigi parameters
 
-Source: https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-5-downloading-the-books
+Sources: 
+* https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-5-downloading-the-books
+* https://medium.com/big-data-processing/getting-started-with-luigi-setting-up-pipelines-9547edefe782
+
+Luigi has few different type of parameters which is self describing by their names. These parameters are
+
+* IntParameter for integers values
+* BoolParameter for boolean values
+* Parameter for strings and other values
+* DateParameter for date data types
+* ListParameter for passing the list
+* DictParameter for a dictionary of items
 
 ```python
 # word-frequency.py

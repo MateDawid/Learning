@@ -1,6 +1,8 @@
 # Luigi task
 
-Source: https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-2-creating-a-luigi-task
+Sources: 
+* https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-2-creating-a-luigi-task
+* https://medium.com/big-data-processing/getting-started-with-luigi-what-why-how-f8e639a1f2a5
 
 A Luigi task is where the execution of your pipeline and the definition of each task’s input and output dependencies take place. Tasks are the building blocks that you will create your pipeline from. You define them in a class, which contains:
 * A `run()` method that holds the logic for executing the task.
@@ -8,19 +10,23 @@ A Luigi task is where the execution of your pipeline and the definition of each 
 * An optional `input()` method that returns any additional tasks in your pipeline that are required to execute the current task. The `run()` method uses these to carry out the task.
 
 ```python
-import luigi
+# hello-world.py
 
-class HelloLuigi(luigi.Task):
-    
-    # def requires(self):
-    #     return RequiredTask()
-    
+import luigi
+from luigi import Task
+
+class HelloWorld(Task):
+
     def output(self):
-        return luigi.LocalTarget('hello-luigi.txt')
+        return luigi.LocalTarget('result.txt')
 
     def run(self):
-        with self.output().open("w") as outfile:
-            outfile.write("Hello Luigi!")
+        print("hello")
+        with self.output().open('w') as f:
+            f.write('Hello world')
+
+if __name__ == '__main__':
+    luigi.run(['HelloWorld', '--local-scheduler'])
 ```
 
 You define that HelloLuigi() is a Luigi task by adding the luigi.Task mixin to it.
@@ -30,7 +36,7 @@ The output() method defines one or more Target outputs that your task produces. 
 To execute the task you created, run the following command:
 
 ```commandline
-python -m luigi --module hello-world HelloLuigi --local-scheduler
+python -m luigi --module hello-world HelloWorld --local-scheduler
 ```
 
 Here, you run the task using python -m instead of executing the luigi command directly; this is because Luigi can only execute code that is within the current PYTHONPATH. You can alternatively add PYTHONPATH='.' to the front of your Luigi command, like so:

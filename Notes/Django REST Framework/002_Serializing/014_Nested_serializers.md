@@ -145,3 +145,5 @@ If we change it to 2 our serializer will serialize a level deeper:
 }
 ```
 The downside is that you have no control over a child's serialization. Using depth will include all fields on the children, in other words.
+
+The authors of Two Scoops of Django argue that you should remove any POST or PUT methods for nested resources and create separate GET/POST/PUT API views for them. From my own experience, they're right: Trying to use a writable nested serializer can quickly become irritating.

@@ -31,3 +31,5 @@ Parameters for the @action decorator:
 2. `methods` is a list of HTTP methods that this action responds to. If it's not set, it defaults to the GET method.
 3. `url_path` defines the URL segment for this action. If it's not set, it defaults to the name of the method.
 4. `url_name` defines the reverse URL name for this action. If it's not set, it's the name of the method; underscores are replaced with dashes.
+
+Although not strictly needed, we've set the url_path and url_name so our naming remains consistent.

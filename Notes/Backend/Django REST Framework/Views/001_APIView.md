@@ -5,7 +5,7 @@ Source: https://testdriven.io/blog/drf-views-part-1/
 ## Intro
 APIView class is a base for all the views that you might choose to use in your DRF application.
 
-![001_APIView.png](001_APIView.png)
+![001_APIView.png](_images/001_APIView.png)
 
 ## Example
 ```python

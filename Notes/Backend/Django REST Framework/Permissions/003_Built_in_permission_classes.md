@@ -2,7 +2,7 @@
 
 Source: https://testdriven.io/blog/built-in-permission-classes-drf/
 
-![003_built_in_permissions.png](003_built_in_permissions.png)
+![003_built_in_permissions.png](_images/003_built_in_permissions.png)
 
 All of those classes, except the last one, DjangoObjectPermissions, override just the has_permission method and inherits the has_object_permission from the BasePermission class. has_object_permission in the BasePermission class always returns True, so it has no impact on object-level access restriction.
 
@@ -56,7 +56,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 ```
 You need to set the permissions for the specific user or group:
 
-![003_DjangoModelPermissions.png](003_DjangoModelPermissions.png)
+![003_DjangoModelPermissions.png](_images/003_DjangoModelPermissions.png)
 
 ## DjangoModelPermissionsOrAnonReadOnly
 

@@ -47,7 +47,7 @@ Unlike has_permission, has_object_permission isn't always executed by default:
 
 ## Difference between has_permission and has_object_permission
 
-![002_has_permissions_differences.png](002_has_permissions_differences.png)
+![002_has_permissions_differences.png](_images/002_has_permissions_differences.png)
 
 List views, only has_permission is executed and the request is either granted or refused access. If access is refused, the objects never get retrieved.
 

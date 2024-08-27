@@ -85,7 +85,7 @@ class ExpiredObjectSuperuserOnly(permissions.BasePermission):
 
 ## Custom error message
 
-![004_Error_message.png](004_Error_message.png)
+![004_Error_message.png](_images/004_Error_message.png)
 
 Take note of the error message. It's not very informative. The user has no idea why their access was denied. We can create a custom error message by adding a message attribute to our permission class:
 ```python

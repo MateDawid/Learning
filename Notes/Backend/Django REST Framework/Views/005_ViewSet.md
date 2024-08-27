@@ -15,7 +15,7 @@ There are four types of ViewSets, from the most basic to the most powerful:
 * ReadOnlyModelViewSet
 * ModelViewSet
 
-![005_ViewSet.png](005_ViewSet.png)
+![005_ViewSet.png](_images/005_ViewSet.png)
 
 ## Base ViewSet
 

@@ -80,7 +80,7 @@ REST_FRAMEWORK = {
 }
 ```
 
-![versioning.png](versioning_01.png)
+![versioning.png](_images/versioning_01.png)
 
 ## URLPathVersioning
 
@@ -149,9 +149,9 @@ REST_FRAMEWORK = {
 Now a subdomain can serve a different version of the app.
 
 Main domain:
-![versioning_02.png](versioning_02.png)
+![versioning_02.png](_images/versioning_02.png)
 Subdomain:
-![versioning_03.png](versioning_03.png)
+![versioning_03.png](_images/versioning_03.png)
 
 ## QueryParameterVersioning
 

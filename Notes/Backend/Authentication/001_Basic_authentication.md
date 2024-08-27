@@ -27,7 +27,7 @@ b'username:password'
 This method is stateless, so the client must supply the credentials with each and every request. It's suitable for API calls along with simple auth workflows that do not require persistent sessions.
 
 ## Flow
-![001_Flow.png](001_Flow.png)
+![001_Flow.png](_images/001_Flow.png)
 ## Pros
 * Since there aren't many operations going on, authentication can be faster with this method.
 * Easy to implement.

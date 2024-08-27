@@ -10,7 +10,7 @@ Session-based auth is stateful. Each time a client requests the server, the serv
 
 ## Flow
 
-![003_Flow.png](003_Flow.png)
+![003_Flow.png](_images/003_Flow.png)
 
 ## Pros
 * Faster subsequent logins, as the credentials are not required.

@@ -8,7 +8,7 @@ HTTP Digest Authentication (or Digest Access Authentication) is a more secure fo
 
 ## Flow
 
-![002_Flow.png](002_Flow.png)
+![002_Flow.png](_images/002_Flow.png)
 
 ## Pros
 

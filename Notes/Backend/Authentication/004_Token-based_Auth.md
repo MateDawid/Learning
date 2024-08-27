@@ -22,7 +22,7 @@ JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be t
 
 ## Flow
 
-![004_Flow.png](004_Flow.png)
+![004_Flow.png](_images/004_Flow.png)
 
 # Pros
 * It's stateless. The server doesn't need to store the token as it can be validated using the signature. This makes the request faster as a database lookup is not required.

@@ -10,7 +10,7 @@ The service layer speaks the specific domain language of the software, can acces
 
 Here's a very simple diagram, positioning the service layer in our Django apps:
 
-![](006_Service.png)
+![](_images/006_Service.png)
 
 A service can be:
 

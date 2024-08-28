@@ -6,4 +6,4 @@ from django.urls import get_resolver
 patterns = get_resolver().url_patterns
 ```
 Example output:
-![img.png](img.png)
+![img.png](_images/img.png)

@@ -315,13 +315,13 @@ The moral of the story is - whenever you see a pattern emerging, create addition
 
 ## Other topics
 
-![](003_Factories.png)
+![](_images/003_Factories.png)
 
 ## Traits
 
-![](003_Factories_traits.png)
+![](_images/003_Factories_traits.png)
 
 ## SubFactory vs RelatedFactory
 
-![](003_Factories_sub_vs_related.png)
-![](003_Factories_4.png)
+![](_images/003_Factories_sub_vs_related.png)
+![](_images/003_Factories_4.png)

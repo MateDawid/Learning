@@ -2,7 +2,7 @@
 
 Source: https://medium.com/@ksarthak4ever/django-request-response-cycle-2626e9e8606e
 
-![005_request_path.png](005_request_path.png)
+![005_request_path.png](_images/005_request_path.png)
 
 ## WSGI
 As we know a Web server is a program that uses HTTP (Hypertext Transfer Protocol) to serve the files that form Web pages to users, in response to their requests, which are forwarded by their computers’ HTTPclients.

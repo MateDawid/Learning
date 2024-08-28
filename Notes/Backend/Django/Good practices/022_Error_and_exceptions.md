@@ -25,7 +25,7 @@ If you are looking for a standard way to structure your error responses, check R
 
 DRF has an excellent guide on how exceptions are being handled, so make sure to read it first - https://www.django-rest-framework.org/api-guide/exceptions/
 
-![](022_Error_and_exceptions.png)
+![](_images/022_Error_and_exceptions.png)
 
 Basically, if the exception handler cannot handle the given exception & returns None, this will result in an unhandled exception & a 500 Server Error. This is often good, because you won't be silencing errors, that you need to pay attention to.
 

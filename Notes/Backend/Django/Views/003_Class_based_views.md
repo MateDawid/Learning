@@ -26,4 +26,4 @@ Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#c
 4. dispatch() triggers a method for a specific HTTP method or http_method_not_allowed().
 5. An HttpResponse is returned.
 
-![](003_CBV_Flow.png)
+![](_images/003_CBV_Flow.png)

@@ -55,7 +55,7 @@ STORAGES = {
     },
 }
 ```
-![static_files_develop.png](static_files_develop.png)
+![static_files_develop.png](_images/static_files_develop.png)
 
 ### Production mode
 * Use a web server like Nginx to route traffic destined for your static files directly to the static root (configured via STATIC_ROOT)

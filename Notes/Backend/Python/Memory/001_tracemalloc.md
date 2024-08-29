@@ -7,11 +7,11 @@ Sources:
 ## Basics
 In the case of memory a well-behaved service will use memory and free memory. It performs like this chart reporting on the memory used over a three-month period.
 
-![](001_tracemalloc_good.png)
+![](_images/001_tracemalloc_good.png)
 
 A microservice that leaks memory over time will exhibit a saw-tooth behavior as memory increases until some point (for example, maximum memory available) where the service is shut down, freeing all the memory and then restarted.
 
-![](001_tracemalloc_bad.png)
+![](_images/001_tracemalloc_bad.png)
 
 If a code review does not turn up any viable suspects, then it is time to turn to tools for tracking down memory leaks. The first tool should provide a way to chart memory usage over time. At BuzzFeed we use DataDog to monitor microservices performance. Leaks may accumulate slowly over time, several bytes at a time. In this case it is necessary to chart the memory growth to see the trend.
 
@@ -25,7 +25,7 @@ for i, stat in enumerate(snapshot.statistics(‘filename’)[:5], 1):
     logging.info(“top_current”,i=i, stat=str(stat))
 ```
 The output will look similar to this:
-![](001_tracemalloc_01.png)
+![](_images/001_tracemalloc_01.png)
 This shows the size of the memory allocation, the number of objects allocated and the average size each on a per module basis.
 
 ## Snapshots comparison
@@ -41,7 +41,7 @@ for i, stat in enumerate(stats[:5], 1):
 
 The output will look similar to this:
 
-![](001_tracemalloc_02.png)
+![](_images/001_tracemalloc_02.png)
 
 This shows the size and the number of objects and a comparison of each and the average allocation size on a per module basis.
 
@@ -54,7 +54,7 @@ for stat in traces[1]:
     for line in stat.traceback.format():
         logging.info(info)
 ```
-![](001_tracemalloc_03.png)
+![](_images/001_tracemalloc_03.png)
 Reading bottom to top, this shows a trace to a line in the socket module where a memory allocation took place. With this information it may be possible to finally isolate the cause of the memory leak.
 
 ## The Search for Memory Leak

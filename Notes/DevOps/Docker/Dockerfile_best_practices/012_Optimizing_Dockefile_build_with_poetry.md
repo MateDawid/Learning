@@ -47,7 +47,7 @@ FROM python:3.11-buster
 
 RUN pip install poetry
 
-COPY . .
+COPY .. .
 
 RUN poetry install
 

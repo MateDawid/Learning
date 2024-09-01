@@ -41,10 +41,13 @@ def write_content(file: TextIO, content_dict: dict, depth: int) -> None:
                 file.write(f'{header}\n{len(header) * "="}\n\n')
             write_content(file=file, content_dict=header_content, depth=depth+1)
         elif isinstance(header_content, str):
-            file.write(f'***{header_content.replace(NOTES_ROOT, "")}***\n\n')
+            file.write(f'# {header_content.replace(NOTES_ROOT, "")}\n\n')
             with open(header_content, mode='r', encoding="utf8") as content_file:
                 for line in content_file.readlines():
-                    file.write(line)
+                    if line.startswith('#'):
+                        file.write(f'{"#" * (depth - 1)}{line}')
+                    else:
+                        file.write(line)
                 file.write('\n')
 
 

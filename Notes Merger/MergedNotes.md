@@ -1,13 +1,13 @@
 Backend
 =======
 
-***Backend\Authentication\001_Basic_authentication.md***
+# Backend\Authentication\001_Basic_authentication.md
 
-# HTTP Basic Authentication
+## HTTP Basic Authentication
 
 Source: https://testdriven.io/blog/web-authentication-methods/#http-basic-authentication
 
-## Intro
+### Intro
 
 Basic authentication, which is built into the HTTP protocol, is the most basic form of authentication. With it, login credentials are sent in the request headers with each request:
 ```
@@ -31,79 +31,79 @@ b'username:password'
 ```
 This method is stateless, so the client must supply the credentials with each and every request. It's suitable for API calls along with simple auth workflows that do not require persistent sessions.
 
-## Flow
+### Flow
 ![001_Flow.png](_images/001_Flow.png)
-## Pros
+### Pros
 * Since there aren't many operations going on, authentication can be faster with this method.
 * Easy to implement.
 * Supported by all major browsers.
-## Cons
+### Cons
 * Base64 is not the same as encryption. It's just another way to represent data. The base64 encoded string can easily be decoded since it's sent in plain text. This poor security feature calls for many types of attacks. Because of this, HTTPS/SSL is absolutely essential.
 * Credentials must be sent with every request.
 * Users can only be logged out by rewriting the credentials with an invalid one.
-***Backend\Authentication\002_Digest_authentication.md***
+# Backend\Authentication\002_Digest_authentication.md
 
-# HTTP Digest Authentication
+## HTTP Digest Authentication
 
 Source: https://testdriven.io/blog/web-authentication-methods/#http-digest-authentication
 
-## Intro
+### Intro
 
 HTTP Digest Authentication (or Digest Access Authentication) is a more secure form of HTTP Basic Auth. The main difference is that the password is sent in MD5 hashed form rather than in plain text, so it's more secure than Basic Auth.
 
-## Flow
+### Flow
 
 ![002_Flow.png](_images/002_Flow.png)
 
-## Pros
+### Pros
 
 * More secure than Basic auth since the password is not sent in plain text.
 * Easy to implement.
 * Supported by all major browsers.
 
-## Cons
+### Cons
 
 * Credentials must be sent with every request.
 * User can only be logged out by rewriting the credentials with an invalid one.
 * Compared to Basic auth, passwords are less secure on the server since bcrypt can't be used.
 * Vulnerable to man-in-the-middle attacks.
-***Backend\Authentication\003_Session-based_Auth.md***
+# Backend\Authentication\003_Session-based_Auth.md
 
-# Session-based Auth
+## Session-based Auth
 
 Source: https://testdriven.io/blog/web-authentication-methods/#session-based-auth
 
-## Intro
+### Intro
 
 With session-based auth (or session cookie auth or cookie-based auth), the user's state is stored on the server. It does not require the user to provide a username or a password with each request. Instead, after logging in, the server validates the credentials. If valid, it generates a session, stores it in a session store, and then sends the session ID back to the browser. The browser stores the session ID as a cookie, which gets sent anytime a request is made to the server.
 
 Session-based auth is stateful. Each time a client requests the server, the server must locate the session in memory in order to tie the session ID back to the associated user.
 
-## Flow
+### Flow
 
 ![003_Flow.png](_images/003_Flow.png)
 
-## Pros
+### Pros
 * Faster subsequent logins, as the credentials are not required.
 * Improved user experience.
 * Fairly easy to implement. Many frameworks (like Django) provide this feature out-of-the-box.
-## Cons
+### Cons
 * It's stateful. The server keeps track of each session on the server-side. The session store, used for storing user session information, needs to be shared across multiple services to enable authentication. Because of this, it doesn't work well for RESTful services, since REST is a stateless protocol.
 * Cookies are sent with every request, even if it does not require authentication.
 * Vulnerable to CSRF attacks. Read more about CSRF and how to prevent it in Flask here.
-***Backend\Authentication\004_Token-based_Auth.md***
+# Backend\Authentication\004_Token-based_Auth.md
 
-# Token-Based Authentication
+## Token-Based Authentication
 
 Source: https://testdriven.io/blog/web-authentication-methods/#token-based-authentication
 
-## Intro
+### Intro
 
 This method uses tokens to authenticate users instead of cookies. The user authenticates using valid credentials and the server returns a signed token. This token can be used for subsequent requests.
 
 Tokens don't need not be saved on the server-side. They can just be validated using their signature. In recent times, token adoption has increased due to the rise of RESTful APIs and Single Page Applications (SPAs).
 
-## JSON Web Token
+### JSON Web Token
 
 The most commonly used token is a JSON Web Token (JWT). A JWT consists of three parts:
 
@@ -115,25 +115,25 @@ All three are base64 encoded and concatenated using a . and hashed. Since they a
 
 JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure, enabling the claims to be digitally signed or integrity protected with a Message Authentication Code (MAC) and/or encrypted. - IETF
 
-## Flow
+### Flow
 
 ![004_Flow.png](_images/004_Flow.png)
 
-# Pros
+## Pros
 * It's stateless. The server doesn't need to store the token as it can be validated using the signature. This makes the request faster as a database lookup is not required.
 * Suited for a microservices architecture, where multiple services require authentication. All we need to configure at each end is how to handle the token and the token secret. 
-# Cons
+## Cons
 * Depending on how the token is saved on the client, it can lead to XSS (via localStorage) or CSRF (via cookies) attacks.
 * Tokens cannot be deleted. They can only expire. This means that if the token gets leaked, an attacker can misuse it until expiry. Thus, it's important to set token expiry to something very small, like 15 minutes.
 * Refresh tokens need to be set up to automatically issue tokens at expiry.
 * One way to delete tokens is to create a database for blacklisting tokens. This adds extra overhead to the microservice architecture and introduces state.
-***Backend\Authentication\005_One_Time_Passwords.md***
+# Backend\Authentication\005_One_Time_Passwords.md
 
-# One Time Passwords
+## One Time Passwords
 
 Source: https://testdriven.io/blog/web-authentication-methods/#one-time-passwords
 
-## Intro
+### Intro
 One time passwords (OTPs) are commonly used as confirmation for authentication. OTPs are randomly generated codes that can be used to verify if the user is who they claim to be. Its often used after user credentials are verified for apps that leverage two-factor authentication.
 
 To use OTP, a trusted system must be present. This trusted system could be a verified email or mobile number.
@@ -142,7 +142,7 @@ Modern OTPs are stateless. They can be verified using multiple methods. While th
 
 Since you get an added layer of security, OTPs are recommended for apps that involve highly sensitive data, like online banking and other financial services.
 
-## Flow
+### Flow
 The traditional way of implementing OTPs:
 
 * Client sends username and password
@@ -164,21 +164,21 @@ How OTP agents like Google Authenticator, Microsoft Authenticator, and FreeOTP w
 * Whenever the OTP is required, the user checks for the code on their device and enters it on the web app
 * The server verifies the code and grants access accordingly
 
-## Pros
+### Pros
 * Adds an extra layer of protection.
 * No danger that a stolen password can be used for multiple sites or services that also implement OTPs.
-## Cons
+### Cons
 * You need to store the seed used for generating OTPs.
 * OTP agents like Google Authenticator are difficult to set up again if you lose the recovery code.
 * Problems arise when the trusted device is not available (dead battery, network error, etc.). Because of this, a backup device is typically required which adds an additional attack vector.
-***Backend\Authentication\006_OAuth_and_OpenID.md***
+# Backend\Authentication\006_OAuth_and_OpenID.md
 
-# OAuth and OpenID
+## OAuth and OpenID
 
 Source 1: https://testdriven.io/blog/web-authentication-methods/#oauth-and-openid
 Source 2: https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc
 
-## Intro
+### Intro
 
 OpenID - used for authentication
 OAuth - used for authorization
@@ -193,7 +193,7 @@ This type of authentication and authorization can be used when you need to have 
 
 This method is often coupled with session-based auth.
 
-## Flow
+### Flow
 
 You visit a website that requires you to log in. You navigate to the login page and see a button called "Sign in with Google". You click the button and it takes you to the Google login page. Once authenticated, you're then redirected back to the website that logs you in automatically. This is an example of using OpenID for authentication. It lets you authenticate using an existing account (via an OpenID provider) without the need to create a new account.
 
@@ -201,50 +201,50 @@ The most famous OpenID providers are Google, Facebook, Twitter, and GitHub.
 
 After logging in, you navigate to the download service within the website that lets you download large files directly to Google Drive. How does the website get access to your Google Drive? This is where OAuth comes into play. You can grant permissions to access resources on another website. In this case, write access to Google Drive.
 
-## Pros
+### Pros
 
 * Improved security.
 * Easier and faster log in flows since there's no need to create and remember a username or password.
 * In case of a security breach, no third-party damage will occur, as the authentication is passwordless.
 
-## Cons
+### Cons
 
 * Your application now depends on another app, outside of your control. If the OpenID system is down, users won't be able to log in.
 * People often tend to ignore the permissions requested by OAuth applications.
 * Users that don't have accounts on the OpenID providers that you have configured won't be able to access your application. The best approach is to implement both -- i.e., username and password and OpenID -- and let the user choose.
 
 
-***Backend\Django\Admin_site\001_Basic_customization.md***
+# Backend\Django\Admin_site\001_Basic_customization.md
 
-# Basic Admin Site Customization
+### Basic Admin Site Customization
 
 Source: https://testdriven.io/blog/customize-django-admin/#basic-admin-site-customization
 
-## Site header
+#### Site header
 ```python
-# core/urls.py
+### core/urls.py
 
 admin.site.site_title = "TicketsPlus site admin (DEV)"
 admin.site.site_header = "TicketsPlus administration"
 admin.site.index_title = "Site administration"
 ```
 
-## URL
+#### URL
 
 Another thing you should do is change the default /admin URL. This'll make it more difficult for malicious actors to find your admin panel.
 
 Change your core/urls.py like so:
 ```python
-# core/urls.py
+### core/urls.py
 
 urlpatterns = [
     path("secretadmin/", admin.site.urls),
 ]
 ```
 Your admin site should now be accessible at http://localhost:8000/secretadmin.
-***Backend\Django\Admin_site\002_Django_model_affect_on_admin.md***
+# Backend\Django\Admin_site\002_Django_model_affect_on_admin.md
 
-# Django Model and Admin
+### Django Model and Admin
 
 Source: https://testdriven.io/blog/customize-django-admin/#django-model-and-admin
 
@@ -255,7 +255,7 @@ Some Django model attributes directly affect the Django admin site. Most importa
 
 Here's an example of how these attributes are used in practice:
 ```python
-# tickets/models.py
+### tickets/models.py
 
 class ConcertCategory(models.Model):
     name = models.CharField(max_length=64)
@@ -271,17 +271,17 @@ class ConcertCategory(models.Model):
 ```
 We provided the plural form since the plural of "concert category" isn't "concert categorys".
 By providing the ordering attribute the categories are now ordered by name.
-***Backend\Django\Admin_site\003_List_display.md***
+# Backend\Django\Admin_site\003_List_display.md
 
-# List Display
+### List Display
 
 Source: https://testdriven.io/blog/customize-django-admin/#customize-admin-site-with-modeladmin-class
 
-## Control List Display
+#### Control List Display
 
 The list_display attribute allows you to control which model fields are displayed on the model list page. Another great thing about it is that it can display related model fields using the __ operator.
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertAdmin(admin.ModelAdmin):
     list_display = ["name", "venue", "starts_at", "price", "tickets_left"]
@@ -293,7 +293,7 @@ By adding the venue to the list_display, we introduced the N + 1 problem. Since 
 To avoid the N + 1 problem, we can use the list_select_related attribute, which works similarly to the select_related method:
 
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertAdmin(admin.ModelAdmin):
     list_display = ["name", "venue", "starts_at", "price", "tickets_left"]
@@ -301,13 +301,13 @@ class ConcertAdmin(admin.ModelAdmin):
     readonly_fields = ["tickets_left"]
 ```
 
-## List Display Custom Fields
+#### List Display Custom Fields
 
 The list_display setting can also be used to add custom fields. To add a custom field, you must define a new method within the ModelAdmin class.
 
 Add a "Sold Out" field, which is True if no tickets are available:
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertAdmin(admin.ModelAdmin):
     list_display = ["name", "venue", "starts_at", "tickets_left", "display_sold_out"]
@@ -321,7 +321,7 @@ class ConcertAdmin(admin.ModelAdmin):
 ```
 We used short_description to set the column name and boolean to tell Django that this column has a boolean value. This way, Django displays the tick/cross icon instead of True and False. We also had to add our display_sold_out method to list_display.
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertAdmin(admin.ModelAdmin):
     list_display = [
@@ -336,13 +336,13 @@ class ConcertAdmin(admin.ModelAdmin):
     display_price.admin_order_field = "price"
 ```
 We used admin_order_field to tell Django by what field this column is orderable.
-***Backend\Django\Admin_site\004_Linking_related_model_objects.md***
+# Backend\Django\Admin_site\004_Linking_related_model_objects.md
 
-# ModelAdmin Class
+### ModelAdmin Class
 
 Source: https://testdriven.io/blog/customize-django-admin/#link-related-model-objects
 
-## Link Related Model Objects
+#### Link Related Model Objects
 
 Django admin site URL structure:
 
@@ -356,7 +356,7 @@ Django admin site URL structure:
 
 Add the display_venue method to ConcertAdmin like so:
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     list_display = [
@@ -373,14 +373,14 @@ class ConcertAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
 
     display_venue.short_description = "Venue"
 ```
-***Backend\Django\Admin_site\005_Filtering.md***
+# Backend\Django\Admin_site\005_Filtering.md
 
-# Filter Model Objects
+### Filter Model Objects
 
 Source: https://testdriven.io/blog/customize-django-admin/#filter-model-objects
 
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertAdmin(admin.ModelAdmin):
     # ...
@@ -392,7 +392,7 @@ To filter by a related object's fields, use the __ operator.
 or more advanced filtering functionality, you can also define custom filters. To define a custom filter, you must specify the options or so-called lookups and a queryset for each lookup.
 
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 from django.contrib.admin import SimpleListFilter
 
@@ -419,16 +419,16 @@ class ConcertAdmin(admin.ModelAdmin):
     list_filter = ["venue", SoldOutFilter]
 ```
 
-***Backend\Django\Admin_site\006_Searching.md***
+# Backend\Django\Admin_site\006_Searching.md
 
-# Search Model Objects
+### Search Model Objects
 
 Source: https://testdriven.io/blog/customize-django-admin/#search-model-objects
 
 Django admin provides basic search functionality. It can be enabled by specifying which model fields should be searchable via the search_fields attribute. Keep in mind that Django doesn't support fuzzy queries by default.
 
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertAdmin(admin.ModelAdmin):
     # ...
@@ -436,16 +436,16 @@ class ConcertAdmin(admin.ModelAdmin):
 ```
 
 
-***Backend\Django\Admin_site\007_Inlines.md***
+# Backend\Django\Admin_site\007_Inlines.md
 
-# Handle Model Inlines
+### Handle Model Inlines
 
 Source: https://testdriven.io/blog/customize-django-admin/#handle-model-inlines
 
 The admin interface allows you to edit models on the same page as the parent model via inlines. Django provides two types of inlines StackedInline and TabularInline. The main difference between them is how they look.
 
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class ConcertInline(admin.TabularInline):
     model = Concert
@@ -463,16 +463,16 @@ class VenueAdmin(admin.ModelAdmin):
     list_display = ["name", "address", "capacity"]
     inlines = [ConcertInline]
 ```
-***Backend\Django\Admin_site\008_Custom_actions.md***
+# Backend\Django\Admin_site\008_Custom_actions.md
 
-# Custom Admin Actions
+### Custom Admin Actions
 
 Source: https://testdriven.io/blog/customize-django-admin/#custom-admin-actions
 
 Django admin actions allow you to perform an "action" on an object or a group of objects. An action can be used to modify an object's attributes, delete the object, copy it, and so forth. Actions are primarily utilized for frequently performed "actions" or bulk changes.
 
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 @admin.action(description="Activate selected tickets")
 def activate_tickets(modeladmin, request, queryset):
@@ -488,9 +488,9 @@ class TicketAdmin(admin.ModelAdmin):
     # ...
     actions = [activate_tickets, deactivate_tickets]
 ```
-***Backend\Django\Admin_site\009_Custom_admin_form.md***
+# Backend\Django\Admin_site\009_Custom_admin_form.md
 
-# Override Django Admin Forms
+### Override Django Admin Forms
 
 Source: https://testdriven.io/blog/customize-django-admin/#override-django-admin-forms
 
@@ -498,7 +498,7 @@ By default, Django automatically generates a ModelForm for your model. That form
 
 Go ahead and create a forms.py file in the tickets app:
 ```python
-# tickets/forms.py
+### tickets/forms.py
 
 from django import forms
 from django.forms import ModelForm, RadioSelect
@@ -549,15 +549,15 @@ On form __init__(), we populated the form using model instance data.
 On save(), we merged first_name and last_name and saved it as customer_full_name.
 Next, set TicketAdmin's form like so:
 ```python
-# tickets/admin.py
+### tickets/admin.py
 
 class TicketAdmin(admin.ModelAdmin):
     # ...
     form = TicketAdminForm
 ```
-***Backend\Django\Config\001_venv.md***
+# Backend\Django\Config\001_venv.md
 
-# Virtual Environment
+### Virtual Environment
 Przed rozpoczęciem nowego projektu konieczne jest założenie wirtualnego środowiska.
 ```commandline
 python -m virtualenv {nazwa-venv}
@@ -568,30 +568,30 @@ Aby uruchomić wirtualne środowisko należy użyć komendy:
 {nazwa-venv}/Scripts/activate
 ```
 
-***Backend\Django\Config\002_Django_installation.md***
+# Backend\Django\Config\002_Django_installation.md
 
-# Instalacja Django
+### Instalacja Django
 Aby zainstalować Django należy użyć komendy:
 ```commandline
 python -m pip install Django
 ```
-***Backend\Django\Config\003_Creating_new_project.md***
+# Backend\Django\Config\003_Creating_new_project.md
 
-# Tworzenie projektu Django
+### Tworzenie projektu Django
 Do utworzenia nowego projektu w Django należy użyć komendy:
 ```commandline
 django-admin startproject {nazwa-projektu}
 ```
-***Backend\Django\Config\004_Creating_new_module.md***
+# Backend\Django\Config\004_Creating_new_module.md
 
-# Dodanie nowego modułu
+### Dodanie nowego modułu
 Do dodania nowego modułu projektu służy komenda:
 ```commandline
 django-admin startapp {nazwa-modulu}
 ```
 Po dodaniu nowego modułu w pliku settings.py należy dodać moduł do INSTALLED_APPS
 ```python
-# settings.py
+### settings.py
 ...
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -603,34 +603,34 @@ INSTALLED_APPS = [
     '<nowy moduł>' 
 ]
 ```
-***Backend\Django\Config\005_Running_project.md***
+# Backend\Django\Config\005_Running_project.md
 
-# Uruchamianie aplikacji
+### Uruchamianie aplikacji
 Aby uruchomić aplikację na serwerze lokalnym należy będąc w folderze projektu użyć komendy:
 ```commandline
 python manage.py runserver
 ```
-***Backend\Django\Config\006_First_migrations.md***
+# Backend\Django\Config\006_First_migrations.md
 
-# Pierwsze migracje
+### Pierwsze migracje
 Po utworzeniu projektu konieczne jest wykonanie pierwszych migracji, w celu przygotowania bazy danych. Służy do tego komenda:
 ```commandline
 python manage.py migrate
 ```
-***Backend\Django\Config\007_Static_and_media_files.md***
+# Backend\Django\Config\007_Static_and_media_files.md
 
-# Static and media files
+### Static and media files
 
 Source: https://testdriven.io/blog/django-static-files/
 
-## Django project files types:
+#### Django project files types:
 **Source code**: These are your core Python modules and HTML files that make up every Django project, where you define your models, views, and templates.
 
 **Static files**: These are your CSS stylesheets, JavaScript files, fonts, and images. Since there's no processing involved, these files are very energy efficient since they can just be served up as is. They are also much easier to cache. Static files are kept in version control and shipped with your source code files during deployment.
 
 **Media file**: These are files that a user uploads. Media files are files that your end-users (internally and externally) upload or are dynamically created by your application (often as a side effect of some user action).
 
-## Why should you treat static and media files differently?
+#### Why should you treat static and media files differently?
 
 You can't trust files uploaded by end-users, so media files need to be treated differently.
 
@@ -638,8 +638,8 @@ You may need to perform processing on user uploaded, media files to be better se
 
 You don't want a user uploaded file to replace a static file accidentally.
 
-## Static files
-### Settings
+#### Static files
+##### Settings
 **STATIC_URL**: URL where the user can access your static files from in the browser. The default is /static/, which means your files will be available at http://127.0.0.1:8000/static/ in development mode -- e.g., http://127.0.0.1:8000/static/css/main.css.
 
 **STATIC_ROOT**: The absolute path to the directory where your Django application will serve your static files from. When you run the collectstatic management command (more on this shortly), it will find all static files and copy them into this directory.
@@ -652,7 +652,7 @@ You don't want a user uploaded file to replace a static file accidentally.
 * FileSystemFinder - uses the STATICFILES_DIRS setting to find files.
 * AppDirectoriesFinder - looks for files in a "static" folder in each Django app within the project.
 
-### Management commands
+##### Management commands
 ```collectstatic``` is a management command that collects static files from the various locations -- i.e., <APP_NAME>/static/ and the directories found in the STATICFILES_DIRS setting -- and copies them to the STATIC_ROOT directory.
 
 ```findstatic``` is a really helpful command to use when debugging so you can see exactly where a specific file comes from.
@@ -661,11 +661,11 @@ You don't want a user uploaded file to replace a static file accidentally.
 
 Don't put any static files in the STATIC_ROOT directory. That's where the static files get copied to automatically after you run collectstatic. Instead, always put them in the directories associated with the STATICFILES_DIRS setting or <APP_NAME>/static/.
 
-### Development mode
+##### Development mode
 Typical development config:
 
 ```python
-# settings.py
+### settings.py
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -678,7 +678,7 @@ STORAGES = {
 ```
 ![static_files_develop.png](_images/static_files_develop.png)
 
-### Production mode
+##### Production mode
 * Use a web server like Nginx to route traffic destined for your static files directly to the static root (configured via STATIC_ROOT)
 * Use WhiteNoise to serve up static files directly from the WSGI or ASGI web application server
 
@@ -708,16 +708,16 @@ server {
 ```
 In short, when a request is sent to /static/ -- e.g, /static/base.css -- Nginx will attempt to serve the file from the "/home/app/web/staticfiles/" folder.
 
-## Media files
-### Settings
+#### Media files
+##### Settings
 **MEDIA_URL**: Similar to the STATIC_URL, this is the URL where users can access media files.
 
 **MEDIA_ROOT**: The absolute path to the directory where your Django application will serve your media files from.
 
-### Development mode
+##### Development mode
 Typical development config:
 ```python
-# settings.py
+### settings.py
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
@@ -741,7 +741,7 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ```
 
-### Production mode
+##### Production mode
 
 Sample Nginx config:
 ```
@@ -768,14 +768,14 @@ server {
 ```
 So, when a request is sent to /media/ -- e.g, /media/upload.png -- Nginx will attempt to serve the file from the "/home/app/web/mediafiles/" folder.
 
-***Backend\Django\Forms\001_Base_forms.md***
+# Backend\Django\Forms\001_Base_forms.md
 
-# Podstawowe formularze
+### Podstawowe formularze
 
 Definicja podstawowego formularza.
 
 ```python
-# project/module/forms.py
+### project/module/forms.py
 from django import forms
 
 class NewTaskForm(forms.Form):
@@ -784,7 +784,7 @@ class NewTaskForm(forms.Form):
 Widok wykorzystujący formularz.
 
 ```python
-# module/views.py
+### module/views.py
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
@@ -819,15 +819,15 @@ Wyświetlenie formularza w HTML.
     <a href="{% url 'module:index' %}">View Tasks</a>
 {% endblock %}
 ```
-***Backend\Django\Good practices\001_Separating_business_logic.md***
+# Backend\Django\Good practices\001_Separating_business_logic.md
 
-# Separating business logic
+### Separating business logic
 
 Sources: 
 * https://emcarrio.medium.com/business-logic-in-a-django-project-a25abc64718c
 * https://github.com/HackSoftware/Django-Styleguide
 
-## Shortly
+#### Shortly
 
 In Django, business logic should live in:
 
@@ -852,7 +852,7 @@ Model properties vs selectors:
 
 The general idea is to "separate concerns" so those concerns can be maintainable / testable.
 
-## In detail
+#### In detail
 
 >As a rule-of-thumb, your application logic should live in modules that aren’t Django-specific modules (eg not in views.py, models.py or forms.py). If I had my way, Django would create an empty business_logic.py in each new app to encourage this.
 
@@ -864,7 +864,7 @@ In reality, this solution is the recommended way of doing things, although it is
 
 Following this principle, you can then use your Model.objects as it was your data repository in the business logic, reducing the coupling to the ORM and allowing you to do integration tests for the database interactions only. In the next example, we’ll see how to use it.
 
-## Example
+#### Example
 
 The example is very simple: we have an Address model that has an is_default field that indicates if that address is the default one of its user.
 
@@ -873,7 +873,7 @@ And then we have an action that makes an address instance the default one, setti
 Here first we have the example done using fat models (high coupling and low cohesion):
 
 ```python
-# models.py
+### models.py
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     street = models.CharField(max_length=50)
@@ -895,7 +895,7 @@ class Address(models.Model):
         events.publish(events.DEFAULT_ADDRESS_CHANGED, address=self)
 
 
-# tests.py
+### tests.py
 class TestSetDefault:
 
     @pytest.fixture
@@ -932,7 +932,7 @@ The problem with the integration test is that you have to test the behaviour usi
 So let’s look to the same example but applying a business logic layer and abstracting the database interactions to a manager (low coupling and high cohesion):
 
 ```python
-# managers.py
+### managers.py
 class AddressManager(models.Manager):
 
     # We use the manager as a data repository
@@ -942,7 +942,7 @@ class AddressManager(models.Manager):
         address.save()
 
 
-# models.py
+### models.py
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     street = models.CharField(max_length=50)
@@ -956,14 +956,14 @@ class Address(models.Model):
     objects = AddressManager()
 
 
-# business_logic.py
-# The business rule is simple and easily testeable
+### business_logic.py
+### The business rule is simple and easily testeable
 def set_default(address):
     Address.objects.set_default(address)
     events.publish(events.DEFAULT_ADDRESS_CHANGED, address=address)
 
 
-# tests.py
+### tests.py
 @pytest.mark.django_db
 class TestAddressManagerSetDefault:
 
@@ -1003,14 +1003,14 @@ class TestSetDefault:
 As you can see we have easier tests and more maintainable code. In this case, we implement unit tests for our business logic that are fast and validate its flow. And then integration tests for the manager that validate the data operations and its dependencies with the database.
 
 The key in this structure is that our business logic is not aware of data integrity or how it is stored, that is the job of the managers. This way we can unit test every flow and leave the integrity checks for the integration tests of the data layer.
-***Backend\Django\Good practices\002_Model_validation.md***
+# Backend\Django\Good practices\002_Model_validation.md
 
-# Model validation
+### Model validation
 
 Sources:
 * https://github.com/HackSoftware/Django-Styleguide
 
-## clean and full_clean
+#### clean and full_clean
 Lets take a look at an example model:
 
 ```python
@@ -1055,7 +1055,7 @@ Validation should be moved to the service layer if:
 
 It's OK to have validation both in clean and in the service, but we tend to move things in the service, if that's the case.
 
-## constraints
+#### constraints
 
 As proposed in this issue, if you can do validation using Django's constraints, then you should aim for that.
 
@@ -1079,9 +1079,9 @@ class Course(BaseModel):
         ]
 ```
 
-***Backend\Django\Good practices\003_Model_properties.md***
+# Backend\Django\Good practices\003_Model_properties.md
 
-# Model properties
+### Model properties
 
 Sources:
 * https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#properties
@@ -1131,9 +1131,9 @@ Properties should be something else (service, selector, utility) in the followin
 * If the calculation is more complex.
 
 Keep in mind that those rules are vague, because context is quite often important. Use your best judgement!
-***Backend\Django\Good practices\004_Model_methods.md***
+# Backend\Django\Good practices\004_Model_methods.md
 
-# Model methods
+### Model methods
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#methods
 
@@ -1211,9 +1211,9 @@ Models should be something else (service, selector, utility) in the following ca
 * If the calculation is more complex.
 
 Keep in mind that those rules are vague, because context is quite often important. Use your best judgement!
-***Backend\Django\Good practices\005_Model_testing.md***
+# Backend\Django\Good practices\005_Model_testing.md
 
-# Model testing
+### Model testing
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#testing
 
@@ -1246,13 +1246,13 @@ A few things to note here:
 
 * We assert that a validation error is going to be raised if we call full_clean.
 * We are not hitting the database at all, since there's no need for that. This can speed up certain tests.
-***Backend\Django\Good practices\006_Service.md***
+# Backend\Django\Good practices\006_Service.md
 
-# Service
+### Service
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#services
 
-## What is Service?
+#### What is Service?
 
 Services are where business logic lives.
 
@@ -1278,14 +1278,14 @@ In most cases, a service can be simple function that:
 * Does business logic - from simple model creation to complex cross-cutting concerns, to calling external services & tasks.
 
 
-***Backend\Django\Good practices\007_Service_examples.md***
+# Backend\Django\Good practices\007_Service_examples.md
 
-# Service examples
+### Service examples
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#example---function-based-service
 
 
-## Example - function-based service
+#### Example - function-based service
 
 An example service that creates a user:
 
@@ -1309,14 +1309,14 @@ As you can see, this service calls 2 other services - profile_create and confirm
 
 In this example, everything related to the user creation is in one place and can be traced.
 
-## Example - class-based service
+#### Example - class-based service
 
 Additionally, we can have "class-based" services, which is a fancy way of saying - wrap the logic in a class.
 
 Here's an example, taken straight from the Django Styleguide Example, related to file upload:
 
 ```python
-# https://github.com/HackSoftware/Django-Styleguide-Example/blob/master/styleguide_example/files/services.py
+### https://github.com/HackSoftware/Django-Styleguide-Example/blob/master/styleguide_example/files/services.py
 
 
 class FileStandardUploadService:
@@ -1388,7 +1388,7 @@ As stated in the comment, we are using this approach for 2 main reasons:
 
 Here's how this service is used:
 ```python
-# https://github.com/HackSoftware/Django-Styleguide-Example/blob/master/styleguide_example/files/apis.py
+### https://github.com/HackSoftware/Django-Styleguide-Example/blob/master/styleguide_example/files/apis.py
 
 class FileDirectUploadApi(ApiAuthMixin, APIView):
     def post(self, request):
@@ -1423,9 +1423,9 @@ class FileAdmin(admin.ModelAdmin):
         except ValidationError as exc:
             self.message_user(request, str(exc), messages.ERROR)
 ```
-***Backend\Django\Good practices\008_Service_naming_convention.md***
+# Backend\Django\Good practices\008_Service_naming_convention.md
 
-# Service naming conventions
+### Service naming conventions
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#naming-convention
 
@@ -1437,9 +1437,9 @@ This is what we prefer in HackSoft's projects. This seems odd at first, but it h
 
 * Namespacing. It's easy to spot all services starting with user_ and it's a good idea to put them in a users.py module.
 * Greppability. Or in other words, if you want to see all actions for a specific entity, just grep for user_.
-***Backend\Django\Good practices\009_Service_modules.md***
+# Backend\Django\Good practices\009_Service_modules.md
 
-# Service naming conventions
+### Service naming conventions
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#modules
 
@@ -1463,9 +1463,9 @@ There are lots of flavors here:
 * You can create a folder-module, jwt/__init__.py, and put the code there.
 * Basically, the structure is up to you. If you feel it's time to restructure and refactor - do so.
 
-***Backend\Django\Good practices\010_Service_selectors.md***
+# Backend\Django\Good practices\010_Service_selectors.md
 
-# Service - selectors
+### Service - selectors
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#selectors
 
@@ -1491,9 +1491,9 @@ As you can see, user_get_visible_for is another selector.
 You can return querysets, or lists or whatever makes sense to your specific case.
 
 
-***Backend\Django\Good practices\011_Service_testing.md***
+# Backend\Django\Good practices\011_Service_testing.md
 
-# Service - testing
+### Service - testing
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#testing-1
 
@@ -1613,13 +1613,13 @@ class ItemBuyTests(TestCase):
 
         payment_charge_mock.assert_called_once()
 ```
-***Backend\Django\Good practices\012_API_and_Serializers.md***
+# Backend\Django\Good practices\012_API_and_Serializers.md
 
-# API and Serializers
+### API and Serializers
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#apis--serializers
 
-## API
+#### API
 
 When using services & selectors, all of your APIs should look simple & identical.
 
@@ -1633,7 +1633,7 @@ When we are creating new APIs, we follow those general rules:
 * If you are calling some_service in your API, you can extract object fetching / data manipulation to some_service_parse.
 * Basically, keep the APIs as simple as possible. They are an interface towards your core business logic.
 
-## Serialization
+#### Serialization
 
 When we are talking about APIs, we need a way to deal with data serialization - both incoming & outgoing data.
 
@@ -1653,18 +1653,18 @@ In case you are using DRF's serializers, here are our rules:
 * Reuse serializers as little as possible.
   * Reusing serializers may expose you to unexpected behavior, when something changes in the base serializers.
 
-## Naming convention
+#### Naming convention
 
 For our APIs we use the following naming convention: <Entity><Action>Api.
 
 Here are few examples: UserCreateApi, UserSendResetPasswordApi, UserDeactivateApi, etc.
-***Backend\Django\Good practices\013_API_List.md***
+# Backend\Django\Good practices\013_API_List.md
 
-# List API
+### List API
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#list-apis
 
-## Plain
+#### Plain
 
 A dead-simple list API should look like that:
 
@@ -1690,7 +1690,7 @@ class UserListApi(APIView):
         return Response(data)
 ```
 
-## Filters and pagination
+#### Filters and pagination
 
 At first glance, this is tricky, since our APIs are inheriting the plain APIView from DRF, while filtering and pagination are baked into the generic ones:
 
@@ -1840,9 +1840,9 @@ class LimitOffsetPagination(_LimitOffsetPagination):
 What we basically did is reverse-engineered the generic APIs.
 
 > 👀 Again, if you need something else for pagination, you can always implement it & use it in the same manner. There are cases, where the selector needs to take care of the pagination. We approach those cases the same way we approach filtering.
-***Backend\Django\Good practices\014_API_Detail.md***
+# Backend\Django\Good practices\014_API_Detail.md
 
-# Detail API
+### Detail API
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#detail-api
 
@@ -1861,9 +1861,9 @@ class CourseDetailApi(SomeAuthenticationMixin, APIView):
 
         return Response(serializer.data)
 ```
-***Backend\Django\Good practices\015_API_Create.md***
+# Backend\Django\Good practices\015_API_Create.md
 
-# Create API
+### Create API
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#create-api
 
@@ -1882,9 +1882,9 @@ class CourseCreateApi(SomeAuthenticationMixin, APIView):
 
         return Response(status=status.HTTP_201_CREATED)
 ```
-***Backend\Django\Good practices\016_API_Update.md***
+# Backend\Django\Good practices\016_API_Update.md
 
-# Update API
+### Update API
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#update-api
 
@@ -1903,9 +1903,9 @@ class CourseUpdateApi(SomeAuthenticationMixin, APIView):
 
         return Response(status=status.HTTP_200_OK)
 ```
-***Backend\Django\Good practices\017_Fetching_objects.md***
+# Backend\Django\Good practices\017_Fetching_objects.md
 
-# Fetching objects
+### Fetching objects
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#update-api
 
@@ -1936,9 +1936,9 @@ This is a very basic utility, that handles the exception and returns None instea
 
 Whatever you do, make sure to keep it consistent.
 
-***Backend\Django\Good practices\018_Nested_serializers.md***
+# Backend\Django\Good practices\018_Nested_serializers.md
 
-# Nested serializers
+### Nested serializers
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#nested-serializers
 
@@ -1974,9 +1974,9 @@ def inline_serializer(*, fields, data=None, **kwargs):
 
     return serializer_class(**kwargs)
 ```
-***Backend\Django\Good practices\019_Advanced_serialization.md***
+# Backend\Django\Good practices\019_Advanced_serialization.md
 
-# Advanced serialization
+### Advanced serialization
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#advanced-serialization
 
@@ -2049,9 +2049,9 @@ As you can see, this is a pretty generic example, but the idea is simple:
 Even though this is labeled as "advanced serialization", the pattern is really powerful and can be used for all serializations.
 
 Such serializer functions usually live in a serializers.py module, in the corresponding Django app.
-***Backend\Django\Good practices\020_Urls.md***
+# Backend\Django\Good practices\020_Urls.md
 
-# Urls
+### Urls
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#urls
 
@@ -2142,13 +2142,13 @@ urlpatterns = [
 Some people prefer the first way of doing it, others prefer the visible tree-like structure. This is up to you & your team.
 
 
-***Backend\Django\Good practices\021_Settings.md***
+# Backend\Django\Good practices\021_Settings.md
 
-# Settings
+### Settings
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#settings
 
-## Organization
+#### Organization
 
 When it comes to Django settings, we tend to follow the folder structure from cookiecutter-django, with few adjustments:
 
@@ -2217,7 +2217,7 @@ from config.settings.celery import *  # noqa
 from config.settings.sentry import *  # noqa
 ```
 
-## Prefixing environment variables with DJANGO_
+#### Prefixing environment variables with DJANGO_
 
 In a lot of examples, you'll see that environment variables are usually prefixed with DJANGO_. This is very helpful when there are other applications alongside your Django app that run on the same environment. In that case, prefixing the environment variables with DJANGO_ helps you to differ which are the environment variables specific to your Django app.
 
@@ -2227,7 +2227,7 @@ For example, we would have DJANGO_SETTINGS_MODULE, DJANGO_DEBUG, DJANGO_ALLOWED_
 
 This is mostly up to personal preference. Just make sure you are consistent with that.
 
-## Integrations
+#### Integrations
 
 Since everything should be imported in base.py, but sometimes we don't want to configure a certain integration for local development, we derived the following approach:
 
@@ -2250,19 +2250,19 @@ if SENTRY_DSN:
     # View the full file here - https://github.com/HackSoftware/Styleguide-Example/blob/master/config/settings/sentry.py
 ```
 
-## Reading from .env
+#### Reading from .env
 
 Having a local .env is a nice way of providing values for your settings.
 
 And the good thing is, django-environ provides you with a way to do that:
 ```python
-# That's in the beginning of base.py
+### That's in the beginning of base.py
 
 import os
 
 from config.env import env, environ
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+### Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = environ.Path(__file__) - 3
 
 env.read_env(os.path.join(BASE_DIR, ".env"))
@@ -2273,9 +2273,9 @@ There are 2 things worth mentioning here:
 
 * Don't put .env in your source control, since this will leak credentials.
 * Rather put an .env.example with empty values for everything, so new developers can figure out what's being used.
-***Backend\Django\Good practices\022_Error_and_exceptions.md***
+# Backend\Django\Good practices\022_Error_and_exceptions.md
 
-# Errors & Exception Handling
+### Errors & Exception Handling
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#errors--exception-handling
 
@@ -2298,7 +2298,7 @@ Followed by some specific approaches:
 
 If you are looking for a standard way to structure your error responses, check RFC7807 - https://datatracker.ietf.org/doc/html/rfc7807
 
-## How exception handling works (in the context of DRF)
+#### How exception handling works (in the context of DRF)
 
 DRF has an excellent guide on how exceptions are being handled, so make sure to read it first - https://www.django-rest-framework.org/api-guide/exceptions/
 
@@ -2306,7 +2306,7 @@ DRF has an excellent guide on how exceptions are being handled, so make sure to 
 
 Basically, if the exception handler cannot handle the given exception & returns None, this will result in an unhandled exception & a 500 Server Error. This is often good, because you won't be silencing errors, that you need to pay attention to.
 
-### DRF's ValidationError
+##### DRF's ValidationError
 
 For example, if we simply raise a rest_framework.exceptions.ValidationError like that:
 
@@ -2369,7 +2369,7 @@ So far, the default DRF behavior can get us:
 
 So if we need to use the default DRF behavior, we need to take care of this inconsistency.
 
-### Django's ValidationError
+##### Django's ValidationError
 
 Now, DRF's default exception handling is not playing nice with Django's ValidationError.
 
@@ -2425,7 +2425,7 @@ Since we need to map between django.core.exceptions.ValidationError and rest_fra
 
 With that, we can now have Django's ValidationError playing nice with DRF's exception handler.
 
-## Describe how your API errors are going to look like.
+#### Describe how your API errors are going to look like.
 
 This is very important and should be done as early as possible in any given project.
 
@@ -2455,14 +2455,14 @@ That's simple enough:
 
 Again, this is up to you & it's specific to the project.\
 
-## Know how to change the default exception handling behavior.
+#### Know how to change the default exception handling behavior.
 This is also important, because when you decide how your errors are going to look like, you need to implement this as custom exception handling.
 
 We've already provided an example for that in the paragraph above, talking about Django's ValidationError.
 
 We'll also provide additional examples in the sections below.
 
-## Approach 1 - Use DRF's default exceptions, with very little modifications.
+#### Approach 1 - Use DRF's default exceptions, with very little modifications.
 
 DRF's error handling is good. It'd be great, if the end result was always consistent. Those are the little modifications that we are going to do.
 
@@ -2641,7 +2641,7 @@ Response:
   "detail": "Request was throttled."
 }
 ```
-## Approach 2 - HackSoft's proposed way
+#### Approach 2 - HackSoft's proposed way
 We are going to propose an approach, that can be easily extended into something that works well for you.
 
 Here are the key ideas:
@@ -2770,13 +2770,13 @@ As you can see, we can mold exception handling to our needs.
 You can start handling more stuff - for example - translating django.core.exceptions.ObjectDoesNotExist to rest_framework.exceptions.NotFound.
 
 You can even handle all exceptions, but then, you should be sure those exceptions are being logged properly, otherwise you might silence something that's important.
-***Backend\Django\Good practices\023_Testing.md***
+# Backend\Django\Good practices\023_Testing.md
 
-# Testing
+### Testing
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#testing-2
 
-## Organization
+#### Organization
 
 In our Django projects, we split our tests depending on the type of code they represent.
 
@@ -2802,7 +2802,7 @@ project_name
 └── __init__.py
 ```
 
-## Naming conventions
+#### Naming conventions
 We follow 2 general naming conventions:
 
 * The test file names should be ```test_the_name_of_the_thing_that_is_tested.py```
@@ -2830,9 +2830,9 @@ If we are to split the utils.py module into submodules, the same will happen for
 * project_name/common/utils/files.py
 * project_name/common/tests/utils/test_files.py
 We try to match the structure of our modules with the structure of their respective tests.
-***Backend\Django\Good practices\024_Celery.md***
+# Backend\Django\Good practices\024_Celery.md
 
-# Celery
+### Celery
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#celery
 
@@ -2842,7 +2842,7 @@ We use Celery for the following general cases:
 * Offloading heavier computational tasks outside the HTTP cycle.
 * Periodic tasks (using Celery beat)
 
-## Basics
+#### Basics
 We try to treat Celery as if it's just another interface to our core logic - meaning - don't put business logic there.
 
 ```python
@@ -2908,7 +2908,7 @@ It may look like that:
 ```python
 from django.db import transaction
 
-# ... more imports here ...
+### ... more imports here ...
 
 from styleguide_example.emails.tasks import email_send as email_send_task
 
@@ -2935,7 +2935,7 @@ So, in general, the way we use Celery can be described as:
 * When we want to trigger a task, we import the task, at module level, giving the _task suffix.
 * We execute tasks, as a side effect, whenever our transaction commits.
 
-## Error handling
+#### Error handling
 
 Sometimes, our service can fail and we might want to handle the error on the task level. For example - we might want to retry the task.
 
@@ -2978,7 +2978,7 @@ As you can see, we do a bunch of retries and if all of them fail, we handle this
 
 The callback follows the naming pattern of _{task_name}_failure and it calls the service layer, just like an ordinary task.
 
-## Structure
+#### Structure
 Tasks are located in tasks.py modules in different apps.
 
 We follow the same rules as with everything else (APIs, services, selectors): if the tasks for a given app grow too big, split them by domain.
@@ -2987,7 +2987,7 @@ Meaning, you can end up with tasks/domain_a.py and tasks/domain_b.py. All you ne
 
 The general rule of thumb is - split your tasks in a way that'll make sense to you.
 
-## Periodic tasks
+#### Periodic tasks
 Managing periodic tasks is quite important, especially when you have tens or hundreds of them.
 
 We use Celery Beat + django_celery_beat.schedulers:DatabaseScheduler + django-celery-beat for our periodic tasks.
@@ -3057,9 +3057,9 @@ Few key things:
 * We always put a link to crontab.guru to explain the cron. Otherwise it's unreadable.
 * Everything is in one place.
 * ⚠️ We use, almost exclusively, a cron schedule. If you plan on using the other schedule objects, provided by Celery, please read thru their documentation & the important notes - https://django-celery-beat.readthedocs.io/en/latest/#example-creating-interval-based-periodic-task - about pointing to the same schedule object. ⚠️
-***Backend\Django\Good practices\025_Model_update_cookbook.md***
+# Backend\Django\Good practices\025_Model_update_cookbook.md
 
-# Model update cookbook
+### Model update cookbook
 
 Source: https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#cookbook
 
@@ -3091,9 +3091,9 @@ The full implementations of these services can be found in our example project:
 If you are going to include model_update in your project, make sure to read the [tests](https://github.com/HackSoftware/Django-Styleguide-Example/blob/master/styleguide_example/common/tests/services/test_model_update.py) & include them too!
 
 
-***Backend\Django\Logging\001_Loggers.md***
+# Backend\Django\Logging\001_Loggers.md
 
-# Loggers
+### Loggers
 
 Source: https://www.freecodecamp.org/news/logging-in-python-debug-your-django-projects/
 
@@ -3107,9 +3107,9 @@ When a message is received by the logger, the log level is compared to the log l
 * ERROR: Major problems related information
 * CRITICAL: Critical problems related information
 
-***Backend\Django\Logging\002_Handlers.md***
+# Backend\Django\Logging\002_Handlers.md
 
-# Handlers
+### Handlers
 
 Source: https://www.freecodecamp.org/news/logging-in-python-debug-your-django-projects/
 
@@ -3118,34 +3118,34 @@ Handlers basically determine what happens to each message in a logger. It has lo
 For example: ERROR log level messages can be sent in real-time to the developer, while INFO log levels can just be stored in a system file.
 
 It essentially tells the system what to do with the message like writing it on the screen, a file, or to a network socket
-***Backend\Django\Logging\003_Filters.md***
+# Backend\Django\Logging\003_Filters.md
 
-# Filters
+### Filters
 
 Source: https://www.freecodecamp.org/news/logging-in-python-debug-your-django-projects/
 
 A filter can sit between a Logger and a Handler. It can be used to filter the log record.
 
 For example: in CRITICAL messages, you can set a filter which only allows a particular source to be processed.
-***Backend\Django\Logging\004_Formatters.md***
+# Backend\Django\Logging\004_Formatters.md
 
-# Formatters
+### Formatters
 
 Source: https://www.freecodecamp.org/news/logging-in-python-debug-your-django-projects/
 
 As the name suggests, formatters describe the format of the text which will be rendered.
 
 
-***Backend\Django\Logging\005_Setup.md***
+# Backend\Django\Logging\005_Setup.md
 
-# Logging setup
+### Logging setup
 
 Source: https://www.freecodecamp.org/news/logging-in-python-debug-your-django-projects/
 
-## settings.py
+#### settings.py
 
 ```python
-# settings.py
+### settings.py
 
 LOGGING = {
     'version': 1,
@@ -3174,15 +3174,15 @@ LOGGING = {
 
 When `propagate` is set as True, a child will propagate all their logging calls to the parent. This means that we can define a handler at the root (parent) of the logger tree and all logging calls in the subtree (child) go to the handler defined in the parent.
 
-## Using logger
+#### Using logger
 
 ```python
 
 from django.http import HttpResponse
 import datetime
-# import the logging library
+### import the logging library
 import logging
-# Get an instance of a logger
+### Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 def hello_reader(request):
@@ -3191,15 +3191,15 @@ def hello_reader(request):
 
 ```
 
-***Backend\Django\ORM\001_F.md***
+# Backend\Django\ORM\001_F.md
 
-# F()
+### F()
 
 Source: https://pogromcykodu.pl/django-orm-w-akcji-wyrazenie-f/
 
 F() enables to access database field of given model and perform additional operations on numbers.
 
-## Where to use it?
+#### Where to use it?
 
 * update(), 
 * create(), 
@@ -3219,7 +3219,7 @@ Employee.objects.update(salary=F("salary") * increase_value)
 Employee.objects.annotate(earnings=F("salary") + F("bonus")) 
 ```
 
-## Example - increasing every Employee salary by 100 PLN
+#### Example - increasing every Employee salary by 100 PLN
 ```python
 from django.db import models
 
@@ -3254,13 +3254,13 @@ Employee.objects.update(salary = F("salary") + 100)
 ```
 
 This will make single query do database to update all Employees.
-***Backend\Django\ORM\002_Concat.md***
+# Backend\Django\ORM\002_Concat.md
 
-# Concat()
+### Concat()
 
 Source: https://pogromcykodu.pl/django-orm-w-akcji-wyrazenie-f/
 
-## Joining same Field types
+#### Joining same Field types
 
 ```python
 from django.db.models import F, Value
@@ -3275,13 +3275,13 @@ print(employees[0].position_extra) # Senior Developer
 
 > String values have to be "packed" with Value() to properly perform database operations.
 
-## Joining CharField and TextField with Concat()
+#### Joining CharField and TextField with Concat()
 
 To join CharField and TextField it's needed to provide **output_field**, to specify which type of field we need to return.
 
 ```python
-# first_name -> CharField, 
-# last_name -> TextField
+### first_name -> CharField, 
+### last_name -> TextField
 
 employees = Employee.objects.annotate(full_name=Concat(F('first_name'), Value(' '), F('last_name'), output_field=CharField())).all()
 print(employees[0].first_name) # Jan
@@ -3289,13 +3289,13 @@ print(employees[0].last_name) # Kowalski
 print(employees[0].full_name) # Jan Kowalski 
 ```
 
-***Backend\Django\ORM\003_Custom_Managers.md***
+# Backend\Django\ORM\003_Custom_Managers.md
 
-# Custom Managers
+### Custom Managers
 
 Source: https://pogromcykodu.pl/masz-dosc-powtarzajacych-sie-warunkow-zapytan-django-manager-rozwiaze-twoj-problem/
 
-## CustomManager
+#### CustomManager
 
 ```python
 from django.db import models
@@ -3322,19 +3322,19 @@ From now on, calling `Article.objects.get_published()` will return only publishe
 Article.objects.get_published().exclude(title__startswith='H') 
 ```
 
-## Custom Manager with custom QuerySet
+#### Custom Manager with custom QuerySet
 
 ```python
 from django.db import models
 
-# Filtering objects directly on QuerySet
+### Filtering objects directly on QuerySet
 class ArticleQuerySet(models.QuerySet):
     def get_published(self):
         return self.filter(published=True)
     def get_archived(self):
         return self.filter(archived=True)
 
-# Using custom Queryset in Custom manager.
+### Using custom Queryset in Custom manager.
 class ArticleManager(models.Manager):
     def get_queryset(self):
         return ArticleQuerySet(self.model, using=self._db)
@@ -3353,9 +3353,9 @@ class Article(models.Model):
 
 Such composition enables to chain custom commands on QuerySets returned by Manager, like `Article.objects.get_published().get_archived()`
 
-***Backend\Django\ORM\004_Abstract_models.md***
+# Backend\Django\ORM\004_Abstract_models.md
 
-# Abstract models
+### Abstract models
 
 Source: https://medium.com/django-unleashed/advanced-django-models-tips-and-tricks-django-86ef2448aff0
 
@@ -3380,9 +3380,9 @@ class TeacherProfile(BaseProfile):
     office = models.CharField(max_length=100)
 ```
 Here, BaseProfile serves as a template. StudentProfile and TeacherProfile will both have bio and avatar fields, but they are stored in separate database tables with their specific fields.
-***Backend\Django\ORM\005_Proxy_models.md***
+# Backend\Django\ORM\005_Proxy_models.md
 
-# Proxy models
+### Proxy models
 
 Source: https://medium.com/django-unleashed/advanced-django-models-tips-and-tricks-django-86ef2448aff0
 
@@ -3395,15 +3395,15 @@ class OrderedProfile(Profile):
         proxy = True
         ordering = ['name']
 
-# Usage:
+### Usage:
 ordered_profiles = OrderedProfile.objects.all()
 
 ```
 
 This proxy model will show all profiles ordered by name.
-***Backend\Django\ORM\006_Multitable_inheritance.md***
+# Backend\Django\ORM\006_Multitable_inheritance.md
 
-# Multitable inheritance
+### Multitable inheritance
 
 Source: https://medium.com/django-unleashed/advanced-django-models-tips-and-tricks-django-86ef2448aff0
 
@@ -3421,13 +3421,13 @@ class Restaurant(Place):
 
 
 Here, Restaurant is a type of Place and has its own table with a link to Place.
-***Backend\Django\ORM\007_Indexes.md***
+# Backend\Django\ORM\007_Indexes.md
 
-# Indexes
+### Indexes
 
 Source: https://medium.com/@sandesh.thakar18/types-of-database-indexing-in-django-5d31581fec67
 
-## Unique Index
+#### Unique Index
 A unique index ensures that no two rows in a table have the same values for the indexed columns. In Django, this can be achieved by adding the unique=True attribute to a field in the model. For example:
 
 ```python
@@ -3435,17 +3435,17 @@ class MyModel(models.Model):
   email = models.EmailField(unique=True)
 ```
 
-## Primary Key Index
+#### Primary Key Index
 Every Django model has a primary key field, which is automatically created and added to the model by default. This field is used to uniquely identify each row in the table and is indexed for fast lookups. The primary key index is created automatically and cannot be removed.
 
-## Regular Index
+#### Regular Index
 A regular index is used to improve the performance of queries that use the indexed columns. In Django, this can be achieved by adding the db_index=True attribute to a field in the model. For example:
 ```python
 class MyModel(models.Model):
     name = models.CharField(max_length=100, db_index=True)
 ```
 
-## Multi-column index
+#### Multi-column index
 A multi-column index is used when you want to index multiple fields in your model. This is useful when you often query your data based on multiple fields at the same time. In Django, this can be achieved by creating an index on multiple fields using the Index class. For example:
 ```python
 from django.db import models
@@ -3459,7 +3459,7 @@ class MyModel(models.Model):
             models.Index(fields=['first_name', 'last_name'])
         ]
 ```
-## Partial Index
+#### Partial Index
 A partial index is a type of index that is created on a subset of a table’s rows, rather than the entire table. This can be useful when you want to improve the performance of queries that filter on specific values in a column.
 
 In Django, partial indexes can be created using the Index class and the condition parameter. The condition parameter is used to specify a condition that must be met in order for a row to be included in the index.
@@ -3485,15 +3485,15 @@ It’s worth noting that creating partial indexes can be beneficial when you hav
 It’s worth noting that indexes are not always necessary and can sometimes slow down write operations. It’s important to consider the balance between read and write performance when deciding which fields to index. Additionally, it’s important to keep in mind that each index consumes disk space and memory and can slow down your database.
 
 In conclusion, indexes are an important tool for optimizing the performance of Django’s database operations. The different types of indexes allow you to index fields in different ways, depending on the use case. It’s important to use them judiciously and consider the trade-offs of each type of index in order to achieve the best performance for your application.
-***Backend\Django\ORM\008_Atomic_transactions.md***
+# Backend\Django\ORM\008_Atomic_transactions.md
 
-# Atomic transactions
+### Atomic transactions
 
 Sources: 
 * https://www.reddit.com/r/django/comments/ypw0mg/can_somebody_explain_when_to_use_transaction/
 * https://plainenglish.io/blog/understanding-djangos-transaction-atomic
 
-## transaction.atomic
+#### transaction.atomic
 
 Before diving into transaction atomic, let’s understand the concept of transactions. In a database context, a transaction represents a logical unit of work that either succeeds as a whole or fails completely, ensuring data consistency. A transaction typically consists of multiple database operations, such as inserts, updates, and deletions.
 
@@ -3518,7 +3518,7 @@ With this, you are guaranteed to have either both, or no records saved.
 
 During the execution of a transaction, two critical concepts come into play: commit and rollback. A commit operation signifies that the transaction is successful, and all changes made within the transaction are permanently saved to the database. On the other hand, a rollback operation discards any changes made within the transaction and reverts the database to its state before the transaction begins.
 
-## select_for_update
+#### select_for_update
 
 Django’s transaction atomic already provides a basic level of concurrency control by using the transaction.atomic block. However, it doesn't handle concurrent updates outside of the transaction scope.
 
@@ -3553,14 +3553,14 @@ def transfer(self, request):
 
 The select_for_update() method is called on the querysets for user_one_obj and user_two_obj. This method locks the selected rows in the database, preventing other transactions from modifying them until the current transaction is completed.
 
-## Bulk inserting
+#### Bulk inserting
 
 Here’s an example of how to perform a bulk insert using Django’s transaction atomic feature with the Product model:
 
 ```python
 from django.db import transaction
 
-# Assume you have a list of products to insert
+### Assume you have a list of products to insert
 products_data = [
     {'name': 'Product 1', 'sku': 'SKU1', 'price': 10.99},
     {'name': 'Product 2', 'sku': 'SKU2', 'price': 19.99},
@@ -3594,13 +3594,13 @@ Here, we decorate the function with the transaction.atomic decorator to ensure t
 After iterating over all the data, we use the bulk_create method of the Product.objects manager to insert all the Product objects in a single query, improving performance compared to individual save() calls.
 
 If any exception occurs during the bulk creation process, we catch it and handle it accordingly. By raising an exception, the transaction will be rolled back, and no changes will persist in the database. If no exceptions occur, the transaction will be committed automatically, and all the products will be inserted into the database.
-***Backend\Django\ORM\009_Proxy_models.md***
+# Backend\Django\ORM\009_Proxy_models.md
 
-# Proxy models
+### Proxy models
 
 Source: https://medium.com/django-unleashed/proxy-models-in-django-a-powerful-tool-for-efficient-entity-management-cf9f4fe18bbc
 
-## Usage example
+#### Usage example
 
 ```python
 from django.db import models
@@ -3648,9 +3648,9 @@ customer = Customer(
 )
 customer.save() # Overridden save function will add customer related attributes to object
 ```
-***Backend\Django\ORM\010_Contraints.md***
+# Backend\Django\ORM\010_Contraints.md
 
-# Constraints
+### Constraints
 
 Sources:
 * https://adamj.eu/tech/2020/03/10/django-check-constraints-sum-percentage-fields/
@@ -3658,7 +3658,7 @@ Sources:
 * https://adamj.eu/tech/2020/03/25/django-check-constraints-one-field-set/
 * https://adamj.eu/tech/2021/02/26/django-check-constraints-prevent-self-following/
 
-## Fields calculation constraint
+#### Fields calculation constraint
 
 ```python
 from django.db import models
@@ -3684,7 +3684,7 @@ class Book(models.Model):
             )
         ]
 ```
-## Choice field constraint
+#### Choice field constraint
 
 Django’s model validation is designed mostly for forms. It trusts that other code paths in your application “know what they’re doing.”
 
@@ -3740,7 +3740,7 @@ class Book(models.Model):
         ]
 ```
 
-## One of fields filled constraint
+#### One of fields filled constraint
 
 To make sure that only one field has a value, when other one is Null use constraint as below.
 
@@ -3795,9 +3795,9 @@ class PointsScore(Score):
         proxy = True
 ```
 
-## Many-to-many field constraint
+#### Many-to-many field constraint
 
-### Follow mechanism
+##### Follow mechanism
 
 Imagine we have a user model that we’d like to introduce a social media “following” pattern to. Users can follow other users to receive updates on our site. We’d like to ensure that users do not follow themselves, since that would need special care in all our code.
 
@@ -3840,7 +3840,7 @@ Note:
 
 * We use string interpolation in our constraint’s name to namespace it to our model. This prevents naming collisions with constraints on other models. Databases have only one namespace for constraints across all tables, so we need to be careful.
 
-### Preventing self follow
+##### Preventing self follow
 
 ```python
 class Follow(models.Model):
@@ -3855,9 +3855,9 @@ class Follow(models.Model):
             ),
         ]
 ```
-***Backend\Django\ORM\011_Custom_migrations.md***
+# Backend\Django\ORM\011_Custom_migrations.md
 
-# Custom migrations
+### Custom migrations
 
 Source: https://adamj.eu/tech/2021/02/26/django-check-constraints-prevent-self-following/
 
@@ -3898,18 +3898,18 @@ class Migration(migrations.Migration):
 * We also use the current database alias. It’s best to this even if our project only uses a single database, in case it gains multiple in the future.
 * We declare `reverse_code` as a no-op, so that this migration is reversible. Reversing the migration won’t be able to restore deleted self-follow relationships because we aren’t backing them up anywhere.
 * We declare the operation as elidable. This means Django can drop the operation when squashing the migration history. This is always worth considering when writing a `RunPython` or `RunSQL` operation, as it helps you make smaller, faster squashes.
-***Backend\Django\ORM\012_Full_clean.md***
+# Backend\Django\ORM\012_Full_clean.md
 
-# Full clean
+### Full clean
 
 Source: https://jamescooke.info/djangos-model-save-vs-full_clean.html
 
 * Creating an instance of a Model and calling `save` on that instance does not call `full_clean`. Therefore it’s possible for invalid data to enter your database if you don’t manually call the `full_clean` function before saving.
 
 * Object managers’ default `create` function also doesn’t call `full_clean`.
-***Backend\Django\ORM\013_Dumping_and_loading_data.md***
+# Backend\Django\ORM\013_Dumping_and_loading_data.md
 
-# Dumping and loading data
+### Dumping and loading data
 
 Source: https://testdriven.io/courses/django-rest-framework/multiple-lists/#H-1-populating-the-new-database
 
@@ -3925,9 +3925,9 @@ Loading data from file:
 // python manage.py loaddata file_path
 python manage.py loaddata initial_shopping_lists_with_items.json
 ```
-***Backend\Django\Performance\001_Benchark_and_profiling.md***
+# Backend\Django\Performance\001_Benchark_and_profiling.md
 
-# Benchmarking and Profiling
+### Benchmarking and Profiling
 
 Source: https://testdriven.io/blog/django-performance-optimization-tips/
 
@@ -3935,16 +3935,16 @@ Source: https://testdriven.io/blog/django-performance-optimization-tips/
 * Silk - https://github.com/jazzband/django-silk
 * line_profiler - https://github.com/pyutils/line_profiler
 * Locust - https://locust.io/
-***Backend\Django\Performance\002_QuerySets.md***
+# Backend\Django\Performance\002_QuerySets.md
 
-# Querysets
+### Querysets
 Sources:
 1. https://docs.djangoproject.com/en/5.0/ref/models/querysets/#when-querysets-are-evaluated
 2. https://docs.djangoproject.com/en/5.0/topics/db/queries/#caching-and-querysets
 3. https://www.hacksoft.io/blog/django-orm-under-the-hood-iterables
 
-## When QuerySets are evaluated
-### Iteration
+#### When QuerySets are evaluated
+##### Iteration
  A QuerySet is iterable, and it executes its database query the first time you iterate over it.
 ```python
 for e in Entry.objects.all():
@@ -3952,34 +3952,34 @@ for e in Entry.objects.all():
 ```
 Note: Don’t use this if all you want to do is determine if at least one result exists. It’s more efficient to use exists().
 
-### Slicing with step paramether
+##### Slicing with step paramether
 Generally, slicing a QuerySet returns a new QuerySet – it doesn’t evaluate the query. An exception is if you use the “step” parameter of Python slice syntax. For example, this would actually execute the query in order to return a list of every second object of the first 10:
 ```python
 Entry.objects.all()[:10:2]
 ```
 
-### Pickling/Caching
+##### Pickling/Caching
 
 If you pickle a QuerySet, this will force all the results to be loaded into memory prior to pickling. Pickling is usually used as a precursor to caching and when the cached queryset is reloaded, you want the results to already be present and ready for use (reading from the database can take some time, defeating the purpose of caching). This means that when you unpickle a QuerySet, it contains the results at the moment it was pickled, rather than the results that are currently in the database.
 
-### repr()
+##### repr()
 
 A QuerySet is evaluated when you call repr() on it. This is for convenience in the Python interactive interpreter, so you can immediately see your results when using the API interactively.
 
-### len()
+##### len()
 
 A QuerySet is evaluated when you call len() on it. This, as you might expect, returns the length of the result list.
 
 Note: If you only need to determine the number of records in the set (and don’t need the actual objects), it’s much more efficient to handle a count at the database level using SQL’s SELECT COUNT(*). Django provides a count() method for precisely this reason.
 
-### list()
+##### list()
 
 Force evaluation of a QuerySet by calling list() on it. For example:
 ```python
 entry_list = list(Entry.objects.all())
 ```
 
-### bool()
+##### bool()
 
 Testing a QuerySet in a boolean context, such as using bool(), or, and or an if statement, will cause the query to be executed. If there is at least one result, the QuerySet is True, otherwise False. For example:
 ```python
@@ -3988,8 +3988,8 @@ if Entry.objects.filter(headline="Test"):
 ```
 Note: If you only want to determine if at least one result exists (and don’t need the actual objects), it’s more efficient to use exists().
 
-## Caching
-### When QuerySets are cached
+#### Caching
+##### When QuerySets are cached
 In a newly created QuerySet, the cache is empty. The first time a QuerySet is evaluated – and, hence, a database query happens – Django saves the query results in the QuerySet’s cache and returns the results that have been explicitly requested (e.g., the next element, if the QuerySet is being iterated over). Subsequent evaluations of the QuerySet reuse the cached results.
 
 The following will create two QuerySets, evaluate them, and throw them away:
@@ -4008,7 +4008,7 @@ print([p.headline for p in queryset])  # Evaluate the query set.
 print([p.pub_date for p in queryset])  # Reuse the cache from the evaluation.
 ```
 
-### When QuerySets are not cached
+##### When QuerySets are not cached
 
 Repeatedly getting a certain index in a queryset object will query the database each time:
 
@@ -4034,7 +4034,7 @@ entry in queryset
 list(queryset)
 ```
 
-## QuerySet as a generator vs QuerySet as an iterable
+#### QuerySet as a generator vs QuerySet as an iterable
 
 * The QuerySet is immutable - chaining methods to our queryset doesn't modify the original queryset - it creates a new one.
 * The QuerySet is a generator when you iterate over it for the first time - when you start iterating over the queryset, internally it executes a SELECT query and yields the DB rows shaped into the desired Python data structure.
@@ -4054,7 +4054,7 @@ for user in hacksoft_users:  # Just yields the cached result
 
 Based on the unique querysets first iterations, the code above makes 1 SELECT query.
 
-## Cache implementation
+#### Cache implementation
 ```python
 class QuerySet:
     ...
@@ -4068,7 +4068,7 @@ class QuerySet:
         return iter(self._result_cache)
 ```
 
-## Iterable classes
+#### Iterable classes
 Let's focus on the QuerySet._iterable_class and see what it does with the SELECT query's data.
 
 The _iterable_class has two functions:
@@ -4099,7 +4099,7 @@ class ValuesIterable(BaseIterable):
             yield {names[i]: row[i] for i in indexes}
 ```
 
-## Methods chaining and order of execution
+#### Methods chaining and order of execution
 The order of the method chaining is not always the same as the order of execution.
 We could categorize the QuerySet methods into 2 categories:
 
@@ -4111,13 +4111,13 @@ The ORM allows us to chain the same methods in almost any order. But, no matter 
 1. Execute the methods that are modifying the SQL query
 2. Run the query in the database
 3. Execute the methods that define the data structure
-***Backend\Django\Performance\003_Caching.md***
+# Backend\Django\Performance\003_Caching.md
 
-# Caching in Django
+### Caching in Django
 
 Source: https://testdriven.io/blog/django-caching
 
-## Caching types
+#### Caching types
 
 **Memcached**: Memcached is a memory-based, key-value store for small chunks of data. It supports distributed caching across multiple servers.
 
@@ -4129,11 +4129,11 @@ Source: https://testdriven.io/blog/django-caching
 
 **Dummy**: A "dummy" cache that doesn't actually cache anything but still implements the cache interface. It's meant to be used in development or testing when you don't want caching, but do not wish to change your code.
 
-## Caching levels
-### Per-site cache
+#### Caching levels
+##### Per-site cache
 This is the easiest way to implement caching in Django. To do this, all you'll have to do is add two middleware classes to your settings.py file:
 ```python
-# settings.py
+### settings.py
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware',     # NEW
@@ -4147,7 +4147,7 @@ CACHE_MIDDLEWARE_SECONDS = '600'    # number of seconds to cache a page for (TTL
 CACHE_MIDDLEWARE_KEY_PREFIX = ''    # should be used if the cache is shared across multiple sites that use the same Django instance
 ```
 Although caching the entire site could be a good option if your site has little or no dynamic content, it may not be appropriate to use for large sites with a memory-based cache backend since RAM is, well, expensive.
-### Per-view cache
+##### Per-view cache
 **It's the caching level that you should almost always start with when looking to implement caching in your Django app.**
 
 You can implement this type of cache with the cache_page decorator either on the view function directly or in the path within URLConf:
@@ -4159,7 +4159,7 @@ from django.views.decorators.cache import cache_page
 def your_view(request):
     ...
 
-# or
+### or
 
 from django.views.decorators.cache import cache_page
 
@@ -4179,7 +4179,7 @@ urlpatterns = [
     path('object/cache/<int:object_id>/', cache_page(60 * 15)(your_view)),
 ]
 ```
-### Template fragment cache
+##### Template fragment cache
 
 If your templates contain parts that change often based on the data you'll probably want to leave them out of the cache.
 
@@ -4199,7 +4199,7 @@ To cache a list of objects:
 ```
 Here, ```{% load cache %}``` gives us access to the cache template tag, which expects a cache timeout in seconds (500) along with the name of the cache fragment (object_list).
 
-### Low-level cache API
+##### Low-level cache API
 
 For cases where the previous options don't provide enough granularity, you can use the low-level API to manage individual objects in the cache by cache key.
 
@@ -4239,7 +4239,7 @@ def object_post_save_handler(sender, **kwargs):
     cache.delete('objects')
 ```
 
-## Redis
+#### Redis
 
 [Download](https://redis.io/download/) and install Redis.
 
@@ -4261,13 +4261,13 @@ CACHES = {
     }
 }
 ```
-***Backend\Django\Performance\004_Low_level_cache.md***
+# Backend\Django\Performance\004_Low_level_cache.md
 
-# Low level caching
+### Low level caching
 
 Source: https://testdriven.io/blog/django-low-level-cache
 
-## Setup Redis
+#### Setup Redis
 
 [Download](https://redis.io/download/) and install Redis.
 
@@ -4290,7 +4290,7 @@ CACHES = {
 }
 ```
 
-## Reading and setting cache
+#### Reading and setting cache
 
 You may want to use the low-level cache API if you need to cache different:
 
@@ -4345,12 +4345,12 @@ Here, we first checked to see if there's a cache object with the name product_ob
 * If so, we just returned it to the template without doing a database query.
 * If it's not found in our cache, we queried the database and added the result to the cache with the key product_objects.
 
-## Invalidating the Cache
-### TTL
+#### Invalidating the Cache
+##### TTL
 Cache may be invalidated after period of time by using ```TTL``` param in settings like:
 
 ```python
-# Cache time to live is 5 minutes
+### Cache time to live is 5 minutes
 CACHE_TTL = 60 * 5
 ```
 
@@ -4382,7 +4382,7 @@ class ApiCalls(TemplateView):
         context['current_time'] = datetime.datetime.now()
         return context
 ```
-### Signals
+##### Signals
 Cache may be also invalidated after changes in database by Django Signals.
 
 Firstly, update ```module/apps.py``` file.
@@ -4426,7 +4426,7 @@ Here, we used the receiver decorator from django.dispatch to decorate two functi
 
 So, when either a save or delete occurs against the Product model, the delete method on the cache object is called to remove the contents of the product_objects cache.
 
-### Django Lifecycle
+##### Django Lifecycle
 
 Rather than using database signals, you could use a third-party package called [Django Lifecycle](https://rsinger86.github.io/django-lifecycle/), which helps make invalidation of cache easier and more readable.
 
@@ -4489,22 +4489,22 @@ As with django signals the hooks won't trigger if we do update via a QuerySet:
 Product.objects.filter(id=1).update(title="A new title")
 ```
 In this case, we still need to create a custom Manager and QuerySet.
-***Backend\Django\Performance\005_Request_response_cycle.md***
+# Backend\Django\Performance\005_Request_response_cycle.md
 
-# Request/response cycle
+### Request/response cycle
 
 Source: https://medium.com/@ksarthak4ever/django-request-response-cycle-2626e9e8606e
 
 ![005_request_path.png](_images/005_request_path.png)
 
-## WSGI
+#### WSGI
 As we know a Web server is a program that uses HTTP (Hypertext Transfer Protocol) to serve the files that form Web pages to users, in response to their requests, which are forwarded by their computers’ HTTPclients.
 
 WSGI is a tool created to solve a basic problem: connecting a web server to a web framework. WSGI has two sides: the ‘server’ side and the ‘application’ side. To handle a WSGI response, the server executes the application and provides a callback function to the application side. The application processes the request and returns the response to the server using the provided callback. Essentially, the WSGI handler acts as the gatekeeper between your web server (Apache, NGINX, etc) and your Django project.
 
 Between the server and the application lie the middlewares. You can think of middlewares as a series of bidirectional filters: they can alter (or short-circuit) the data flowing back and forth between the network and your Django application.
 
-## Single request flow
+#### Single request flow
 
 When the user makes a request of your application, a WSGI handler is instantiated, which:
 
@@ -4519,7 +4519,7 @@ When the user makes a request of your application, a WSGI handler is instantiate
 9. loops through each of the response methods, (from the inside out, reverse order from request middlewares)
 10. finally builds a return value and calls the callback function to the web server
 
-## Layers of Django Application
+#### Layers of Django Application
 1. Request Middlewares
 2. URL Router(URL Dispatcher)
 3. Views
@@ -4527,16 +4527,16 @@ When the user makes a request of your application, a WSGI handler is instantiate
 5. Template Renderers
 6. Response Middlewares
 
-## Middlewares
+#### Middlewares
 
 There are four key points you can hook into the request/response cycle through your own custom middleware: ```process_request```, ```process_response```, ```process_view```, and ```process_exception```. Think of an onion: request middlewares are executed from the outside-in, hit the view at the center, and return through response middlewares back to the surface.
-***Backend\Django\Permissions\001_User_level_permissions.md***
+# Backend\Django\Permissions\001_User_level_permissions.md
 
-# User-level Permissions
+### User-level Permissions
 
 Source: https://testdriven.io/blog/django-permissions/
 
-## User permissions to model
+#### User permissions to model
 
 When django.contrib.auth is added to the INSTALLED_APPS setting in the settings.py file, Django automatically creates add, change, delete and view permissions for each Django model that's created.
 
@@ -4558,7 +4558,7 @@ By default, Django will create the following permissions:
 * blog.delete_post
 * blog.view_post
 
-## Checking User permission
+#### Checking User permission
 
 You can then check if a user (via a Django user object) has permissions with the has_perm() method:
 ```python
@@ -4571,26 +4571,26 @@ from blog.models import Post
 content_type = ContentType.objects.get_for_model(Post)
 post_permission = Permission.objects.filter(content_type=content_type)
 print([perm.codename for perm in post_permission])
-# => ['add_post', 'change_post', 'delete_post', 'view_post']
+### => ['add_post', 'change_post', 'delete_post', 'view_post']
 
 user = User.objects.create_user(username="test", password="test", email="test@user.com")
 
-# Check if the user has permissions already
+### Check if the user has permissions already
 print(user.has_perm("blog.view_post"))
-# => False
+### => False
 
-# To add permissions
+### To add permissions
 for perm in post_permission:
     user.user_permissions.add(perm)
 
 print(user.has_perm("blog.view_post"))
-# => False
-# Why? This is because Django's permissions do not take
-# effect until you allocate a new instance of the user.
+### => False
+### Why? This is because Django's permissions do not take
+### effect until you allocate a new instance of the user.
 
 user = get_user_model().objects.get(email="test@user.com")
 print(user.has_perm("blog.view_post"))
-# => True
+### => True
 ```
 
 Superusers will always have permission set to True even if the permission does not exist:
@@ -4601,19 +4601,19 @@ superuser = User.objects.create_superuser(
     username="super", password="test", email="super@test.com"
 )
 
-# Output will be true
+### Output will be true
 print(superuser.has_perm("blog.view_post"))
 
-# Output will be true even if the permission does not exists
+### Output will be true even if the permission does not exists
 print(superuser.has_perm("foo.add_bar"))
 ```
-***Backend\Django\Permissions\002_Group_level_permissions.md***
+# Backend\Django\Permissions\002_Group_level_permissions.md
 
-# Group-level permissions
+### Group-level permissions
 
 Source: https://testdriven.io/blog/django-permissions/
 
-## Intro
+#### Intro
 
 Group models are a generic way of categorizing users so you can apply permissions, or some other label, to those users. A user can belong to any number of groups.
 
@@ -4621,7 +4621,7 @@ With Django, you can create groups to class users and assign permissions to each
 
 To create a group, you need the Group model from django.contrib.auth.models.
 
-## Example
+#### Example
 
 Let's create groups for the following roles:
 * Author: Can view and add posts
@@ -4642,7 +4642,7 @@ publisher_group, created = Group.objects.get_or_create(name="Publisher")
 content_type = ContentType.objects.get_for_model(Post)
 post_permission = Permission.objects.filter(content_type=content_type)
 print([perm.codename for perm in post_permission])
-# => ['add_post', 'change_post', 'delete_post', 'view_post']
+### => ['add_post', 'change_post', 'delete_post', 'view_post']
 
 for perm in post_permission:
     if perm.codename == "delete_post":
@@ -4666,9 +4666,9 @@ print(user.has_perm("blog.change_post")) # => False
 print(user.has_perm("blog.view_post")) # => True
 print(user.has_perm("blog.add_post")) # => True
 ```
-***Backend\Django\Permissions\003_Enforcing_permission.md***
+# Backend\Django\Permissions\003_Enforcing_permission.md
 
-# Enforcing Permissions
+### Enforcing Permissions
 
 Source: https://testdriven.io/blog/django-permissions/
 
@@ -4714,9 +4714,9 @@ For example:
   {# Your content here #}
 {% endif %}
 ```
-***Backend\Django\Permissions\004_Model_level_permissions.md***
+# Backend\Django\Permissions\004_Model_level_permissions.md
 
-# Model-level Permissions
+### Model-level Permissions
 
 Source: https://testdriven.io/blog/django-permissions/
 
@@ -4776,11 +4776,11 @@ class PostListView(UserPassesTestMixin, View):
         return render(request, self.template_name)
 ```
 So, with UserPassesTestMixin, you need to override the test_func method of the class and add your own test. Do note that the return value of this method must always be a boolean.
-***Backend\Django\Session\001_Storing_data_in_session.md***
+# Backend\Django\Session\001_Storing_data_in_session.md
 
-# Przechowywanie danych w sesji
+### Przechowywanie danych w sesji
 ```python
-# module/views.py
+### module/views.py
 def index(request):
     # Check if there already exists a "tasks" key in our session
     if "tasks" not in request.session:
@@ -4790,9 +4790,9 @@ def index(request):
         "tasks": request.session["tasks"]
     })
 ```
-***Backend\Django\Signals\001_Django_signals.md***
+# Backend\Django\Signals\001_Django_signals.md
 
-# Django Signals
+### Django Signals
 
 Source: https://testdriven.io/courses/django-rest-framework/validation-ordering-pagination/#H-6-django-signals
 
@@ -4808,7 +4808,7 @@ There're two key elements of the signal: The sender and the receiver.
 The sender (a Python object) dispatches a signal, and the receiver (a function or an instance method) receives the signal and then does something.
 
 ```python
-# shopping_list/receivers.py
+### shopping_list/receivers.py
 
 
 from django.db.models.signals import post_save
@@ -4829,7 +4829,7 @@ So, when a ShoppingItem instance is saved, interaction_with_shopping_list update
 We just need to register the receiver in shopping_list/apps.py:
 
 ```python
-# shopping_list/apps.py
+### shopping_list/apps.py
 
 
 from django.apps.config import AppConfig
@@ -4854,13 +4854,13 @@ default_app_config = "shopping_list.apps.ApiConfig"
 This sets the app's default configuration to the one defined in shopping_list/apps.py.
 
 
-***Backend\Django\Templates\001_Variables.md***
+# Backend\Django\Templates\001_Variables.md
 
-# Variables in templates
+### Variables in templates
 
 Source: https://pogromcykodu.pl/html-na-sterydach/
 
-## Example view
+#### Example view
 ```python
 class StudentsView(View):
     def get(self, request):
@@ -4872,7 +4872,7 @@ class StudentsView(View):
         }
         return render(request, 'students.html', context=context)
 ```
-## Variables
+#### Variables
 Template:
 ```html
 Student 1 : {{ student_1 }}
@@ -4883,7 +4883,7 @@ Display:
 Student 1: {'name': 'John', 'surname': 'Black', 'grade': 5.0}
 Student 2: {'name': 'Mary', 'surname': 'White', 'grade': 3.5}
 ```
-## Dict values
+#### Dict values
 Template:
 ```html
 Student 1:
@@ -4894,7 +4894,7 @@ Output:
 Student 1:
 Imię: John, Nazwisko: Black
 ```
-## Class objects
+#### Class objects
 ```python
 class Student:
     def __init__(self, name, surname, grade):
@@ -4921,7 +4921,7 @@ Student 3:
 Imię: Mike, Nazwisko: Doe
 ```
 
-## Lists
+#### Lists
 
 ```python
 students_list = [student_1, student_2, student_3]
@@ -4942,13 +4942,13 @@ Drugi student z listy: {'name': 'Mary', 'surname': 'White', 'grade': 3.5}
 ```
 
 
-***Backend\Django\Templates\002_Tags.md***
+# Backend\Django\Templates\002_Tags.md
 
-# Tags
+### Tags
 
 Source: https://pogromcykodu.pl/html-na-sterydach/
 
-## List iteration
+#### List iteration
 
 `{% for ... in ... %}`
 
@@ -4961,7 +4961,7 @@ Template:
 </ul> 
 ```
 
-## Reversed list iteration
+#### Reversed list iteration
 
 ```html
 {% for pizza in pizza_menu reversed %}
@@ -4969,7 +4969,7 @@ Template:
 {% endfor %} 
 ```
 
-## Item index during iteration
+#### Item index during iteration
 
 * `{{ forloop.counter0 }}`
 
@@ -5010,7 +5010,7 @@ Returns reverted loop counter ending on 1.
 {% endfor %} 
 ```
 
-## Detecting first/last element during iteration
+#### Detecting first/last element during iteration
 
 * `{{ forloop.first }}`
 ```html
@@ -5033,7 +5033,7 @@ Returns reverted loop counter ending on 1.
 {% endfor %}
 ```
 
-## Detecting empty list
+#### Detecting empty list
 `{% empty %}`
 ```html
 <ul>
@@ -5044,7 +5044,7 @@ Returns reverted loop counter ending on 1.
 {% endfor %} 
 </ul> 
 ```
-## If/else
+#### If/else
 `{% if ... elif ... else %}`
 Template:
 ```html
@@ -5061,24 +5061,24 @@ Template:
 </ul> 
 ```
 
-## Inheritance and templates extending
+#### Inheritance and templates extending
 
 * `{% block ... %} {% endblock %}` – defining block to override in different template
 * `{% extends ... %}` – indicating template to extend
 * `{% include %}` – input other template
 * `{% load %}` – loading additional tags
 
-***Backend\Django\Templates\003_Filters.md***
+# Backend\Django\Templates\003_Filters.md
 
-# Filters
+### Filters
 
 Source: https://pogromcykodu.pl/html-na-sterydach/
 
-## Pattern
+#### Pattern
 
 `{{ variable | filter_name }} `
 
-## Example data
+#### Example data
 ```python
 student_1 = {
     'name': 'John', 
@@ -5090,7 +5090,7 @@ student_1 = {
     'scholarship': ''
 }
 ```
-## String operations
+#### String operations
 * `lower` – lowercasing string. Example: `{{ student_1.name | lower }}`  ➜  john.
 * `upper` – uppercasing string. Example: `{{ student_1.name | upper }}`   ➜  JOHN 
 * `title` – changing first letter of single word to upper case.  Example:  `{{ student_1.bio | title }}`   ➜  Very Smart And Intelligent.
@@ -5099,16 +5099,16 @@ student_1 = {
 * `truncatewords` – cutting string to given words count, adding '...'. Example:  `{{ student_1.bio | truncatewords:2 }}`   ➜  Very smart …
 * `linebreaksbr` – replacing '\n' with <br>.
 
-## Date/hour formatting
+#### Date/hour formatting
 `date` – date in given format. Example: `{{ student_1.birth_date | date:"d/m/Y" }}`   ➜  27/10/2000
 `time` – time in given format. Example: `{{ student_1.birth_date | time:"H:i" }}`   ➜  16:25
-## Empty/default values
+#### Empty/default values
 `default` – replacing empty string or none with default. Example: `{{ student_1.scholarship | default:"Brak" }}`   ➜  Brak 
 `yesno` – custom string for boolean values.. Example: `{{ student_1.has_graduated | yesno:"Tak,Nie" }}`   ➜  Tak
 
-***Backend\Django\Testing\001_Models_testing.md***
+# Backend\Django\Testing\001_Models_testing.md
 
-# Testowanie modeli
+### Testowanie modeli
 ```python
 from django.test import TestCase
 from .models import Flight, Airport, Passenger
@@ -5135,9 +5135,9 @@ class FlightTestCase(TestCase):
 	    a = Airport.objects.get(code="AAA")
 	    self.assertEqual(a.arrivals.count(), 1)
 ```
-***Backend\Django\Testing\002_Endpoints_testing.md***
+# Backend\Django\Testing\002_Endpoints_testing.md
 
-# Testowanie endpointów
+### Testowanie endpointów
 ```python
 ...
 class FlightTestCase(TestCase):
@@ -5158,19 +5158,19 @@ class FlightTestCase(TestCase):
 	    self.assertEqual(response.status_code, 404)
 ```
 
-***Backend\Django\Testing\003_Factories.md***
+# Backend\Django\Testing\003_Factories.md
 
-# Factories
+### Factories
 
 Source: 
 * https://www.hacksoft.io/blog/improve-your-tests-django-fakes-and-factories#fakes
 * https://www.hacksoft.io/blog/improve-your-tests-django-fakes-and-factories-advanced-usage
 * https://youtu.be/-C-XNHAJF-c?si=5viLbeVKRLgn8zXD
 
-## Creating Factories
+#### Creating Factories
 
 ```python
-# models.py
+### models.py
 
 from django.db import models
 from django.utils import timezone
@@ -5193,7 +5193,7 @@ class VehiclePurchase(models.Model):
 ```
 
 ```python
-# factories.py
+### factories.py
 
 import factory
 
@@ -5218,7 +5218,7 @@ class VehiclePurchaseFactory(factory.django.DjangoModelFactory):
     sales_member = factory.SubFactory(UserFactory)
 ```
 
-## DjangoModelFactory
+#### DjangoModelFactory
 
 DjangoModelFactory is a basic interface from factory_boy that gives "ORM powers" to your factories.
 
@@ -5227,7 +5227,7 @@ It's main feature here is that it provides you with a common "create" and "build
 * SomeFactory.create() / SomeFactory() - saves the generated object to the database. The related sub factories are also created in the database.
 * SomeFactory.build() - generates a model instance without saving it to the database. The related sub factories are also not stored in the database.
 
-## Faker
+#### Faker
 
 As you may have noticed, we don't create a Faker instance in the factories file. We import it from another file in the application. This is intentional!
 
@@ -5235,14 +5235,14 @@ We highly recommend "proxying" the Faker instance and using it in your app that 
 
 You'd most likely want to have the same configuration when you use fakes around your app. Same goes if you want to customize the providers and use them in different places.
 ```python
-# my_project/utils/tests/base.py
+### my_project/utils/tests/base.py
 
 from faker import Faker
 
 faker = Faker()
 ```
 
-## LazyAttribute
+#### LazyAttribute
 It's an extremely simple but yet powerful abstraction that represents the symbiosis between the factories and the fakes.
 
 It accepts a method which is invoked when a Factory instance is being generated. The return value of the method is used for the value of the desired attribute.
@@ -5288,7 +5288,7 @@ michaelthompson@example.com
 mkennedy@example.com
 ```
 
-## Factory.build() vs Factory.create()
+#### Factory.build() vs Factory.create()
 Factory.build() will return you a new object that's not yet saved in the database.
 
 This might be helpful in situations, where you need the object, but don't need it to be saved in the database, thus, improving the speed of the test.
@@ -5299,7 +5299,7 @@ Possible use cases where you can apply this:
 * A service that performs some small validation at the beginning of its definition. This service receives some model instances as arguments. When you test the validation, you can build() the passed objects if you don't need them in the database
 * A selector that is grouping some passed data. If this selector does not perform any database queries, build() the passed data instead of creating it
 
-# LazyAttribute for field constraints
+### LazyAttribute for field constraints
 
 ```python
 class SchoolCourse(models.Model):
@@ -5326,7 +5326,7 @@ class SchoolCourseFactory(factory.django.DjangoModelFactory):
 ```
 As you can see, the _self attribute of the lamba function is key here.
 
-## SelfAttribute
+#### SelfAttribute
 
 ```python
 class Student(models.Model):
@@ -5360,7 +5360,7 @@ class RosterFactory(factory.django.DjangoModelFactory):
 ```
 This implementation says: "I want my roster period to be the same as the course period" which should be a valid statement for most of the use cases. It also says -  "I want my roster's course to be in the school of the generated student by default".
 
-## The double-dot notation
+#### The double-dot notation
 The double-dot notation refers to the parent factory (in our case RosterFactory) where current sub factory (in our case SchoolCourseFactory) is being called. This is well described in the docs [here](https://factoryboy.readthedocs.io/en/stable/reference.html?#parents).
 
 If the double-dot notation is not up to your taste, you can achieve the same behavior by using the LazyAttribute, making the code a bit more explicit:
@@ -5380,7 +5380,7 @@ class RosterFactory(factory.django.DjangoModelFactory):
 ```
 > NOTE: Take a look at the factory_parent here. It's actually a reference to the RosterFactory in our case.
 
-## Helper Factories
+#### Helper Factories
 
 For example, if we observe that a lot of tests are dealing with Rosters that need to be in some chronological order, one after the other, we might want to do something like this:
 
@@ -5421,7 +5421,7 @@ AttributeError                            Traceback (most recent call last)
 AttributeError: 'Roster' object has no attribute 'start_after'
 ```
 
-## Parent with children factory
+#### Parent with children factory
 
 If we observe that a lot of tests always require a specific parent object, to come hand-in-hand with created children objects, we might want to make our lives a bit easier.
 
@@ -5475,21 +5475,21 @@ There are several important points here:
 
 The moral of the story is - whenever you see a pattern emerging, create additional helpers, to make your tests clearer.
 
-## Other topics
+#### Other topics
 
 ![](_images/003_Factories.png)
 
-## Traits
+#### Traits
 
 ![](_images/003_Factories_traits.png)
 
-## SubFactory vs RelatedFactory
+#### SubFactory vs RelatedFactory
 
 ![](_images/003_Factories_sub_vs_related.png)
 ![](_images/003_Factories_4.png)
-***Backend\Django\Urls\001_All_url_patterns.md***
+# Backend\Django\Urls\001_All_url_patterns.md
 
-# Listing all url patterns in project
+### Listing all url patterns in project
 
 ```python
 from django.urls import get_resolver
@@ -5498,9 +5498,9 @@ patterns = get_resolver().url_patterns
 ```
 Example output:
 ![img.png](_images/img.png)
-***Backend\Django\Urls\002_Defining_URL_params.md***
+# Backend\Django\Urls\002_Defining_URL_params.md
 
-# Defining URL params
+### Defining URL params
 
 Source: https://pogromcykodu.pl/stworz-wlasny-walidator-url/
 
@@ -5512,19 +5512,19 @@ urlpatterns = {
 
 ```
 
-## URL variables types:
+#### URL variables types:
 * int – integer -> `<int:pk>`
 * str – non-empty string without '/' sign -> `<str:name>`
 * slug – string containint letters, numbers, '-' and '_' -> `<slug:slug>`
 * uuid – string containing groups of letters divided by '=' -> `<uuid:id>`
 * path – non-empty string with '/' sign as path separator -> `<path:file_path>`
-***Backend\Django\Urls\003_PathConverters.md***
+# Backend\Django\Urls\003_PathConverters.md
 
-# PathConverters
+### PathConverters
 
 Source: https://pogromcykodu.pl/stworz-wlasny-walidator-url/
 
-## Default URL converters:
+#### Default URL converters:
 
 ```python
 path('article/<int:pk>', ArticleDetailsView.as_view()),
@@ -5536,7 +5536,7 @@ path('article/<int:pk>', ArticleDetailsView.as_view()),
 * uuid – UUIDConverter 
 * path – PathConverter
 
-## Example Converter
+#### Example Converter
 
 ```python
 class IntConverter:
@@ -5549,12 +5549,12 @@ class IntConverter:
         return str(value)
 ```
 
-## Exceptions
+#### Exceptions
 
 * ValueError - on invalid value in `to_python` method
 * NoReverseMatch - on invalid value in `to_url` method
 
-## Custom Converter
+#### Custom Converter
 
 ```python
 class YearConverter(IntConverter):
@@ -5567,7 +5567,7 @@ class YearConverter(IntConverter):
 ```
 
 ```python
-# urls.py
+### urls.py
 
 register_converter(YearConverter, 'yyyy')
 
@@ -5577,11 +5577,11 @@ urlpatterns = {
     path('articles/<yyyy:year>', ArticlesListView.as_view()) 
 }
 ```
-***Backend\Django\Users\001_Login_and_logout.md***
+# Backend\Django\Users\001_Login_and_logout.md
 
-# Login i logout
+### Login i logout
 ```python
-# project/module/urls.py
+### project/module/urls.py
 ...
 
 urlpatterns = [
@@ -5590,9 +5590,9 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout")
 ]
 ```
-## Login
+#### Login
 ```python
-# project/module/views.py
+### project/module/views.py
 from django.contrib.auth import authenticate, login, logout
 
 def login_view(request):
@@ -5609,44 +5609,44 @@ def login_view(request):
             })
     return render(request, "module/login.html")
 ```
-### 5.2. Logout
+##### 5.2. Logout
 ```python
-# module/views.py
+### module/views.py
 def logout_view(request):
     logout(request)
     return render(request, "module/login.html", {
                 "message": "Logged Out"
             })
 ```
-***Backend\Django\Users\002_Superuser.md***
+# Backend\Django\Users\002_Superuser.md
 
-# Tworzenie superusera
+### Tworzenie superusera
 Warto również założyć konto superusera, aby uzyskać możliwość logowania się w panelu administracyjnym.
 ```commandline
 python manage.py createsuperuser
 ```
-***Backend\Django\Users\003_Custom_user_model.md***
+# Backend\Django\Users\003_Custom_user_model.md
 
-# Custom user model
+### Custom user model
 
 Source: https://testdriven.io/blog/django-custom-user-model
 
-## Start project with custom User!
+#### Start project with custom User!
 Do this on project init to omit problems in the future. In case you want to migrate to custom User model in existing project check [this link](https://testdriven.io/blog/django-custom-user-model-migration/).
 
-## Base classes for custom User
+#### Base classes for custom User
 Options:
 
 **AbstractUser**: Use this option if you are happy with the existing fields on the user model and just want to remove the username field.
 
 **AbstractBaseUser**: Use this option if you want to start from scratch by creating your own, completely new user model. 
 
-## Custom User manager
+#### Custom User manager
 
 Custom manager subclassing BaseUserManager, that uses email as the unique identifier instead of a username.
 
 ```python
-# users/managers.py
+### users/managers.py
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
@@ -5684,15 +5684,15 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 ```
 
-## Custom User model
+#### Custom User model
 
-### AbstractUser - use predefined fields
+##### AbstractUser - use predefined fields
 * Set *username* field to None. 
 * Add *email* field, make it unique and required, and mark it as *USERNAME_FIELD*. 
 * Specify that all objects for the class come from the CustomUserManager
 
 ```python
-# users/models.py
+### users/models.py
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -5713,25 +5713,25 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.email
 ```
-### AbstractBaseUser - add all fields manually
+##### AbstractBaseUser - add all fields manually
 * Add fields *email*, *is_staff*, *is_active*, and *date_joined*.
 * Mark *email* field as *USERNAME_FIELD*. 
 * Specify that all objects for the class come from the CustomUserManager
 
-## Settings
+#### Settings
 Add the following line to the settings.py file so that Django knows to use the new custom user class:
 
 ```python
-# settings.py
+### settings.py
 
 AUTH_USER_MODEL = "users.CustomUser"
 ```
 
 After that, make migrations and migrate changes to database.
 
-## Forms
+#### Forms
 ```python
-# users/forms.py
+### users/forms.py
 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
@@ -5752,9 +5752,9 @@ class CustomUserChangeForm(UserChangeForm):
         fields = ("email",)
 ```
 
-## Admin
+#### Admin
 ```python
-# users/admin.py
+### users/admin.py
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
@@ -5788,12 +5788,12 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(CustomUser, CustomUserAdmin)
 ```
-***Backend\Django\Views\001_Adding_view.md***
+# Backend\Django\Views\001_Adding_view.md
 
-# Dodawanie widoku
+### Dodawanie widoku
 W celu dodania nowego widoku konieczne jest utworzenie jego definicji w views.py oraz określenie w urls.py endpointu pod jakim ten widok będzie dostępny.
 ```python
-# project/module/views.py
+### project/module/views.py
  from django.shortcuts import render
  from django.http import HttpResponse
 
@@ -5801,7 +5801,7 @@ W celu dodania nowego widoku konieczne jest utworzenie jego definicji w views.py
      return HttpResponse("Hello, world!")
 ```
 ```python
-# project/module/urls.py
+### project/module/urls.py
  from django.urls import path
  from . import views
 
@@ -5813,7 +5813,7 @@ W celu dodania nowego widoku konieczne jest utworzenie jego definicji w views.py
 Konieczne jest dodanie zawartości pliku urls.py zawartego w danym module do urls.py projektu.
 
 ```python
-# project/project/urls.py
+### project/project/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
@@ -5822,13 +5822,13 @@ urlpatterns = [
     path('module/', include("module.urls"))
 ]
 ```
-***Backend\Django\Views\002_Function_based_views.md***
+# Backend\Django\Views\002_Function_based_views.md
 
-# Function-based views
+### Function-based views
 
 Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#function-based-views-fbvs
 
-## Pros
+#### Pros
 
 * Explicit code flow (you have full control over what happens)
 * Simple to implement
@@ -5836,14 +5836,14 @@ Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#f
 * Great for unique view logic
 * Easy to integrate with decorators
 
-## Cons
+#### Cons
 
 * A lot of repeated (boilerplate) code
 * Handling of HTTP methods via conditional branching
 * Don't take advantage of OOP
 * Harder to maintain
 
-## Example
+#### Example
 
 ```python
 from django.shortcuts import render, redirect
@@ -5867,16 +5867,16 @@ urlpatterns = [
     path('create/', task_create_view, name='task-create'),
 ]
 ```
-## Usage
+#### Usage
 
 You should opt for FBVs when you're working on highly customized view logic. In other words, FBVs are a great use case for a view that doesn't share much code with other views. A few real-world examples for using FBVs would be: a statistics view, a chart view, and a password reset view.
-***Backend\Django\Views\003_Class_based_views.md***
+# Backend\Django\Views\003_Class_based_views.md
 
-# Class-based views
+### Class-based views
 
 Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#class-based-views-cbvs
 
-## Pros
+#### Pros
 
 * Are extensible
 * They take advantage of OOP concepts (most importantly inheritance)
@@ -5885,14 +5885,14 @@ Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#c
 * Django's built-in generic CBVs
 * They're similar to Django REST framework views
 
-## Cons
+#### Cons
 
 * Implicit code flow (a lot of stuff happens in the background)
 * Use many mixins, which can be confusing
 * More complex and harder to master
 * Decorators require an extra import or code override
 
-## Flow
+#### Flow
 
 1. An HttpRequest is routed to MyView by the Django URL dispatcher.
 2. The Django URL dispatcher calls as_view() on MyView.
@@ -5901,20 +5901,20 @@ Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#c
 5. An HttpResponse is returned.
 
 ![](_images/003_CBV_Flow.png)
-***Backend\Django\Views\004_Generic_class_based_views.md***
+# Backend\Django\Views\004_Generic_class_based_views.md
 
-# Generic Class-based views
+### Generic Class-based views
 
 Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#djangos-generic-class-based-views
 
-## Generic Display Views
+#### Generic Display Views
 
 Designed to display data.
 
 * DetailView
 * ListView
 
-## Generic Editing Views
+#### Generic Editing Views
 
 Provide a foundation for editing content.
 
@@ -5923,7 +5923,7 @@ Provide a foundation for editing content.
 * UpdateView
 * DeleteView
 
-## Generic Date-based Views
+#### Generic Date-based Views
 
 Allow in-depth displaying of date-based data.
 
@@ -5934,15 +5934,15 @@ Allow in-depth displaying of date-based data.
 * DayArchiveView
 * TodayArchiveView
 * DateDetailView
-***Backend\Django REST Framework\Authentication\001_Credentials_based_authentication.md***
+# Backend\Django REST Framework\Authentication\001_Credentials_based_authentication.md
 
-# Credentials-based Authentication
+### Credentials-based Authentication
 
 Source: https://testdriven.io/blog/django-rest-auth
 
-## Settings
+#### Settings
 ```python
-# core/settings.py
+### core/settings.py
 
 INSTALLED_APPS = [
     # ...
@@ -5953,7 +5953,7 @@ INSTALLED_APPS = [
 
 The authtoken app is required since we'll use TokenAuthentication instead of Django's default SessionAuthentication. Token authentication is a simple token-based HTTP authentication scheme that is appropriate for client-server setups.
 ```python
-# settings/core.py
+### settings/core.py
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -5962,10 +5962,10 @@ REST_FRAMEWORK = {
 }
 ```
 
-## django-allauth
+#### django-allauth
 
 ```python
-# core/settings.py
+### core/settings.py
 
 INSTALLED_APPS = [
     "django.contrib.sites",  # make sure 'django.contrib.sites' is installed
@@ -5978,17 +5978,17 @@ INSTALLED_APPS = [
 
 django-allauth depends on Django's "sites" framework so make sure you have it installed. On top of that, make sure that you have the SITE_ID set:
 ```python
-# core/settings.py
+### core/settings.py
 
 SITE_ID = 1  # make sure SITE_ID is set
 ```
-## dj-rest-auth
+#### dj-rest-auth
 ```commandline
 pip install "dj-rest-auth[with_social]==4.0.0"
 ```
 We need to use the with_social specifier since we want to enable the standard registration process. Additionally, we'll utilize this package later when we enable social authentication.
 ```python
-# core/settings.py
+### core/settings.py
 
 INSTALLED_APPS = [
     # ...
@@ -5998,7 +5998,7 @@ INSTALLED_APPS = [
 ```
 Update authentication/urls.py like so:
 ```python
-# authentication/urls.py
+### authentication/urls.py
 
 from dj_rest_auth.registration.views import RegisterView
 from dj_rest_auth.views import LoginView, LogoutView, UserDetailsView
@@ -6012,9 +6012,9 @@ urlpatterns = [
     path("user/", UserDetailsView.as_view(), name="rest_user_details"),
 ]
 ```
-## Testing
+#### Testing
 
-### #Register
+##### #Register
 Then, to create an account run the following in a new terminal window:
 ```commandline
 $ curl -XPOST -H "Content-type: application/json" -d '{
@@ -6025,7 +6025,7 @@ $ curl -XPOST -H "Content-type: application/json" -d '{
 ```
 By default, you'll get an empty response.
 
-### Login
+##### Login
 You can now use the created account to obtain an authentication token:
 ```commandline
 $ curl -XPOST -H "Content-type: application/json" -d '{
@@ -6040,7 +6040,7 @@ The response will be similar to this one:
     "key": "<your_token>"
 }
 ```
-### User Details
+##### User Details
 Now pass the token in the Authorization header to fetch the user details:
 ```commandline
 $ curl -XGET -H 'Authorization: Token <your_token>' \
@@ -6056,7 +6056,7 @@ Response:
     "last_name": ""
 }
 ```
-### Logout
+##### Logout
 As you might have guessed, sending a POST request to the logout endpoint destroys the token:
 ```commandline
 $ curl -XPOST -H 'Authorization: Token <your_token>' \
@@ -6069,19 +6069,19 @@ Response:
 }
 ```
 
-***Backend\Django REST Framework\Authentication\002_Email_verification_and_password_reset.md***
+# Backend\Django REST Framework\Authentication\002_Email_verification_and_password_reset.md
 
-# Email Verification and Password Reset
+### Email Verification and Password Reset
 
 Source: https://testdriven.io/blog/django-rest-auth/#email-verification-and-password-reset
 
-## SMTP Settings
+#### SMTP Settings
 
 You can use your own SMTP server or utilize Brevo (formerly SendInBlue), Mailgun, SendGrid, or a similar service. I suggest you go with Brevo since they're relatively cheap and allow you to send a decent amount of emails daily (for free).
 
 To configure SMTP, add the following to core/settings.py:
 ```python
-# core/settings.py
+### core/settings.py
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "<your email host>"                    # smtp-relay.sendinblue.com
@@ -6092,11 +6092,11 @@ EMAIL_HOST_PASSWORD = "<your email password>"       # your password
 DEFAULT_FROM_EMAIL = "<your default from email>"    # email ending with @sendinblue.com
 ```
 
-## Email verification and password reset
+#### Email verification and password reset
 
 Add the following django-allauth settings to core/settings.py:
 ```python
-# core/settings.py
+### core/settings.py
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
@@ -6111,13 +6111,13 @@ By default, django-allauth takes care of these URLs. It renders a form and submi
 
 To set up the redirects, first define the following two settings in core/settings.py:
 ```python
-# core/settings.py
+### core/settings.py
 
-# <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
+### <EMAIL_CONFIRM_REDIRECT_BASE_URL>/<key>
 EMAIL_CONFIRM_REDIRECT_BASE_URL = \
     "http://localhost:3000/email/confirm/"
 
-# <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>/
+### <PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL>/<uidb64>/<token>/
 PASSWORD_RESET_CONFIRM_REDIRECT_BASE_URL = \
     "http://localhost:3000/password-reset/confirm/"
 ```
@@ -6125,7 +6125,7 @@ Make sure to include the trailing slash / at the end of the URLs.
 
 Next, add the following two views to authentication/views.py:
 ```python
-# authentication/views.py
+### authentication/views.py
 
 from django.conf import settings
 from django.http import HttpResponseRedirect
@@ -6145,7 +6145,7 @@ def password_reset_confirm_redirect(request, uidb64, token):
 ```
 Lastly, register the newly created views in authentication/urls.py:
 ```python
-# authentication/urls.py
+### authentication/urls.py
 
 from dj_rest_auth.registration.views import (
     ResendEmailVerificationView,
@@ -6176,8 +6176,8 @@ urlpatterns = [
     path("password/reset/confirm/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
 ]
 ```
-## Testing
-### Register
+#### Testing
+##### Register
 Creating a new user now requires you to provide a valid email address:
 ```commandline
 $ curl -XPOST -H "Content-type: application/json" -d '{
@@ -6196,7 +6196,7 @@ Response:
 }
 ```
 As you register a verification email will be sent to your email.
-### Verify Email
+##### Verify Email
 From the frontend you can then POST the key back to the backend to verify the email address:
 ```commandline
 $ curl -XPOST -H "Content-type: application/json" -d '{
@@ -6211,7 +6211,7 @@ Response:
 ```
 Once you've successfully verified your email address you'll be able to log in.
 
-### Password Reset
+##### Password Reset
 To request a new password, you need to POST to /api/auth/password/reset/ like so:
 ```
 $ curl -XPOST -H "Content-type: application/json" -d '{
@@ -6219,15 +6219,15 @@ $ curl -XPOST -H "Content-type: application/json" -d '{
   }' 'http://localhost:8000/api/auth/password/reset/' | jq
 ```
 After you send the request you'll receive aa email.
-***Backend\Django REST Framework\Authentication\003_Authentication_types.md***
+# Backend\Django REST Framework\Authentication\003_Authentication_types.md
 
-# Authentication types
-## BasicAuthentication
+### Authentication types
+#### BasicAuthentication
 
 Username + password (base64 encoded)
 
 ```python
-# settings/core.py
+### settings/core.py
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -6243,12 +6243,12 @@ REST_FRAMEWORK = {
 | &nbsp; | Only suitable for testing            |
 | &nbsp; | Must use HTTPS                       |
 
-## SessionAuthentication
+#### SessionAuthentication
 
 Cookie files stored in browser session after first authentication.
 
 ```python
-# settings/core.py
+### settings/core.py
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -6262,12 +6262,12 @@ REST_FRAMEWORK = {
 | Secure                  | Not good for multiple frontends |
 | Only validate user once | Hard to keep up-to-date         |
 
-## TokenAuthentication
+#### TokenAuthentication
 
 Using token generated with single username & password authentication.
 
 ```python
-# settings/core.py
+### settings/core.py
 INSTALLED_APPS = {
     "rest_framework.authtoken"
 }
@@ -6284,12 +6284,12 @@ REST_FRAMEWORK = {
 | Easy to scale           | Large tokens hurt performance |
 | Only validate user once | Tokens never expire           |
 
-## RemoteUserAuthentication
+#### RemoteUserAuthentication
 
 Rarely used, mostly for intranet sites.
 
 ```python
-# settings/core.py
+### settings/core.py
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -6298,14 +6298,14 @@ REST_FRAMEWORK = {
 }
 ```
 
-## JWTAuthentication
+#### JWTAuthentication
 
 JSON Web Token generated with djangorestframework-simplejwt package.
 
 jwt.io - site to destructuring  JWT token
 
 ```python
-# settings/core.py
+### settings/core.py
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -6321,13 +6321,13 @@ REST_FRAMEWORK = {
 | Signed            | Complicated setup |
 | Can be encrypted  | &nbsp;            |
 | Can set to expire | &nbsp;            |
-***Backend\Django REST Framework\Basics\001_DRF_Basics.md***
+# Backend\Django REST Framework\Basics\001_DRF_Basics.md
 
-# DRF Basics
+### DRF Basics
 
 Source: https://testdriven.io/courses/django-rest-framework/intro
 
-## REST
+#### REST
 An API, which stands for Application Programming Interface, is an interface for computers instead of people. It's a method of communication between two machines.
 
 REST, which stands for Representational State Transfer, is an architectural style for providing standards between computer systems on the web. Its purpose is to make it easier for systems to communicate with each other.
@@ -6338,7 +6338,7 @@ For a system to be "RESTful" -- i.e., compliant with REST -- it needs to abide b
 2. **Stateless**: Each request from the client to the server is stateless. In other words, both the client and server can understand any request independently, without seeing any of the previous requests.
 3. **Uniformed Interface**: All API endpoints should be accessible by the same approach.
 
-## Methods
+#### Methods
 
 | HTTP   | Method  | 	CRUD Action	Scope | 	Purpose	                                | Structure of URL          |
 |--------|---------|--------------------|------------------------------------------|---------------------------|
@@ -6348,9 +6348,9 @@ For a system to be "RESTful" -- i.e., compliant with REST -- it needs to abide b
 | PUT    | 	Update | 	single resource   | 	Update a single resource	               | api/shopping-items/<uuid> |
 | PATCH  | 	Update | 	single resource   | 	Update a single resource	               | api/shopping-items/<uuid> |
 | DELETE | 	Delete | 	single resource	  | Delete a single resource	                | api/shopping-items/<uuid> |
-***Backend\Django REST Framework\Permissions\001_View_permissions.md***
+# Backend\Django REST Framework\Permissions\001_View_permissions.md
 
-# View Permissions
+### View Permissions
 
 Source: https://testdriven.io/blog/drf-permissions/
 
@@ -6360,7 +6360,7 @@ APIView has two methods that check for permissions:
 * check_object_permissions - checks if the request should be permitted based on the combination of the request and object data
 
 ```python
-# rest_framework/views.py
+### rest_framework/views.py
 
 class APIView(View):
     # other methods
@@ -6390,13 +6390,13 @@ class APIView(View):
                     code=getattr(permission, 'code', None)
                 )
 ```
-***Backend\Django REST Framework\Permissions\002_Permission_classes.md***
+# Backend\Django REST Framework\Permissions\002_Permission_classes.md
 
-# Permission classes
+### Permission classes
 
 Source: https://testdriven.io/blog/drf-permissions/
 
-## BasePermission
+#### BasePermission
 All permission classes, either custom or built-in, extend from the BasePermission class:
 ```python
 class BasePermission(metaclass=BasePermissionMetaclass):
@@ -6409,7 +6409,7 @@ class BasePermission(metaclass=BasePermissionMetaclass):
 ```
 As you can see, BasePermission has two methods, has_permission and has_object_permission, that both return True. The permission classes override one or both of the methods to conditionally return True.
 
-## has_permission
+#### has_permission
 
 has_permission is used to decide whether a request and a user are allowed to access a specific view
 
@@ -6422,7 +6422,7 @@ has_permission possesses knowledge about the request, but not about the object o
 
 has_permission (called by check_permissions) gets executed before the view handler is executed, without explicitly calling it.
 
-## has_object_permission
+#### has_object_permission
 
 has_object_permission is used to decide whether a specific user is allowed to interact with a specific object
 
@@ -6439,7 +6439,7 @@ Unlike has_permission, has_object_permission isn't always executed by default:
 * has_object_permission is never executed for list views (regardless of the view you're extending from) or when the request method is POST (since the object doesn't exist yet).
 * When any has_permission returns False, the has_object_permission doesn't get checked. The request is immediately rejected.
 
-## Difference between has_permission and has_object_permission
+#### Difference between has_permission and has_object_permission
 
 ![002_has_permissions_differences.png](_images/002_has_permissions_differences.png)
 
@@ -6447,9 +6447,9 @@ List views, only has_permission is executed and the request is either granted or
 
 Detail views, has_permission is executed and then only if permission is granted, has_object_permission is executed after the object is retrieved.
 
-***Backend\Django REST Framework\Permissions\003_Built_in_permission_classes.md***
+# Backend\Django REST Framework\Permissions\003_Built_in_permission_classes.md
 
-# Built-in permission classes
+### Built-in permission classes
 
 Source: https://testdriven.io/blog/built-in-permission-classes-drf/
 
@@ -6457,7 +6457,7 @@ Source: https://testdriven.io/blog/built-in-permission-classes-drf/
 
 All of those classes, except the last one, DjangoObjectPermissions, override just the has_permission method and inherits the has_object_permission from the BasePermission class. has_object_permission in the BasePermission class always returns True, so it has no impact on object-level access restriction.
 
-## AllowAny
+#### AllowAny
 
 The most open permission of all is AllowAny. The has_permission and has_object_permission methods on AllowAny always return True without checking anything. Using it isn't necessary (by not setting the permission class, you implicitly set this one), but you still should since it makes the intent explicit and helps to maintain consistency throughout the app.
 ```python
@@ -6475,19 +6475,19 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
 ```
-## IsAuthenticated
+#### IsAuthenticated
 
 IsAuthenticated checks if the request has a user and if that user is authenticated. Setting permission_classes to IsAuthenticated means that only authenticated users will be able to access the API endpoint with any of the request methods.
 
-## IsAuthenticatedOrReadOnly
+#### IsAuthenticatedOrReadOnly
 
 When permissions are set to IsAuthenticatedOrReadOnly, the request must either have an authenticated user or use one of the safe/read-only HTTP request methods (GET, HEAD, OPTIONS). This means that every user will be able to see all the objects, but only logged-in users will be able to add, change, or delete objects.
 
-## IsAdminUser
+#### IsAdminUser
 
 Permissions set to IsAdminUser means that the request needs to have a user and that user must have is_staff set to True. This means that only admin users can see, add, change, or delete objects.
 
-## DjangoModelPermissions
+#### DjangoModelPermissions
 
 DjangoModelPermissions allows us to set any combination of permissions to each of the users separately. The permission then checks if the user is authenticated and if they have add, change, or delete user permissions on the model.
 ```python
@@ -6509,23 +6509,23 @@ You need to set the permissions for the specific user or group:
 
 ![003_DjangoModelPermissions.png](_images/003_DjangoModelPermissions.png)
 
-## DjangoModelPermissionsOrAnonReadOnly
+#### DjangoModelPermissionsOrAnonReadOnly
 
 DjangoModelPermissionsOrAnonReadOnly extends the DjangoModelPermissions and only changes one thing: It sets authenticated_users_only to False. 
 
 Anonymous users can see the objects but can't interact with them.
 
-## DjangoObjectPermissions
+#### DjangoObjectPermissions
 
 While DjangoModelPermissions limits the user's permission for interacting with a model (all the instances), DjangoObjectPermissions limits the interaction to a single instance of the model (an object). To use DjangoObjectPermissions you'll need a permission backend that supports object-level permissions, like django-guardian.
 
-***Backend\Django REST Framework\Permissions\004_Custom_permission_classes.md***
+# Backend\Django REST Framework\Permissions\004_Custom_permission_classes.md
 
-# Custom permission classes
+### Custom permission classes
 
 Source: https://testdriven.io/blog/custom-permission-classes-drf/
 
-## BasePermission
+#### BasePermission
 
 All permission classes, either custom or built-in, extend from the BasePermission class:
 ```python
@@ -6549,9 +6549,9 @@ class BasePermission(metaclass=BasePermissionMetaclass):
 
 Permission classes override one or both of those methods to conditionally return True. If you don't override the methods, they will always return True, granting unlimited access.
 
-## Permission based on User properties
+#### Permission based on User properties
 ```python
-# permissions.py
+### permissions.py
 
 from rest_framework import permissions
 
@@ -6580,12 +6580,12 @@ class AuthorAllStaffAllButEditOrReadOnly(permissions.BasePermission):
         return False
 ```
 
-## Permission based on object properties
+#### Permission based on object properties
 
 Let's say you want to restrict access to objects older than 10 minutes for everyone except superusers:
 
 ```python
-# permissions.py
+### permissions.py
 
 from datetime import datetime, timedelta
 
@@ -6606,7 +6606,7 @@ class ExpiredObjectSuperuserOnly(permissions.BasePermission):
             return True
 ```
 
-## Custom error message
+#### Custom error message
 
 ![004_Error_message.png](_images/004_Error_message.png)
 
@@ -6627,15 +6627,15 @@ class ExpiredObjectSuperuserOnly(permissions.BasePermission):
         else:
             return True
 ```
-***Backend\Django REST Framework\Permissions\005_Global_permissions.md***
+# Backend\Django REST Framework\Permissions\005_Global_permissions.md
 
-# Global permissions
+### Global permissions
 
 Source: https://testdriven.io/blog/built-in-permission-classes-drf/#global-permissions
 
 You can easily set global permission in your settings.py file, using built-in permission classes. For example:
 ```python
-# settings.py
+### settings.py
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -6644,13 +6644,13 @@ REST_FRAMEWORK = {
 }
 ```
 DEFAULT_PERMISSION_CLASSES will only work for the views or objects that don't have permissions explicitly set.
-***Backend\Django REST Framework\Permissions\006_Combining_and_Excluding_Permission_Classes.md***
+# Backend\Django REST Framework\Permissions\006_Combining_and_Excluding_Permission_Classes.md
 
-# Combining and Excluding Permission Classes
+### Combining and Excluding Permission Classes
 
 Source: https://testdriven.io/blog/custom-permission-classes-drf/#combining-and-excluding-permission-classes
 
-## AND operator
+#### AND operator
 
 AND is the default behavior of permission classes, achieved by using ,:
 ```python
@@ -6662,14 +6662,14 @@ It can also be written with &:
 permission_classes = [IsAuthenticated & IsStaff & SomeCustomPermissionClass]
 ```
 
-## OR operator
+#### OR operator
 
 With the OR (|), when any of the permission classes return True, the permission is granted. You can use the OR operator to offer multiple possibilities in which the user gets granted permission.
 ```python
 permission_classes = [IsStaff | IsOwner]
 ```
 
-## NOT operator
+#### NOT operator
 
 The NOT operator results in the exact opposite to the defined permission class. In other words, permission is granted to all users except the ones from the permission class.
 
@@ -6682,16 +6682,16 @@ Be careful! If you only use the NOT operator, everybody else will be allowed acc
 permission_classes = [~IsFinancesMember & IsAuthenticated]
 ```
 
-## Parentheses
+#### Parentheses
 
 Inside permission_classes you can also use parentheses (()) to control which expression gets resolved first.
 ```python
 permission_classes = [(IsFinancesMember | IsTechMember) & IsOwner]
 ```
 In this example, (IsFinancesMember | IsTechMember) will be resolved first. Then, the result of that will be used with & IsOwner.
-***Backend\Django REST Framework\Project_init\001_Installation.md***
+# Backend\Django REST Framework\Project_init\001_Installation.md
 
-# Installation
+### Installation
 Przykładowa zawartość pliku requirements.txt, którą należy zainstalować.
 ```
 Django==4.1.3  
@@ -6700,14 +6700,14 @@ django-filter==22.1
 djangorestframework==3.14.0  
 djangorestframework-jsonapi==6.0.0
 ```
-***Backend\Django REST Framework\Project_init\002_Settings.md***
+# Backend\Django REST Framework\Project_init\002_Settings.md
 
-# Settings
+### Settings
 
 W pliku settings.py dodać zainstalowane pakiety.
 
 ```python
-# settings.py
+### settings.py
 
 INSTALLED_APPS = [  
     'django.contrib.admin',  
@@ -6723,7 +6723,7 @@ INSTALLED_APPS = [
 ```
 W tym samym pliku dodać słownik REST_FRAMEWORK. Poniżej przykład z bazowymi wartościami z dokumentacji.
  ```python
-#settings.py
+###settings.py
 
 REST_FRAMEWORK = {  
     'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',  
@@ -6751,7 +6751,7 @@ REST_FRAMEWORK = {
 
 W głównym pliku urls.py dodać router i jego adresy.
 ```python
-#urls.py
+###urls.py
 
 from django.urls import path  
 from django.contrib import admin  
@@ -6770,14 +6770,14 @@ Utworzyć i wykonać migracje
 python manage.py makemigrations
 python manage.py migrate
 ```
-***Backend\Django REST Framework\Routers\001_Router_urls.md***
+# Backend\Django REST Framework\Routers\001_Router_urls.md
 
-# Router urls
+### Router urls
 
 Router służy do mapowania ViewSetów na adresy url. Chcąc wykorzystać adresy url zarejestrowane w routerze trzeba rozszerzyć urlpatterns w globalnym pliku urls.py o parametr url routera.
 
 ```python
-# project/urls.py
+### project/urls.py
 
 from django.urls import path
 from django.contrib import admin
@@ -6794,9 +6794,9 @@ urlpatterns += [
     path('contact/', core_views.ContactAPIView.as_view()), # NEW URL
 ]
 ```
-***Backend\Django REST Framework\Routers\002_Default_router.md***
+# Backend\Django REST Framework\Routers\002_Default_router.md
 
-# DefaultRouter
+### DefaultRouter
 
 Jeżeli chcemy dodać url dla obiektu ViewSet (np. dziedziczącego z GenericViewSet) należy go zarejestrować bezpośrednio w routerze.
 
@@ -6808,9 +6808,9 @@ router = routers.DefaultRouter()
 router.register(r'item', ecommerce_views.ItemViewSet, basename='item')  
 router.register(r'order', ecommerce_views.OrderViewSet, basename='order')
 ```
-***Backend\Django REST Framework\Serializing\001_Serializing_definition.md***
+# Backend\Django REST Framework\Serializing\001_Serializing_definition.md
 
-# Serializing
+### Serializing
 
 Source: https://testdriven.io/courses/django-rest-framework/getting-started/#H-2-serializers
 
@@ -6827,14 +6827,14 @@ While deserializing the data, serializers also perform validation.
 Generally, you write your serializers in a serializers.py file. If it becomes too big, you can restructure it into a separate Python package.
 
 
-***Backend\Django REST Framework\Serializing\002_Base_serializer.md***
+# Backend\Django REST Framework\Serializing\002_Base_serializer.md
 
-# Serializer
+### Serializer
 Wymaga zdefiniowania wszystkich pól, jakie mają być serializowane. Odpowiednik modelu Form z bazowego Django.
 
 Przykładowy model:
 ```python
-# models.py
+### models.py
 
 from django.db import models  
 from pygments.lexers import get_all_lexers  
@@ -6858,7 +6858,7 @@ class Snippet(models.Model):
 ```
 Serializer dla modelu:
 ```python
-# serializers.py
+### serializers.py
 
 from rest_framework import serializers  
 from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES  
@@ -6890,14 +6890,14 @@ class SnippetSerializer(serializers.Serializer):
 		instance.save()  
 		return instance
 ```
-***Backend\Django REST Framework\Serializing\003_Model_serializer.md***
+# Backend\Django REST Framework\Serializing\003_Model_serializer.md
 
-# ModelSerializer
+### ModelSerializer
 Korzysta ze wskazanych pól modelu zdefiniowanego w klasie Meta, możliwe jest jednak dodanie własnych danych. Odpowiednik modelu ModelForm z bazowego Django.
 
 Przykładowy model:
 ```python
-# models.py
+### models.py
 
 from django.db import models  
 from utils.model_abstracts import Model  
@@ -6924,7 +6924,7 @@ class Contact(
 ```
 Serializer dla modelu:
 ```python
-# serializers.py
+### serializers.py
 
 from . import models  
 from rest_framework import serializers  
@@ -6944,12 +6944,12 @@ class ContactSerializer(serializers.ModelSerializer):
 			'message'  
 		)
 ```
-***Backend\Django REST Framework\Serializing\004_Serializing_and_deserializing.md***
+# Backend\Django REST Framework\Serializing\004_Serializing_and_deserializing.md
 
-# Proces serializacji i deserializacji
+### Proces serializacji i deserializacji
 Model:
 ```python
-# models.py
+### models.py
 
 from django.db import models  
 from pygments.lexers import get_all_lexers  
@@ -6973,7 +6973,7 @@ class Snippet(models.Model):
 ```
 Serializer:
 ```python
-# serializers.py
+### serializers.py
 
 from rest_framework import serializers  
 from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES  
@@ -7021,13 +7021,13 @@ Serializujemy instancję obiektu przekazując ją do obiektu serializera.
 ```python
 serializer = SnippetSerializer(snippet)
 serializer.data
-# {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}
+### {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}
 ```
 Słownik zawarty w zmiennej serializer.data serializujemy przy użyciu klasy JSONRenderer. Uzyskujemy obiekt w postaci bajtowej.
 ```python
 content = JSONRenderer().render(serializer.data)
 content
-# b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
+### b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
 ```
 Taki obiekt można również zdeserializować z powrotem do postaci instancji obiektu modelu Django.
 ```python
@@ -7038,25 +7038,25 @@ data = JSONParser().parse(stream)
 
 serializer = SnippetSerializer(data=data)
 serializer.is_valid()
-# True
+### True
 serializer.validated_data
-# OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+### OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
 serializer.save()
-# <Snippet: Snippet object>
+### <Snippet: Snippet object>
 ```
-***Backend\Django REST Framework\Serializing\005_Queryset_serializing.md***
+# Backend\Django REST Framework\Serializing\005_Queryset_serializing.md
 
-# Serializowanie querysetów
+### Serializowanie querysetów
 
 Do obiektu serializera możliwe jest też przekazanie całego querysetu. W tym celu konieczne jest podanie parametru **many** z wartością **True**.
 ```python
 serializer = SnippetSerializer(Snippet.objects.all(), many=True)
 serializer.data
-# [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+### [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 ```
-***Backend\Django REST Framework\Serializing\006_extra_kwargs.md***
+# Backend\Django REST Framework\Serializing\006_extra_kwargs.md
 
-# extra_kwargs
+### extra_kwargs
 Aby nadpisać niektóre właściwości dla poszczególnych pól można utworzyć zmienną extra_kwargs w klasie Meta serializera:
 ```python
 class UserSerializer(serializers.ModelSerializer):
@@ -7067,13 +7067,13 @@ class UserSerializer(serializers.ModelSerializer):
           'min_length': 5
       }}
 ```
-***Backend\Django REST Framework\Serializing\007_Validation.md***
+# Backend\Django REST Framework\Serializing\007_Validation.md
 
-# Validation
+### Validation
 
 Source: https://testdriven.io/blog/drf-serializers/
 
-## Custom field validation
+#### Custom field validation
 Custom field validation allows us to validate a specific field. We can use it by adding the validate_<field_name> method to our serializer like so:
 ```python
 from rest_framework import serializers
@@ -7090,7 +7090,7 @@ class MovieSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Rating has to be between 1 and 10.')
         return value
 ```
-## Object-level validation
+#### Object-level validation
 Sometimes you'll have to compare fields with one another in order to validate them. This is when you should use the object-level validation approach.
 
 Example:
@@ -7113,7 +7113,7 @@ The validate method will make sure us_gross is never bigger than worldwide_gross
 
 You should avoid accessing additional fields in the custom field validator via self.initial_data. This dictionary contains raw data, which means that your data types won't necessarily match the required data types. DRF will also append validation errors to the wrong field.
 
-## Functional validators
+#### Functional validators
 If we use the same validator in multiple serializers, we can create a function validator instead of writing the same code over and over again. Let's write a validator that checks if the number is between 1 and 10:
 ```python
 def is_rating(value):
@@ -7132,9 +7132,9 @@ class MovieSerializer(serializers.ModelSerializer):
     rating = IntegerField(validators=[is_rating])
     ...
 ```
-***Backend\Django REST Framework\Serializing\008_Custom_output.md***
+# Backend\Django REST Framework\Serializing\008_Custom_output.md
 
-# Custom output
+### Custom output
 
 Source: https://testdriven.io/blog/drf-serializers/
 
@@ -7177,7 +7177,7 @@ If we serialize a resource and access its data property, we'll get the following
    ]
 }
 ```
-## to_representation()
+#### to_representation()
 Now, let's say we want to add a total likes count to the serialized data. The easiest way to achieve this is by implementing the to_representation method in our serializer class:
 ```python
 from rest_framework import serializers
@@ -7210,7 +7210,7 @@ If we serialize another resource, we'll get the following result:
    "likes": 2
 }
 ```
-## to_internal_value()
+#### to_internal_value()
 Suppose the services that use our API appends unnecessary data to the endpoint when creating resources:
 ```json
 {
@@ -7248,9 +7248,9 @@ class ResourceSerializer(serializers.ModelSerializer):
 
         return super().to_internal_value(resource_data)
 ```
-***Backend\Django REST Framework\Serializing\009_Serializer_context.md***
+# Backend\Django REST Framework\Serializing\009_Serializer_context.md
 
-# Serializer context
+### Serializer context
 
 Source: https://testdriven.io/blog/drf-serializers/
 
@@ -7282,9 +7282,9 @@ class ResourceSerializer(serializers.ModelSerializer):
         return representation
 ```
 Our serializer output will now contain key with value.
-***Backend\Django REST Framework\Serializing\010_Source_keyword.md***
+# Backend\Django REST Framework\Serializing\010_Source_keyword.md
 
-# Source keyword
+### Source keyword
 
 Source: https://testdriven.io/blog/drf-serializers/
 
@@ -7316,7 +7316,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'is_staff', 'is_active']
 ```
 
-## Rename serializer output fields
+#### Rename serializer output fields
 
 To rename a serializer output field we need to add a new field to our serializer and pass it to fields property.
 ```python
@@ -7328,7 +7328,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'is_staff', 'active']
 Our active field is now going to be named active instead of is_active.
 ```
-## Attach serializer function response to data
+#### Attach serializer function response to data
 We can use source to add a field which equals to function's return.
 ```python
 class UserSerializer(serializers.ModelSerializer):
@@ -7340,7 +7340,7 @@ class UserSerializer(serializers.ModelSerializer):
 ```
 ```get_full_name()``` is a method from the Django user model that concatenates user.first_name and user.last_name.
 
-## Append data from one-to-one models
+#### Append data from one-to-one models
 Now let's suppose we also wanted to include our user's bio and birth_date in UserSerializer. We can do that by adding extra fields to our serializer with the source keyword.
 
 Let's modify our serializer class:
@@ -7357,9 +7357,9 @@ class UserSerializer(serializers.ModelSerializer):
         ]  # note we also added the new fields here
 ```
 We can access userprofile.<field_name>, because it is a one-to-one relationship with our user.
-***Backend\Django REST Framework\Serializing\011_SerializerMethodField.md***
+# Backend\Django REST Framework\Serializing\011_SerializerMethodField.md
 
-# SerializerMethodField
+### SerializerMethodField
 
 Source: https://testdriven.io/blog/drf-serializers/
 
@@ -7384,9 +7384,9 @@ class UserSerializer(serializers.ModelSerializer):
         return f'{obj.first_name} {obj.last_name}'
 ```
 This piece of code creates a user serializer that also contains full_name which is the result of the get_full_name() function.
-***Backend\Django REST Framework\Serializing\012_Different_serializers_for_read_and_write.md***
+# Backend\Django REST Framework\Serializing\012_Different_serializers_for_read_and_write.md
 
-# Different Read and Write Serializers
+### Different Read and Write Serializers
 
 Source: https://testdriven.io/blog/drf-serializers/
 
@@ -7410,9 +7410,9 @@ class MyViewSet(viewsets.ModelViewSet):
         return MyModelReadSerializer
 ```
 This code checks what REST operation has been used and returns MyModelWriteSerializer for write operations and MyModelReadSerializer for read operations.
-***Backend\Django REST Framework\Serializing\013_Read_only_fields.md***
+# Backend\Django REST Framework\Serializing\013_Read_only_fields.md
 
-# Read-only Fields
+### Read-only Fields
 
 Source: https://testdriven.io/blog/drf-serializers/
 
@@ -7439,13 +7439,13 @@ class AccountSerializer(serializers.Serializer):
     class Meta:
         read_only_fields = ['id', 'username']
 ```
-***Backend\Django REST Framework\Serializing\014_Nested_serializers.md***
+# Backend\Django REST Framework\Serializing\014_Nested_serializers.md
 
-# Nested serializers
+### Nested serializers
 
 Source: https://testdriven.io/blog/drf-serializers/
 
-## Explicit definition
+#### Explicit definition
 
 The explicit definition works by passing an external Serializer as a field to our main serializer.
 
@@ -7509,7 +7509,7 @@ Serialize again and you'll get this:
     "content": "This is an interesting message."
 }
 ```
-## Using the depth field
+#### Using the depth field
 
 When it comes to nested serialization, the depth field is one of the most powerful featuress. Let's suppose we have three models -- ModelA, ModelB, and ModelC. ModelA depends on ModelB while ModelB depends on ModelC. They are defined like so:
 ```python
@@ -7590,13 +7590,13 @@ If we change it to 2 our serializer will serialize a level deeper:
 The downside is that you have no control over a child's serialization. Using depth will include all fields on the children, in other words.
 
 The authors of Two Scoops of Django argue that you should remove any POST or PUT methods for nested resources and create separate GET/POST/PUT API views for them. From my own experience, they're right: Trying to use a writable nested serializer can quickly become irritating.
-***Backend\Django REST Framework\Serializing\015_Eager_loading.md***
+# Backend\Django REST Framework\Serializing\015_Eager_loading.md
 
-# Eager loading
+### Eager loading
 
 Source: https://rex-chiang.medium.com/django-rest-framework-eager-loading-a67e6be15b3
 
-## Implementation example
+#### Implementation example
 
 ```python
 class EagerLoadingMixin:
@@ -7626,12 +7626,12 @@ orders = Order.objects.all()
 queryset = OrderSerializer.setup_eager_loading(orders)
 data = OrderSerializer(queryset, many=True).data
 ```
-***Backend\Django REST Framework\Testing\001_APITestCase.md***
+# Backend\Django REST Framework\Testing\001_APITestCase.md
 
-# APITestCase
+### APITestCase
 DRF zapewnia moduł wspierający testowanie napisanego API. W tym celu należy zaimportować klasę APITestCase z modułu rest_framework.test
 ```python
-# tests.py
+### tests.py
 
 from rest_framework.test import APITestCase  
   
@@ -7641,13 +7641,13 @@ class ContactTestCase(APITestCase):
     """
     pass
 ```
-***Backend\Django REST Framework\Testing\002_setUp.md***
+# Backend\Django REST Framework\Testing\002_setUp.md
 
-# setUp
+### setUp
 Zdefiniowanie metody setUp() w klasie dziedziczącej po klasie APITestCase pozwala sprawia, że kod, napisany w tej metodzie wykona się przed wykonaniem zestawu testów zdefiniowanym w klasie.
 
 ```python
-# tests.py
+### tests.py
 
 from rest_framework.test import APIClient  
 from rest_framework.test import APITestCase   
@@ -7665,9 +7665,9 @@ class ContactTestCase(APITestCase):
 		}  
         self.url = "/contact/"
 ```
-***Backend\Django REST Framework\Testing\003_Creating_unit_tests.md***
+# Backend\Django REST Framework\Testing\003_Creating_unit_tests.md
 
-# Tworzenie unit testów
+### Tworzenie unit testów
 Testy tworzone są jako metody dla klasy dziedziczącej po APITestCase. Przykładowy unit test:
 ```python
 from .models import Contact  
@@ -7688,16 +7688,16 @@ class ContactTestCase(APITestCase):
 		self.assertEqual(Contact.objects.count(), 1)  
 		self.assertEqual(Contact.objects.get().title, "Billy Smith")
 ```
-***Backend\Django REST Framework\Testing\004_Running_tests.md***
+# Backend\Django REST Framework\Testing\004_Running_tests.md
 
-# Uruchomienie testów
+### Uruchomienie testów
 Uruchomienie wszystkich istniejących w projekcie testów odbywa się poprzez uruchomienie komendy:
 ```
 python manage.py test
 ```
-***Backend\Django REST Framework\Throttling\001_Throttling.md***
+# Backend\Django REST Framework\Throttling\001_Throttling.md
 
-# Throttling
+### Throttling
 
 Source: https://testdriven.io/courses/django-rest-framework/user-management/#H-4-throttling
 
@@ -7711,7 +7711,7 @@ DRF provides two types of throttle classes:
 
 You can also create your own throttle class.
 
-## Default
+#### Default
 
 As with the other default DRF settings, you can configure the default settings in the REST_FRAMEWORK dict in the settings.py file.
 
@@ -7734,14 +7734,14 @@ REST_FRAMEWORK = {
 }
 ```
 
-## Custom
+#### Custom
 
 Let's create a throttle limitation per day and minute separately. That way, you avoid slow performance of your API and at the same time ensure the client has enough requests available throughout the day.
 
 We need to create multiple UserRateThrottles to achieve that, one for a daily rate and one for a rate per minute.
 
 ```python
-# shopping_list/api/throttling.py
+### shopping_list/api/throttling.py
 
 
 from rest_framework.throttling import UserRateThrottle
@@ -7774,9 +7774,9 @@ REST_FRAMEWORK = {
     },
 }
 ```
-***Backend\Django REST Framework\Versioning\001_Versioning.md***
+# Backend\Django REST Framework\Versioning\001_Versioning.md
 
-# Versioning
+### Versioning
 
 Source: https://testdriven.io/courses/django-rest-framework/api-versioning/
 
@@ -7790,11 +7790,11 @@ DRF supports multiple versioning schemes:
 4. HostNameVersioning
 5. QueryParameterVersioning
 
-## Setup
+#### Setup
 
 For example, you could update the ShoppingListDetail view to choose the serializer based on the version parameter:
 ```python
-# shopping_list/api/views.py
+### shopping_list/api/views.py
 
 
 from shopping_list.api.serializers import ShoppingListSerializer,ShoppingListSerializerV2
@@ -7811,10 +7811,10 @@ class ShoppingListDetail(generics.RetrieveUpdateDestroyAPIView):
 The second version of the serializer would look something like this:
 
 ```python
-# shopping_list/api/serializers.py
+### shopping_list/api/serializers.py
 
 
-# original serializer:
+### original serializer:
 class ShoppingListSerializer(serializers.ModelSerializer):
     members = UserSerializer(many=True, read_only=True)
     unpurchased_items = serializers.SerializerMethodField()
@@ -7826,7 +7826,7 @@ class ShoppingListSerializer(serializers.ModelSerializer):
     def get_unpurchased_items(self, obj) -> List[UnpurchasedItem]:
         return [{"name": shopping_item.name} for shopping_item in obj.shopping_items.filter(purchased=False)][:3]
 
-# new serializer:
+### new serializer:
 class ShoppingListSerializerV2(serializers.ModelSerializer):
     members = UserSerializer(many=True, read_only=True)
     unpurchased_items = serializers.SerializerMethodField()
@@ -7840,7 +7840,7 @@ class ShoppingListSerializerV2(serializers.ModelSerializer):
 ```
 Now let's see how to get DRF to use different serializers based on the incoming request for different types of versioning.
 
-## AcceptHeaderVersioning
+#### AcceptHeaderVersioning
 
 According to the DRF docs, versioning based on accept headers is considered the best practice.
 
@@ -7849,7 +7849,7 @@ In short, DRF gets info about the version from the HTTP request Accept header.
 To use AcceptHeaderVersioning, inside REST_FRAMEWORK settings within the settings.py file, set DEFAULT_VERSIONING_CLASS to AcceptHeaderVersioning:
 
 ```python
-# core/settings.py
+### core/settings.py
 
 
 REST_FRAMEWORK = {
@@ -7860,12 +7860,12 @@ REST_FRAMEWORK = {
 
 ![versioning.png](_images/versioning_01.png)
 
-## URLPathVersioning
+#### URLPathVersioning
 
 With URLPathVersioning, the URL pattern includes a version key argument -- e.g., v1/api/ or v2/api.
 
 ```python
-# core/settings.py
+### core/settings.py
 
 
 REST_FRAMEWORK = {
@@ -7877,7 +7877,7 @@ REST_FRAMEWORK = {
 Add a second version URL pattern to the urls.py file:
 
 ```python
-# core/urls.py
+### core/urls.py
 
 
 from django.urls import path, re_path
@@ -7888,14 +7888,14 @@ urlpatterns = [
     re_path(r"(?P<version>(v2))/api/shopping-lists/(?P<pk>\S+)/$", ShoppingListDetail.as_view(), name="shopping-list-detail-v2"), # adding url for the same view with versioning
 ]
 ```
-## NamespaceVersioning
+#### NamespaceVersioning
 
 NamespaceVersioning is the same as the URLPathVersioning for the client. The only difference is that it uses namespaces instead of URL keyword arguments.
 
 In the core urls.py file, you just need to add a namespace like so:
 
 ```python
-# core/urls.py
+### core/urls.py
 
 
 urlpatterns = [
@@ -7908,14 +7908,14 @@ Now, the namespace will be passed to all the included URLs.
 
 Without any additional change, now if you navigate to http://127.0.0.1:8000/v2/api/shopping-lists/<SHOPPING-LIST-UUID>/, you'll see that the second serializer is used. The result is the same as with URLPathVersioning.
 
-## HostNameVersioning
+#### HostNameVersioning
 
 HostNameVersioning gets the requested version based on the hostname.
 
 To use it, DEFAULT_VERSIONING_CLASS must be set to HostNameVersioning:
 
 ```python
-# core/settings.py
+### core/settings.py
 
 
 REST_FRAMEWORK = {
@@ -7931,14 +7931,14 @@ Main domain:
 Subdomain:
 ![versioning_03.png](_images/versioning_03.png)
 
-## QueryParameterVersioning
+#### QueryParameterVersioning
 
 QueryParameterVersioning allows a client to include the version as a query parameter -- e.g., api?version=v1 or api?version=v2.
 
 Change the DEFAULT_VERSIONING_CLASS to URLPathVersioning:
 
 ```python
-# core/settings.py
+### core/settings.py
 
 
 REST_FRAMEWORK = {
@@ -7950,18 +7950,18 @@ REST_FRAMEWORK = {
 You can test this option directly in the browser by adding a query parameter to the URL: http://127.0.0.1:8000/v2/api/shopping-lists/<SHOPPING-LIST-UUID>/?version=v2.
 
 
-***Backend\Django REST Framework\Views\001_APIView.md***
+# Backend\Django REST Framework\Views\001_APIView.md
 
-# API View
+### API View
 
 Source: https://testdriven.io/blog/drf-views-part-1/
 
-## Intro
+#### Intro
 APIView class is a base for all the views that you might choose to use in your DRF application.
 
 ![001_APIView.png](_images/001_APIView.png)
 
-## Example
+#### Example
 ```python
 class Item(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -7996,7 +7996,7 @@ class ListItems(APIView):
 ```
 The call to the database is done inside the handler functions. They're selected according to the request's HTTP method (e.g., GET -> get, DELETE -> delete).
 
-## Policy attributes
+#### Policy attributes
 
 | Attribute                 | 	Usage	                                                                                                                         | Examples                                    |
 |---------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
@@ -8006,18 +8006,18 @@ The call to the database is done inside the handler functions. They're selected 
 | throttle_classes          | determines if a request should be authorized based on the rate of requests	                                                     | AnonRateThrottle, UserRateThrottle          |
 | permission_classes        | determines if a request should be authorized based on user credentials	                                                         | IsAuthenticated, DjangoModelPermissions     |
 | content_negotiation_class | selects one of the multiple possible representations of the resource to return to a client (unlikely you'll want to set it up)	 | only custom content negotiation classes     |
-***Backend\Django REST Framework\Views\002_Function_view.md***
+# Backend\Django REST Framework\Views\002_Function_view.md
 
-# Function-based Views
+### Function-based Views
 
 Source: https://testdriven.io/blog/drf-views-part-1/
 
-## Intro
+#### Intro
 If you're writing a view in the form of a function, you'll need to use the @api_view decorator.
 
 @api_view is a decorator that converts a function-based view into an APIView subclass (thus providing the Response and Request classes). It takes a list of allowed methods for the view as an argument.
 
-## Example
+#### Example
 ```python
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8028,7 +8028,7 @@ def delete_all_items(request):
     return Response(status=status.HTTP_200_OK)
 ```
 
-## Policy Decorators
+#### Policy Decorators
 
 * @renderer_classes
 * @parser_classes
@@ -8053,13 +8053,13 @@ def items_not_done(request):
 
     return Response(content)
 ```
-***Backend\Django REST Framework\Views\003_GenericAPIView_and_Mixins.md***
+# Backend\Django REST Framework\Views\003_GenericAPIView_and_Mixins.md
 
-# GenericAPIView and mixins
+### GenericAPIView and mixins
 
 Source: https://testdriven.io/blog/drf-views-part-1/
 
-## GenericAPIView
+#### GenericAPIView
 
 GenericAPIView is a base class for all other generic views. It provides methods like get_object/get_queryset and get_serializer. Although it's designed to be combined with mixins (as it's used within generic views), it's possible to use it on its own:
 ```python
@@ -8083,7 +8083,7 @@ class RetrieveDeleteItem(GenericAPIView):
  ```       
 When extending GenericAPIView, queryset and serializer_class must be set. Alternatively, you can overwrite get_queryset()/get_serializer_class().
 
-## Mixins
+#### Mixins
 
 |Mixin |	Usage|
 |-|-|
@@ -8133,9 +8133,9 @@ We defined get and post methods on our own, which used list and create actions p
 Theoretically, that means that you could bind POST methods with list actions and GET methods with create actions, and things would "kind" of work.
 
 **It's a good idea to have a single view for handling all instances -- listing all instances and adding a new instance -- and another view for handling a single instance -- retrieving, updating, and deleting single instances.**
-***Backend\Django REST Framework\Views\004_Concrete_views.md***
+# Backend\Django REST Framework\Views\004_Concrete_views.md
 
-# Concrete Views
+### Concrete Views
 
 Concrete views do most of the work that we need to do on our own when using APIView. They use mixins as their basic building blocks, combine the building blocks with GenericAPIView, and bind actions to the methods.
 
@@ -8170,9 +8170,9 @@ All classes that extend from a concrete view need:
 
 * queryset
 * serializer class
-***Backend\Django REST Framework\Views\005_ViewSet.md***
+# Backend\Django REST Framework\Views\005_ViewSet.md
 
-# ViewSets
+### ViewSets
 
 Source: https://testdriven.io/blog/drf-views-part-3/
 
@@ -8191,7 +8191,7 @@ There are four types of ViewSets, from the most basic to the most powerful:
 
 ![005_ViewSet.png](_images/005_ViewSet.png)
 
-## Base ViewSet
+#### Base ViewSet
 
 The ViewSet class takes advantage of the APIView class. It doesn't provide any actions by default, but you can use it to create your own set of views:
 ```python
@@ -8212,7 +8212,7 @@ class ItemViewSet(ViewSet):
         return Response(serializer.data)
 ```
 
-## Actions
+#### Actions
 
 Possible actions:
 * list
@@ -8251,9 +8251,9 @@ class ItemsViewSet(ViewSet):
 ```
 
 The detail parameter should be set as True if the action is meant for a single object or False if it's meant for all objects.
-***Backend\Django REST Framework\Views\006_Routers.md***
+# Backend\Django REST Framework\Views\006_Routers.md
 
-# Routers
+### Routers
 
 Source: https://testdriven.io/blog/drf-views-part-3/
 
@@ -8268,7 +8268,7 @@ The main difference between them is that DefaultRouter includes a default API ro
 
 Routers can also be combined with urlpatterns:
 ```python
-# urls.py
+### urls.py
 
 from django.urls import path, include
 from rest_framework import routers
@@ -8286,7 +8286,7 @@ urlpatterns = [
 
 Here's how the router maps methods to actions:
 ```python
-# https://github.com/encode/django-rest-framework/blob/3.12.4/rest_framework/routers.py#L83
+### https://github.com/encode/django-rest-framework/blob/3.12.4/rest_framework/routers.py#L83
 
 routes = [
         # List route.
@@ -8331,25 +8331,25 @@ routes = [
         ),
     ]
 ```
-***Backend\Django REST Framework\Views\007_GenericViewSet.md***
+# Backend\Django REST Framework\Views\007_GenericViewSet.md
 
-# GenericViewSet
+### GenericViewSet
 
 Source: https://testdriven.io/blog/drf-views-part-3/
 
 While ViewSet extends APIView, GenericViewSet extends GenericAPIView.
 ```python
-# https://github.com/encode/django-rest-framework/blob/3.12.4/rest_framework/viewsets.py#L210
+### https://github.com/encode/django-rest-framework/blob/3.12.4/rest_framework/viewsets.py#L210
 class ViewSet(ViewSetMixin, views.APIView):
    pass
 
 
-# https://github.com/encode/django-rest-framework/blob/3.12.4/rest_framework/viewsets.py#L217
+### https://github.com/encode/django-rest-framework/blob/3.12.4/rest_framework/viewsets.py#L217
 class GenericViewSet(ViewSetMixin, generics.GenericAPIView):
    pass
 ```
 
-## Using GenericViewSet with Mixins
+#### Using GenericViewSet with Mixins
 ```python
 from rest_framework import mixins, viewsets
 
@@ -8359,7 +8359,7 @@ class ItemViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     queryset = Item.objects.all()
 ```
 
-## Using GenericViewSet with Explicit Action Implementations
+#### Using GenericViewSet with Explicit Action Implementations
 
 ```python
 from rest_framework import status
@@ -8395,13 +8395,13 @@ class ItemViewSet(GenericViewSet):
 ```
 
 
-***Backend\Django REST Framework\Views\008_ModelViewSet.md***
+# Backend\Django REST Framework\Views\008_ModelViewSet.md
 
-# ModelViewSets
+### ModelViewSets
 
 Source: https://testdriven.io/blog/drf-views-part-3/
 
-## ModelViewSet
+#### ModelViewSet
 
 ModelViewSet provides default create, retrieve, update, partial_update, destroy and list actions since it uses GenericViewSet and all of the available mixins.
 
@@ -8411,7 +8411,7 @@ class ItemModelViewSet(ModelViewSet):
     serializer_class = ItemSerializer
     queryset = Item.objects.all()
 ```
-## ReadOnlyModelViewSet
+#### ReadOnlyModelViewSet
 
 ReadOnlyModelViewSet is a ViewSet that provides only list and retrieve actions by combining GenericViewSet with the RetrieveModelMixin and ListModelMixin mixins.
 
@@ -8424,9 +8424,9 @@ class ItemReadOnlyViewSet(ReadOnlyModelViewSet):
     serializer_class = ItemSerializer
     queryset = Item.objects.all()
 ```
-***Backend\Django REST Framework\Views\009_Renderers.md***
+# Backend\Django REST Framework\Views\009_Renderers.md
 
-# DRF Renderers
+### DRF Renderers
 
 Source: https://testdriven.io/courses/django-rest-framework/manual-testing/#H-6-default-renderer
 
@@ -8455,9 +8455,9 @@ class ShoppingItemViewSet(ModelViewSet):
     serializer_class = ShoppingItemSerializer
     renderer_classes = [JSONRenderer]
 ```
-***Backend\Django REST Framework\Views\010_Custom_view_actions.md***
+# Backend\Django REST Framework\Views\010_Custom_view_actions.md
 
-# Custom actions
+### Custom actions
 
 Source: https://testdriven.io/courses/django-rest-framework/custom-actions/
 
@@ -8492,9 +8492,9 @@ Parameters for the @action decorator:
 4. `url_name` defines the reverse URL name for this action. If it's not set, it's the name of the method; underscores are replaced with dashes.
 
 Although not strictly needed, we've set the url_path and url_name so our naming remains consistent.
-***Backend\Luigi\001_Task.md***
+# Backend\Luigi\001_Task.md
 
-# Luigi task
+## Luigi task
 
 Sources: 
 * https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-2-creating-a-luigi-task
@@ -8506,7 +8506,7 @@ A Luigi task is where the execution of your pipeline and the definition of each 
 * An optional `input()` method that returns any additional tasks in your pipeline that are required to execute the current task. The `run()` method uses these to carry out the task.
 
 ```python
-# hello-world.py
+## hello-world.py
 
 import luigi
 from luigi import Task
@@ -8545,9 +8545,9 @@ With the `--module hello-world HelloLuigi` flag, you tell Luigi which Python mod
 
 The `--local-scheduler` flag tells Luigi to not connect to a Luigi scheduler and, instead, execute this task locally. Running tasks using the local-scheduler flag is only recommended for development work.
 
-***Backend\Luigi\002_Scheduler.md***
+# Backend\Luigi\002_Scheduler.md
 
-# Luigi Scheduler
+## Luigi Scheduler
 
 Source: https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-4-running-the-luigi-scheduler
 
@@ -8570,9 +8570,9 @@ By default, Luigi tasks run using the Luigi scheduler. To run one of your previo
 ```commandline
 python -m luigi --module word-frequency GetTopBooks
 ```
-***Backend\Luigi\003_Parameters.md***
+# Backend\Luigi\003_Parameters.md
 
-# Luigi parameters
+## Luigi parameters
 
 Sources: 
 * https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-5-downloading-the-books
@@ -8588,7 +8588,7 @@ Luigi has few different type of parameters which is self describing by their nam
 * DictParameter for a dictionary of items
 
 ```python
-# word-frequency.py
+## word-frequency.py
 
 class DownloadBooks(luigi.Task):
     """
@@ -8624,9 +8624,9 @@ In this task you introduce a Parameter; in this case, an integer parameter. Luig
 ```commandline
 python -m luigi --module word-frequency DownloadBooks --FileID 2
 ```
-***Backend\Luigi\004_Config.md***
+# Backend\Luigi\004_Config.md
 
-# Luigi config
+## Luigi config
 
 Source: https://www.digitalocean.com/community/tutorials/how-to-build-a-data-processing-pipeline-using-luigi-in-python-on-ubuntu-20-04#step-7-defining-configuration-parameters
 
@@ -8669,17 +8669,17 @@ Config values may be overridden in command.
 ```commandline
 python -m luigi --module word-frequency TopWords --GlobalParams-NumberBooks 15 --GlobalParams-NumberTopWords 750
 ```
-***Backend\pytest\001_Installation.md***
+# Backend\pytest\001_Installation.md
 
-# Instalacja
+## Instalacja
 Instalacja biblioteki pytest oraz pluginu do sprawdzenia pokrycia kodu testami.
 ```commandline
 pip install pytest
 pip install pytest-cov
 ```
-***Backend\pytest\002_Base_operations.md***
+# Backend\pytest\002_Base_operations.md
 
-# Podstawowe operacje
+## Podstawowe operacje
 Żeby zdefiniować test konieczne jest utworzenie funkcji rozpoczynającej się od słowa "test". Przykład:
 ```python
 def test_sum() -> None:  
@@ -8699,14 +8699,14 @@ Raport o pokryciu testami i ze wskazaniem nieprzetestowanych fragmentów kodu:
 ```commandline
 coverage html
 ```
-# Uruchomienie testów
+## Uruchomienie testów
 W celu uruchomienia napisanych testów w konsoli należy wpisać następującą komendę:
 ```
 py.test
 ```
-***Backend\pytest\003_Exceptions_testing.md***
+# Backend\pytest\003_Exceptions_testing.md
 
-# Testowanie wyjątków
+## Testowanie wyjątków
 Jeżeli dany test ma sprawdzić wystąpienie wyjątku, należy użyć konstrukcji **with pytest.raises([nazwa_wyjątku])**.
 ```python
 from pay.processor import PaymentProcessor  
@@ -8719,9 +8719,9 @@ def test_api_key_invalid() -> None:
         processor = PaymentProcessor("")  
         processor.charge("1249190007575069", 12, 2024, 100)
 ```
-***Backend\pytest\004_Parametrize.md***
+# Backend\pytest\004_Parametrize.md
 
-# Parametryzacja testów
+## Parametryzacja testów
 Żeby uniknąć konieczności kopiowania i wykonywania testów dla różnych danych możliwe jest parametryzowanie testów.
 Testujemy metodę find_hashtags() klasy Twitter, która wyszukuje słów oznaczonych hashtagiem w podanej wiadomości.
 ```python
@@ -8746,10 +8746,10 @@ def test_tweet_with_hashtag(message, expected):
 
 Jako pierwszy argument dekoratora podane są nazwy zmiennych, które chcemy przekazać do testu (w tym przypadku "message" oraz "expected"). Jako drugi argument przekazana jest tupla, zawierające poszczególne zestawy wartości do testowania.
 
-***Backend\pytest\005_Fixture.md***
+# Backend\pytest\005_Fixture.md
 
-# Fixtures
-## Podstawowy fixture
+## Fixtures
+### Podstawowy fixture
 W celu przygotowania parametrów wejściowych do testów, które można wielokrotnie wykorzystać używa się tzw. fixtures. 
 Mamy dwa testy testujące klasę Twitter. W obu tych testach inicjalizowany jest obiekt klasy Twitter.
 ```python
@@ -8778,7 +8778,7 @@ def test_tweet_single_message(twitter):
     twitter.tweet('Test message')  
     assert twitter.tweets == ['Test message']
 ```
-## Fixture jako generator
+### Fixture jako generator
 Fixture z punktu 7.1. można również napisać w formie generatora.
 ```python
 @pytest.fixture  
@@ -8788,7 +8788,7 @@ def twitter():
     twitter.delete()
 ```
 W takiej sytuacji w momencie wykonywania testu na fixturze będącym generatorem wykonywana jest po raz pierwszy metoda \_\_next\_\_(), która zwraca obiekt klasy Twitter. W momencie zakończenia testu na fixturze wykonywana jest po raz drugi metoda \_\_next\_\_, co zgodnie z działaniem generatorów prowadzi do wykonania metody twitter.delete() i zwrócenia wyjątku StopIteration. Mechanizm ten jest często wykorzystywany w testach do wykonania dodatkowych operacji przy zakończeniu testu.
-## Request jako argument fixture'a
+### Request jako argument fixture'a
 Do fixture'a można również przekazać argument request, który zawiera dodatkowe dane związane z kontekstem wykonywanego testu.
 ```python
 @pytest.fixture  
@@ -8797,7 +8797,7 @@ def twitter(request):
     yield twitter  
     twitter.delete()
 ```
-## Parametryzacja fixture'ów
+### Parametryzacja fixture'ów
 Request można również wykorzystać do parametryzowania fixture'ów. W fixturze twitter chcemy zainicjować klasę Twitter z dwoma różnymi parametrami. W tym celu do dekoratora przekazujemy żądane parametry w zmiennej param.
 ```python
 @pytest.fixture(params=[None, 'test.txt'])  
@@ -8807,7 +8807,7 @@ def twitter(request):
     twitter.delete()
 ```
 W takiej sytuacji wszystkie testy wykorzystujące ten fixture zostaną wykonane dwukrotnie - raz z wartością parametru None, a raz z wartością 'test.txt'.
-## Tymczasowe pliki
+### Tymczasowe pliki
 Aby utworzyć tymczasowe pliki w ramach fixture'a możliwe jest skorzystanie z tymczasowej ścieżki tmpdir. Po wykonaniu testu plik taki zostanie natychmiastowo usunięty.
 ```python
 @pytest.fixture  
@@ -8816,7 +8816,7 @@ def backend(tmpdir):
     temp_file.write('')  
     return temp_file
 ```
-## getfixturevalue
+### getfixturevalue
 Istnieje możliwość niepodawania fixture'a jako argumentu testu, ale wyciągnięcie go przy użyciu jego nazwy. Jest to przydatne w sytuacji, gdzie ten sam test chcemy wykonać dla różnych fixture'ów. Nie działa to jednak dobrze w przypadku sparametryzowanych fixture'ów.
 ```python
 @pytest.mark.parametrize('file_type', ('zip_file', 'tar_file'))
@@ -8824,7 +8824,7 @@ def test_file(self, file_type: str, request):
 	file = request.getfixturevalue(file_type)
 	...
 ```
-## yield in fixture
+### yield in fixture
 
 You can run part of a fixture before and part after a test using yield instead of return. For example:
 ```python
@@ -8845,9 +8845,9 @@ def database():
     os.unlink(file_name)
 ```
 
-***Backend\pytest\006_Monkey_patching.md***
+# Backend\pytest\006_Monkey_patching.md
 
-# Monkey patching
+## Monkey patching
 Monkey patching "nadpisuje" elementy programu np. funkcje innymi mechanizmami. Poniżej przyklad zastąpienia funkcji input.
 
 ```python
@@ -8856,7 +8856,7 @@ from pay.payment import pay_order
 from pytest import MonkeyPatch  
   
 
-# klasa MonkeyPatch musi być przekazana jako argument funkcji
+## klasa MonkeyPatch musi być przekazana jako argument funkcji
 def test_pay_order(monkeypatch: MonkeyPatch) -> None:
 	# Przygotowanie inputów  
     inputs = ["1249190007575069", "12", "2024"]  
@@ -8872,11 +8872,11 @@ Do monkey patchingu można wykorzystać też funkcjonalność fixture'ów. Poni�
 def no_requests(monkeypatch):  
     monkeypatch.delattr('requests.sessions.Session.request')
 ```
-***Backend\pytest\007_Mocking.md***
+# Backend\pytest\007_Mocking.md
 
-# Mockowanie
+## Mockowanie
 W celu zastąpienia pewnych obiektów / systemów w ramach testowania wykorzystywane jest tzw. mockowanie. Proces ten polega na umieszczeniu "atrapy" domyślnie używanego obiektu, która przejmie jego funkcje w czasie testowania. Jest to bardziej zaawansowana forma monkey patchingu.
-## unittest
+### unittest
 Możliwe jest użycie metody context managera patch z biblioteki unittest, który dla wskazanej funkcji zwraca określoną w zmiennej return_value wartość.
 ```python
 from unittest.mock import patch
@@ -8966,9 +8966,9 @@ Traceback (most recent call last):
     raise AttributeError("Mock object has no attribute %r" % name)
 AttributeError: Mock object has no attribute 'create_event'
 ```
-## pytest
+### pytest
 
-### monkeypatch
+#### monkeypatch
 To use mocking in pytest pass ```monkeypatch``` argument in test arguments.
 
 ```python
@@ -9007,7 +9007,7 @@ We used pytest's monkeypatch fixture to replace all calls to the get method from
 
 We used an object because requests returns a Response object.
 
-### unittest.mock.create_autospec
+#### unittest.mock.create_autospec
 We can simplify the tests with the create_autospec method from the unittest.mock module. This method creates a mock object with the same properties and methods as the object passed as a parameter:
 
 ```python
@@ -9037,9 +9037,9 @@ def test_get_my_ip(monkeypatch):
 
     assert get_my_ip() == my_ip
     ```
-***Backend\pytest\008_Skipping_test.md***
+# Backend\pytest\008_Skipping_test.md
 
-# Pominięcie testu
+## Pominięcie testu
 Istnieje możliwość pominięcia testu w przypadku, gdy dla danych parametrów nie chcemy go wykonywać.
 ```python
 def test_tweet_with_username(twitter):  
@@ -9048,9 +9048,9 @@ def test_tweet_with_username(twitter):
     twitter.tweet('Test message')  
     assert twitter.tweets == [{'message': 'Test message', 'avatar': 'test'}]
 ```
-***Backend\pytest\009_conftest.md***
+# Backend\pytest\009_conftest.md
 
-# Plik conftest.py
+## Plik conftest.py
 Plik conftest.py to plik konfiguracyjny dla testów pytestowych, gdzie można np:
 *  Składować wielokrotnie używane fixtury, które będą automatycznie wykryte przez testy zdefiniowane w innych plikach.
 * Ustalić czynności, które mają zostać wykonane przed wszystkimi testami, np:
@@ -9060,9 +9060,9 @@ def pytest_runtest_setup():
 	print('Start test')
 ```
 
-***Backend\pytest\010_Coverage.md***
+# Backend\pytest\010_Coverage.md
 
-# Coverage
+## Coverage
 
 Source: https://testdriven.io/courses/django-rest-framework/full-test-coverage/#H-11-test-coverage
 
@@ -9106,9 +9106,9 @@ There's a command that adds the line numbers that don't have code coverage to th
 ```commandline
 (venv)$ python -m pytest --cov-report term-missing --cov=shopping_list
 ```
-***Backend\Python\Concurrent_programming\001_Threading.md***
+# Backend\Python\Concurrent_programming\001_Threading.md
 
-# Obsługa wątków
+### Obsługa wątków
 Do obsługi wątków w Pythonie służy zapożyczony z Javy moduł threading.
 ```python
 import threading
@@ -9122,8 +9122,8 @@ class Task(threading.Thread):
 Task().start()
 print('program finished')
 
-# program finished
-# task done
+### program finished
+### task done
 ```
 Ostatnia linia powyższego kodu wykonała się w trakcie trwania programu. Jeżeli program ma czekać na wykonanie taska, konieczne jest zastosowanie metody .join() na tym tasku, lub określenie go jako daemon
 ```python
@@ -9136,13 +9136,13 @@ class Task(threading.Thread):
 		print('task done')
 
 task = Task()
-# task.daemon = True
+### task.daemon = True
 task.start()
 task.join()
 print('program finished')
 
-# task done
-# program finished
+### task done
+### program finished
 ```
 Tworzenie wątków jako klas jest niezalecane ze względu na konieczność dziedziczenia z modułu threading. Zamiast tego pisze się je funkcyjnie.
 
@@ -9176,10 +9176,10 @@ def on_start():
 	print('--- RACE STARTED ---') 
 
 horse_names = ('Alfie', 'Daisy', 'Unity')
-# Barrier jako pierwszy argument przyjmuje liczbę wątków, które ma zatrzymać. Po zatrzymaniu podanej liczby uruchamia je ponownie.
+### Barrier jako pierwszy argument przyjmuje liczbę wątków, które ma zatrzymać. Po zatrzymaniu podanej liczby uruchamia je ponownie.
 barrier = threading.Barrier(len(horse_names), action=on_start)
 
-# Inicjalizacja osobnego wątku dla każdego konia
+### Inicjalizacja osobnego wątku dla każdego konia
 horses = [
 	threading.Thread(target=horse, args=(name,))
 	for name in horse_names
@@ -9188,7 +9188,7 @@ horses = [
 for horse in horses:
 	horse.start()
 
-# Użycie drugiej pętli jest konieczne, ponieważ gdyby zastosować join() zaraz po użyciu start() dla jednego wątku, pozostałe wątki nie mogłyby się rozpocząć dopóki pierwszy by się nie zakończył
+### Użycie drugiej pętli jest konieczne, ponieważ gdyby zastosować join() zaraz po użyciu start() dla jednego wątku, pozostałe wątki nie mogłyby się rozpocząć dopóki pierwszy by się nie zakończył
 for horse in horses:
 	horse.join()
 ```
@@ -9214,9 +9214,9 @@ threading.Thread(target=on_key_press).start()
 
 finished.set()
 ```
-***Backend\Python\Concurrent_programming\002_Queues.md***
+# Backend\Python\Concurrent_programming\002_Queues.md
 
-# Kolejki
+### Kolejki
 
 ```python
 import queue
@@ -9248,9 +9248,9 @@ for _ in range(5):
 
 q.join()
 ```
-***Backend\Python\Concurrent_programming\003_Processes.md***
+# Backend\Python\Concurrent_programming\003_Processes.md
 
-# Procesy
+### Procesy
 ```python
 from multiprocessing import Process
 
@@ -9262,15 +9262,15 @@ if __name__ == '__main__':
 	p.start()
 	p.join()
 ```
-***Backend\Python\Concurrent_programming\004_asyncio.md***
+# Backend\Python\Concurrent_programming\004_asyncio.md
 
-# asyncio
+### asyncio
 Bilbioteka asyncio wykorzystywana jest do przetwarzania asynchronicznego. Poniżej przykład jej zastosowaniu w ciągu Fibonacciego.
 
 ```python
 import asyncio
 
-# Zdefiniowanie korutyny
+### Zdefiniowanie korutyny
 async def fib(n):
 	if n < 2:
 		return n
@@ -9290,13 +9290,13 @@ finally:
 	loop.close()
 ```
 
-***Backend\Python\Dataclasses\001_Base_dataclasses.md***
+# Backend\Python\Dataclasses\001_Base_dataclasses.md
 
-# Dataclasses
+### Dataclasses
 
 Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535932
 
-## Intro
+#### Intro
 
 Instead of usual class definitions, dataclasses enables to get rid of boilerplate code and define object oriented mainly on data instead of behaviour.
 
@@ -9318,9 +9318,9 @@ class Vehicle:
     license_plate: str
     fuel_type: FuelType = FuelType.ELECTRIC
 ```
-***Backend\Python\Dataclasses\002_Default_values.md***
+# Backend\Python\Dataclasses\002_Default_values.md
 
-# Default values
+### Default values
 
 >Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535932
 
@@ -9367,9 +9367,9 @@ class Vehicle:
     accessories: list[Accessory] = field(default_factory=lambda: [Accessory.AIRCO])
 ```
 
-***Backend\Python\Dataclasses\003_Protected_values.md***
+# Backend\Python\Dataclasses\003_Protected_values.md
 
-# Protected values
+### Protected values
 
 >Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535932
 
@@ -9384,9 +9384,9 @@ class Vehicle:
 
 It will end up with error if during initialization field `accessories` will be provided.
 
-***Backend\Python\Dataclasses\004_Post_init.md***
+# Backend\Python\Dataclasses\004_Post_init.md
 
-# __post_init__
+### __post_init__
 
 >Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535932
 
@@ -9399,9 +9399,9 @@ class Vehicle:
     def __post_init__(self):
         self.license_plate = generate_vehicle_license()
 ```
-***Backend\Python\Dataclasses\005_Read-only_instances.md***
+# Backend\Python\Dataclasses\005_Read-only_instances.md
 
-# Read-only dataclass instance
+### Read-only dataclass instance
 
 >Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535932
 
@@ -9414,19 +9414,19 @@ class Vehicle:
 ```
 
 >It will also disable all operations performed in `__post_init__` method! You can use `field(default_factory=)` as workaround.
-***Backend\Python\Data_containers\001_Array.md***
+# Backend\Python\Data_containers\001_Array.md
 
-# Array
+### Array
 Struktura danych przypominająca działaniem array stosowany np. w C i służy między innymi do komunikacji z softem pisanym w tym języku. 
 ```python
 import array
 
-# Konieczne zadeklarowanie typu zmiennych.
+### Konieczne zadeklarowanie typu zmiennych.
 example = array.array('b')
 ```
-***Backend\Python\Data_containers\002_ChainMap.md***
+# Backend\Python\Data_containers\002_ChainMap.md
 
-# ChainMap
+### ChainMap
 Struktura umożliwiająca połączenie dwóch słowników. W przypadku, gdy w którymś ze składowych słowników zajdzie jakaś zmiana, będzie ona uwzględniona w obiekcie ChainMap.
 ```python
 from collections import ChainMap
@@ -9440,26 +9440,26 @@ maps = d,maps # lista słowników w kolejności, w jakiej zostały dodane[{'colo
 ```
 Przy próbie podania wartości dla już istniejącego klucza w ChainMap pozostanie pierwotna wartość.
 
-***Backend\Python\Data_containers\003_Counter.md***
+# Backend\Python\Data_containers\003_Counter.md
 
-# Counter
+### Counter
 Zlicza ilość wystąpień elementów w sekwencji.
 ```python
 from collections import Counter
 
 c = Counter('abbac') 
-# Counter({'a': 2, 'b': 2, 'c': 1})
+### Counter({'a': 2, 'b': 2, 'c': 1})
 
 c['x'] 
-# Zwraca 0 zamiast wyjątku
+### Zwraca 0 zamiast wyjątku
 
 c.most_common() 
-# Zwraca posortowaną listę od najczęściej występującego elementu
-# [('a', 2), ('b', 2), ('c', 1)]
+### Zwraca posortowaną listę od najczęściej występującego elementu
+### [('a', 2), ('b', 2), ('c', 1)]
 ```
-***Backend\Python\Data_containers\004_defaultdict.md***
+# Backend\Python\Data_containers\004_defaultdict.md
 
-# defaultdict
+### defaultdict
 Pozwala na uproszczenie i przyspieszenie kodu, którego celem jest np. budowa słownika. Przykładowo - poniżej kod, którego celem jest zbudowanie słownika, gdzie kluczem jest długość imienia, a wartością - lista podanych w sekwencji imion.
 ```python
 names_by_length = {}
@@ -9469,7 +9469,7 @@ for name in ('bob', 'alice', 'max', 'adam', 'eve'):
 		names_by_length[key] = []
 	names_by_length[key].append(name)
 	
-# names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
+### names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
 ```
 Ten sam efekt można uzyskać używając defaultdict. W przypadku, gdy kod sięga do słownika przy użyciu nieistniejącego klucza wykonywana jest funkcja podana jako argument przy inicjalizacji defaultdicta (w tym przypadku funkcja list()).
 
@@ -9477,16 +9477,16 @@ Ten sam efekt można uzyskać używając defaultdict. W przypadku, gdy kod sięg
 from collections import defaultdict
 
 names_by_length = defaultdict(list)
-# argument "list" oznacza, że przy próbie wyciągnięcia danych dla nieistniejącego klucza zostanie utworzona pusta lista
+### argument "list" oznacza, że przy próbie wyciągnięcia danych dla nieistniejącego klucza zostanie utworzona pusta lista
 
 for name in ('bob', 'alice', 'max', 'adam', 'eve'):
 	names_by_length[len(name)].append(name)
 	
-# names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
+### names_by_length = {3: ['bob', 'max', 'eve'], 4: ['adam'], 5: ['alice']}
 ```
-***Backend\Python\Data_containers\005_OrderedDict.md***
+# Backend\Python\Data_containers\005_OrderedDict.md
 
-# OrderedDict
+### OrderedDict
 Słownik zachowujący porządek wstawianych kluczy. Wykorzystuje wewnętrznie listę dwukierunkową.
 ```python
 from collections import OrderedDict
@@ -9497,34 +9497,34 @@ row['firstName'] = 'Jan'
 row['lastName'] = 'Kowalski'
 
 list(row.items())
-# Poszczególne elementy słownika są zachowana w kolejności, w jakiej zostały dodane
-# [('id', '123'), ('firstName', 'Jan'), ('lastName', 'Kowalski')]
+### Poszczególne elementy słownika są zachowana w kolejności, w jakiej zostały dodane
+### [('id', '123'), ('firstName', 'Jan'), ('lastName', 'Kowalski')]
 ```
-***Backend\Python\Data_containers\006_deque.md***
+# Backend\Python\Data_containers\006_deque.md
 
-# deque
+### deque
 Nazwa to skrót od "double ended queue". Wykorzystuje wewnętrznie listę dwukierunkową. Deque może służyć np. do składowania historii operacji. 
 Dla określonej liczby elementów deque zachowuje ich kolejność przy użyciu wskaźnika początkowego i końcowego. Przy dodaniu nowego elementu wskaźnik końcowy wskazuje na nowy element, za to wskaźnik początkowy przenosi się na następujący po dotychczasowym elemencie początkowym.
 ```python
 from collections import deque
 
 history = deque(maxlen=3)
-# maxlen określa maksymalną długość kolejki
+### maxlen określa maksymalną długość kolejki
 
 text = "Houston we have a problem"
 for word in text.split():
 	history.append(word)
 
-# W czasie iteracji zmienna history będzie zawierać zawsze 3 elementy, gdzie dodanie nowego elementu będzie usuwać pierwszy element z listy, jeżeli będzie ona miała długość równą maxlen
+### W czasie iteracji zmienna history będzie zawierać zawsze 3 elementy, gdzie dodanie nowego elementu będzie usuwać pierwszy element z listy, jeżeli będzie ona miała długość równą maxlen
 
 history.popleft()
-# Usuwa element z lewej (początkowej) strony kolejki
+### Usuwa element z lewej (początkowej) strony kolejki
 history.appendleft('not')
-# Dodaje element na początku kolejki
+### Dodaje element na początku kolejki
 ```
-***Backend\Python\Data_containers\007_namedtuple.md***
+# Backend\Python\Data_containers\007_namedtuple.md
 
-# namedtuple
+### namedtuple
 Namedtuple to po prostu tuple z nazwanymi polami
 ```python
 import collections import namedtuple
@@ -9532,16 +9532,16 @@ import collections import namedtuple
 p = 1, 2
 Point = namedtuple('Point', ['x', 'y'])
 Point(*p)
-# Point(x=1, x=2)
+### Point(x=1, x=2)
 d = {'x': 3, 'y': 4}
 Point(**d)
-# Point(x=3, x=4)
+### Point(x=3, x=4)
 Point(x=5, y=6)
-# Point(x=5, x=6)
+### Point(x=5, x=6)
 ```
-***Backend\Python\Data_containers\008_enum.md***
+# Backend\Python\Data_containers\008_enum.md
 
-# enum
+### enum
 
 Moduł pozwalający na tworzenie typów wyliczeniowych.
 ```python
@@ -9553,39 +9553,39 @@ class Season(Enum):
 	AUTUMN = 3
 	WINTER = 4
 
-# printing enum member as string
+### printing enum member as string
 Season.SPRING
-# Season.SPRING
+### Season.SPRING
 
-# printing name of enum member using "name" keyword
+### printing name of enum member using "name" keyword
 print(Season.SPRING.name)
-# SPRING
+### SPRING
 
-# printing value of enum member using "value" keyword
+### printing value of enum member using "value" keyword
 print(Season.SPRING.value)
-# 1
+### 1
 
-# printing the type of enum member using type()
+### printing the type of enum member using type()
 print(type(Season.SPRING))
-# <enum 'Season'>
+### <enum 'Season'>
 
-# printing enum member as repr
+### printing enum member as repr
 print(repr(Season.SPRING))
-# <Season.SPRING: 1>
+### <Season.SPRING: 1>
 
-# printing all enum member using "list" keyword
+### printing all enum member using "list" keyword
 print(list(Season))
-# [<Season.SPRING: 1>, <Season.SUMMER: 2>, <Season.AUTUMN: 3>, <Season.WINTER: 4>]
+### [<Season.SPRING: 1>, <Season.SUMMER: 2>, <Season.AUTUMN: 3>, <Season.WINTER: 4>]
 ```
-***Backend\Python\Functional_programming\001_Higher_order_functions.md***
+# Backend\Python\Functional_programming\001_Higher_order_functions.md
 
-# Higher order functions
+### Higher order functions
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150904384/posts/2160071945
 Functions that may take other function as an argument and/or return function as a return value.
 
 ```python
-# This is higher-order function
+### This is higher-order function
 def send_email_promotion(customers: list[Customer], is_eligible: Callable[[Customer], bool]) -> None:
     for customer in customers:
         if is_eligible(customer):
@@ -9608,18 +9608,18 @@ def main() -> None:
     # send_email_promotion(customers, lambda customer: customer.age >= 50)
 ```
 
-## map
+#### map
 Wykonuje wskazaną funkcję na każdym elemencie podanej sekwencji i zwraca listę wyników tej funkcji
 ```python 
-# Zwraca iterator pozycji poszczególnych elementów stringa w Unicode
+### Zwraca iterator pozycji poszczególnych elementów stringa w Unicode
 map(ord, 'zażółć gęślą jaźń') 
 ```
-## filter
+#### filter
 Filtruje sekwencje bazując podanej funkcji.
 ```python 
 filter(str.isupper, 'Hello World') 
 ```
-## functools.reduce
+#### functools.reduce
 Iteruje po elementach sekwencji i redukuje ją do pojedynczej wartości.
 **Przykład 1: Sumowanie liczb**
 ```python
@@ -9628,11 +9628,11 @@ from functools import reduce
 
 numbers = [42, 15, 2, 33]
 
-# Pierwsza wartość funkcji to tzw. akumulator, na którym wykonywane są operacje bazujące na drugim argumencie
+### Pierwsza wartość funkcji to tzw. akumulator, na którym wykonywane są operacje bazujące na drugim argumencie
 def f(subtotal, number):
 	return subtotal + number
 
-#reduce(f, numbers)
+###reduce(f, numbers)
 reduce(operator.add, numbers)
 ```
 **Przykład 2: Grupowanie liczb parzystych i nieparzystych**
@@ -9649,9 +9649,9 @@ def f(grouped, number):
 
 reduce(f, numbers, {'even': [], 'odd': []})
 ```
-***Backend\Python\Functional_programming\002_Nested_functions.md***
+# Backend\Python\Functional_programming\002_Nested_functions.md
 
-# Funkcje zagnieżdżone
+### Funkcje zagnieżdżone
 Jako, że funkcje to typ pierwszoklasowy, można je bez ograniczeń zagnieżdżać. Stosowanie funkcji zagnieżdżonych umożliwia ukrywanie implementacji. Funkcja zagnieżdżona ma zasięg lokalny, przez co ma bezpośredni dostęp do argumentów przekazanych do funkcji nadrzędnej.  
 ```python
 def selection_sort(items):
@@ -9674,9 +9674,9 @@ def selection_sort(items):
 items = ['bob', 'alice', 'max']
 selection_sort(items) 
 ```
-***Backend\Python\Functional_programming\003_Variables_scope.md***
+# Backend\Python\Functional_programming\003_Variables_scope.md
 
-# Zasięg zmiennych
+### Zasięg zmiennych
 Wartości zmiennych wyszukiwane są w kolejności LEGB - local, enclosed, global, built-in.
 ```python
 %reset -f
@@ -9694,19 +9694,19 @@ def outer():
 outer()
 print(x)
 
-# local
-# enclosed
-# global
+### local
+### enclosed
+### global
 ```
-***Backend\Python\Functional_programming\004_Closures.md***
+# Backend\Python\Functional_programming\004_Closures.md
 
-# Closures
+### Closures
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150904384/posts/2160071962
 
 Functions defined within the function. It enables to pass variables to Callable types of arguments
 
-## Manual closure
+#### Manual closure
 
 ```python
 
@@ -9732,7 +9732,7 @@ def main() -> None:
     send_email_promotion(customers, is_eligible_closure(50))
 ```
 
-## functools.partial
+#### functools.partial
 
 Same effect may be achieved by using partial function from functools package.
 
@@ -9757,9 +9757,9 @@ def main() -> None:
     is_eligible = partial(is_eligible_for_promotion, cutoff_age=25)
     send_email_promotion(customers, is_eligible(50))
 ```
-***Backend\Python\Functional_programming\005_Partial_functions.md***
+# Backend\Python\Functional_programming\005_Partial_functions.md
 
-# Funkcje cząstkowe
+### Funkcje cząstkowe
 Funkcje wykonujące działanie innej funkcji, ale z mniejszą wymaganą do podania liczbą argumentów.
 
 ```python
@@ -9768,20 +9768,20 @@ from functools import partial
 def quadratic(x, a, b, c):
 	return a*x**2 + b*x + c
 
-# Funkcja cząstkowa - zapis 1
+### Funkcja cząstkowa - zapis 1
 def y(x):
 	return quadratic(x, 3, 1, -4)
 
-# Funkcja cząstkowa - zapis 2
+### Funkcja cząstkowa - zapis 2
 y = partial(quadratic, a=3, b=1, c=-4)
 ```
-***Backend\Python\Good practices\7_principles_of_modern_software_design\001_Favor_composition_over_inheritance.md***
+# Backend\Python\Good practices\7_principles_of_modern_software_design\001_Favor_composition_over_inheritance.md
 
-# Composition over inheritance
+#### Composition over inheritance
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150529699/posts/2153184357
 
-## Example of calculating salary for employees
+##### Example of calculating salary for employees
 
 ```python
 from dataclasses import dataclass
@@ -9858,7 +9858,7 @@ In this case we have three separate classes for three types of employees - `Hour
 
 All of them has `compute_pay()` method defined and demands specific fields for pay calculation.
 
-## Usual refactoring using inheritance
+##### Usual refactoring using inheritance
 
 ```python
 from dataclasses import dataclass
@@ -9948,7 +9948,7 @@ In this way of refactoring initial code calculation of commission (that was comm
 
 All `WithCommision` child classes do their job, but they provide exactly the same functionality, so it ends up with code duplication.
 
-## Refactoring using composition
+##### Refactoring using composition
 
 ```python
 from dataclasses import dataclass, field
@@ -10035,15 +10035,15 @@ Protocol `PaymentSource` defines, how payment source should look like for typing
 `Employee` object represents all employees, that may have many payment sources.
 
 Computing pay in `compute_pay()` method works for all payment sources as according to defined protocol they share the same interface.
-***Backend\Python\Good practices\7_principles_of_modern_software_design\002_High_cohesion.md***
+# Backend\Python\Good practices\7_principles_of_modern_software_design\002_High_cohesion.md
 
-# High cohesion
+#### High cohesion
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150528069/posts/2153184358
 
 We can say that function has high cohesion, when it has single responsibility and uses other classes and functions to do other things.
 
-## Order class with low cohesion
+##### Order class with low cohesion
 
 ```python
 class Order:
@@ -10086,7 +10086,7 @@ if __name__ == "__main__":
 
 `Order` class has many responsibilities - it handles adding new items to order and paying for order with many payment types.
 
-## Order with high cohesion
+##### Order with high cohesion
 
 ```python
 from enum import Enum, auto
@@ -10142,18 +10142,18 @@ if __name__ == "__main__":
 After minor refactoring `Order` class has only responsibility to add items and store order data.
 Payment processes were moved to separate `PaymentProcessor` class, where all payment types have separate method for handling payment.
 Statuses were changed to Enum instead of raw string.
-***Backend\Python\Good practices\7_principles_of_modern_software_design\003_Low_coupling.md***
+# Backend\Python\Good practices\7_principles_of_modern_software_design\003_Low_coupling.md
 
-# Low coupling
+#### Low coupling
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150527399/posts/2153184359
 
-## Coupling
+##### Coupling
 
 Coupling is degree in which all parts of code need each other to work. The lower coupling is the more modular your program becomes. 
 When coupling is low it's easy to reuse modules in many applications.
 
-## Types of coupling
+##### Types of coupling
 * Content coupling - when one class/method/function changes data in another class
 
 ```python
@@ -10179,7 +10179,7 @@ VEHICLE_DATA = {
 * Data coupling - when many functions/classes uses the same data/objects
 * Import coupling - when your application needs some third party libraries
 
-## Principle of Least Knowledge / Law of Demeter
+##### Principle of Least Knowledge / Law of Demeter
 
 It says that you have to try to create units that only have knowledge and talk to closely related units.
 
@@ -10211,16 +10211,16 @@ class Order:
         self.prices.append(price)
 ```
 
-***Backend\Python\Good practices\7_principles_of_modern_software_design\004_Start_with_the_data.md***
+# Backend\Python\Good practices\7_principles_of_modern_software_design\004_Start_with_the_data.md
 
-# Start with the data
+#### Start with the data
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150523714/posts/2153274137
 
 You need to put the behaviour as closely as possible to the data, that it needs. It will reduce number of data, 
 that you will need to pass along as parameters.
 
-## Before
+##### Before
 
 ```python
 from dataclasses import dataclass
@@ -10322,7 +10322,7 @@ if __name__ == "__main__":
     main()
 ```
 
-## After
+##### After
 
 Data about customer was moved from `RentalContract` dataclass to separate `Customer` dataclass.
 
@@ -10434,9 +10434,9 @@ if __name__ == "__main__":
     main()
 ```
 
-***Backend\Python\Good practices\7_principles_of_modern_software_design\005_Depend_on_Abstractions.md***
+# Backend\Python\Good practices\7_principles_of_modern_software_design\005_Depend_on_Abstractions.md
 
-# Depend on Abstractions
+#### Depend on Abstractions
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150479414/posts/2153274138
 
@@ -10446,8 +10446,8 @@ like abstract classes and protocols.
 You have to have one "dirty" place, where all your implementations starts to "live". If you need to change your code in 
 different your code in many places after minor change - you need to use more abstractions, because coupling is too high. 
 
-## Using typing as abstraction
-### Before
+##### Using typing as abstraction
+###### Before
 
 `__init__` method of `PaymentProcessor` class needing to "know" about all authorization methods, that exists in 
 separate module.
@@ -10466,7 +10466,7 @@ class PaymentProcessor:
             self.authorize = authorize_robot
 ```
 
-### After 
+###### After 
 Particular authorizing functions replaced with abstraction created with Python typing system. In this case `PaymentProcessor` 
 gets authorizing function as an argument instead of string. 
 
@@ -10481,9 +10481,9 @@ class PaymentProcessor:
         self.authorize = authorize
 ```
 
-## Using protocol for abstraction 
+##### Using protocol for abstraction 
 
-### Before
+###### Before
 `PaymentProcessor` dependent directly on `Order` class and changing it's params (so it needs to know about implementation details).
 
 ```python
@@ -10496,7 +10496,7 @@ class PaymentProcessor:
         print(f"Processing debit payment for amount: ${(order.total_price / 100):.2f}.")
         order.status = PaymentStatus.PAID
 ```
-### After
+###### After
 Instead of using `Order` class in `PaymentProcessor` implementation using `Payable` protocol providing methods and properties needed by `PaymentProcessor`. 
 
 ```python
@@ -10517,20 +10517,20 @@ class PaymentProcessor:
         print(f"Processing debit payment for amount: ${(payable.total_price / 100):.2f}.")
         payable.set_payment_status(PaymentStatus.PAID)
 ```
-***Backend\Python\Good practices\7_principles_of_modern_software_design\006_Separate_creation_from_use.md***
+# Backend\Python\Good practices\7_principles_of_modern_software_design\006_Separate_creation_from_use.md
 
-# Separate creation from use
+#### Separate creation from use
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150444017/posts/2153274140
 
 As a continuation of cohesion topic, where we want to split responsibilities we can go one step ahead and split 
 creating an object from using them. Factory pattern is a good way to do so.
 
-## Factory pattern
+##### Factory pattern
 
 The main point of Factory pattern is that we have a class that is responsible for creating objects.
 
-### Before
+###### Before
 
 `main` function is responsible for - receiving a user choice for video quality, creating Exporter objects and using selected Exporter objects,
 
@@ -10566,7 +10566,7 @@ def main() -> None:
     audio_exporter.do_export(folder)
 ```
 
-### After
+###### After
 
 Instead of creating objects in `main` functions, the one of Exporter classes (which are factories) is responsible to do so.
 
@@ -10664,18 +10664,18 @@ def main() -> None:
     # perform the exporting job
     do_export(factory)
 ```
-***Backend\Python\Good practices\7_principles_of_modern_software_design\007_Keep_things_simple.md***
+# Backend\Python\Good practices\7_principles_of_modern_software_design\007_Keep_things_simple.md
 
-# Keep things simple
+#### Keep things simple
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150437717/posts/2153274144
 
-## DRY
+##### DRY
 
 Don't repeat yourself. Remove duplications. But it's not always needed to create too generic replacements for existing duplication,
 let's keep things simple and easy to maintain.
 
-### Before 
+###### Before 
 
 ```python
 def read_vehicle_type() -> str:
@@ -10703,7 +10703,7 @@ def main():
     vehicle_color = read_vehicle_color()
 ```
 
-### After
+###### After
 
 ```python
 def read_choice(question: str, choices: list[str]) -> str:
@@ -10723,24 +10723,24 @@ def main():
     )
 ```
 
-## KISS
+##### KISS
 
 Keep it simple, stupid - this rule leads to not overcomplicating your code - do not use abstraction, protocols and other stuff,
 if the only thing you need to do is to add two integers.
 
-## YAGNI
+##### YAGNI
 
 You Ain't Gonna Need It - this rule speaks about not implementing something, that you don't need right now. Don't create extra 
 features - users will ask you for them if they will be needed.  
-***Backend\Python\Good practices\Basics\001_Language_properties.md***
+# Backend\Python\Good practices\Basics\001_Language_properties.md
 
-# WŁAŚCIWOŚCI JĘZYKA
-## 1.1. Przestrzenie nazw  
+#### WŁAŚCIWOŚCI JĘZYKA
+##### 1.1. Przestrzenie nazw  
 W pewnym sensie powiązane z zakresami są przestrzenie nazw. Są to zakresy zapewniające nam to, że nazwa danego obiektu będzie unikalna i że można z nich będzie korzystać bez ryzyka wystąpienia jakichkolwiek konfliktów. To swojego rodzaju zbiór nazw i definicji, które mogą mieć zastosowanie lokalne (podobnie jak zakresy, w obrębie funkcji), ale także globalnie, które określają nazwy dla całego kodu, zaimportowanych paczek. W Pythonie funkcjonują także wbudowane przestrzenie nazw kluczowych funkcji w tym języku, dzięki którym możemy mieć pewność, że utworzony przez nas obiekt nie będzie w konflikcie z którąkolwiek z wbudowanych funkcji Pythona.  
-## 1.2. Różnica między modułem i paczką  
+##### 1.2. Różnica między modułem i paczką  
 Zarówno moduły jak i paczki wykorzystywane są do modularyzacji kodu, co przekłada się na jego łatwość w utrzymaniu i ułatwia pracę z omówionymi już zakresami. Moduły są plikami zawierający zestaw zdefiniowanych instrukcji, klas i zmiennych. Można zaimportować zarówno całe moduły, jak i ich części.  
 Paczka w Pythonie zazwyczaj składa się z kilku modułów. Jest ona jednak na tyle przydatna, że określa dla nich przestrzenie nazw i eliminuje konflikty pomiędzy poszczególnymi modułami.  
-## 1.3. Zakresy  
+##### 1.3. Zakresy  
 Zakresy, czy też scope’y, w Pythonie nie różnią się od tego, co znamy z innych języków programowania. Scope to blok kodu, w którym działa dany obiekt i tylko w nim jest dostępny. Na przykład lokalny zakres odnosi się do wszystkich obiektów w danej funkcji, zaś zakres globalny będzie zawierał wszystkie obiekty w całym kodzie.  
 ```python
 x = 10             # zmienna globalna
@@ -10754,7 +10754,7 @@ def f():
 f()                # uruchomienie funkcji wydrukuje zmienną globalną x i zmienna lokalną y
 print(x)           # drukuje zmienną globalną x
 ```
-##   1.4. Typy wbudowane  
+#####   1.4. Typy wbudowane  
 - `str` – string, tekstowy typ danych,  
 - `int` – liczba,  
 - `float` – liczba zmiennoprzecinkowa,  
@@ -10770,20 +10770,20 @@ print(x)           # drukuje zmienną globalną x
 - `bytearray` – mutowalny wariant bytes,  
 - `memoryview` – dostęp do wewnętrznych danych obiektów obsługujących bufory protokołów.  
 
-## 1.5. PYTHONPATH  
+##### 1.5. PYTHONPATH  
 `PYTHONPATH` to zmienna środowiskowa pozwalająca wskazać dodatkowe lokalizacje, z których Python będzie mógł zaciągnąć moduły i paczki.  
-## 1.6. PEP8  
+##### 1.6. PEP8  
 PEP 8 to opracowany jeszcze w 2001 r. dokument, w którym opisane zostały najlepsze praktyki w zakresie pisania czytelnego kodu w Pythonie. Stanowi część oficjalnej dokumentacji języka. Stanowi on powszechnie respektowaną normę i w zasadzie stanowi lekturę obowiązkową dla każdego, kto chce programować w Pythonie. Z treścią dokumentu zapoznać się można na  [oficjalnej stronie Pythona](https://www.python.org/dev/peps/pep-0008/#introduction).
 
-***Backend\Python\Good practices\Being_responsible_developer\001_Mixins.md***
+# Backend\Python\Good practices\Being_responsible_developer\001_Mixins.md
 
-# Mixins
+#### Mixins
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150391101/posts/2153184360
 
 Mixin is a pattern that uses multiple inheritance to inject some additional behaviour to existing class.
 
-## Tradeoffs
+##### Tradeoffs
 
 1. Order of inheritance matters
 
@@ -10803,17 +10803,17 @@ So in that case Mixin class has to be always on the left to make sure that it's 
 It's strict that mixins should be groups of methods and should not contain any instance variables - otherwise they are 
 just usual classes. 
 
-## Better approach
+##### Better approach
 
 Instead of injecting additional methods to class it's better to use composition (as stands in "Favor composition over 
 inheritance" principle). It makes your code better to read and understand.
-***Backend\Python\Good practices\Being_responsible_developer\002_Setting_up_a_complex_software_project.md***
+# Backend\Python\Good practices\Being_responsible_developer\002_Setting_up_a_complex_software_project.md
 
-# Setting up a complex software project
+#### Setting up a complex software project
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150391480/posts/2153274176
 
-## Project files
+##### Project files
 
 * LICENSE
 * README.md
@@ -10821,7 +10821,7 @@ inheritance" principle). It makes your code better to read and understand.
 * .pylintrc
 * .gitignore
 
-## Project folders
+##### Project folders
 
 * assets - images, json files, pdfs, other data files
 * docs - documentation files for users
@@ -10831,41 +10831,41 @@ inheritance" principle). It makes your code better to read and understand.
 * tests - unit tests
 * tools - script for development purposes
 
-## Modules and packages
+##### Modules and packages
 
 Every file in Python is considered as module and every directory is considered as package.
 
-## Import tips
+##### Import tips
 
 ```python
-# OK
+#### OK
 from package_1.file_1 import function_1
 from package import file
 import package
 
-# Not OK
+#### Not OK
 from package_1.file_1 import *
 ```
 
-## Code organising
+##### Code organising
 
 Avoid generic packages names like utils, helpers, etc. It would lead to group unrelated things in single package - 
 we need to avoid that. Better solution is to split it into smaller packages focused on particular goal.  
 
-## Architecture as structure
+##### Architecture as structure
 
 To make code organization easier you can translate picked architecture to directories in application. Example: if you use 
 Model-View-Controller architecture pattern you can create model, view, controller directories to store logic for particular architecture part.
 
-***Backend\Python\Good practices\Clean_code\000_Sources.md***
+# Backend\Python\Good practices\Clean_code\000_Sources.md
 
-## Sources
+##### Sources
 [1] https://testdriven.io/blog/clean-code-python
 
-***Backend\Python\Good practices\Clean_code\001_Code_standards.md***
+# Backend\Python\Good practices\Clean_code\001_Code_standards.md
 
-# Code standards
-## PEP 8
+#### Code standards
+##### PEP 8
 PEP 8 naming conventions:
 * class names should be CamelCase (MyClass)
 * variable names should be snake_case and all lowercase (first_name)
@@ -10895,7 +10895,7 @@ PEP 8 comments:
 -   comments should have a space after the # sign with the first word capitalized
 -   multi-line comments used in functions (docstrings) should have a short single-line description followed by more text
 
-## Pythonic Code
+##### Pythonic Code
 There's a big difference between writing Python code and writing Pythonic code. To write Pythonic code you can't just idiomatically translate another language (like Java or C++) to Python; you need to be thinking in Python to being with.
 Let's look at an example. We have to add the first 10 numbers together like so  `1 + 2 + ... + 10`.
 
@@ -10917,7 +10917,7 @@ sum_all = sum(range(1, n + 1))
 
 print(sum_all)  # 55
 ```
-## The Zen of Python
+##### The Zen of Python
 ```
 >>> import this
 
@@ -10943,22 +10943,22 @@ If the implementation is hard to explain, it's a bad idea.
 If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!
 ```
-***Backend\Python\Good practices\Clean_code\002_Code_principles.md***
+# Backend\Python\Good practices\Clean_code\002_Code_principles.md
 
-# Code Principles
-## DRY (Don't repeat yourself)
+#### Code Principles
+##### DRY (Don't repeat yourself)
 This is one of the simplest coding principles. Its only rule is that code should not be duplicated. Instead of duplicating lines, find an algorithm that uses iteration. DRY code is easily maintainable. You can take this principle even further with model/data abstraction.
 
 The cons of the DRY principle are that you can end up with too many abstractions, external dependency creations, and complex code. DRY can also cause complications if you try to change a bigger chunk of your codebase. This is why you should avoid DRYing your code too early. It's always better to have a few repeated code sections than wrong abstractions.
-## KISS (Keep it simple, stupid)
+##### KISS (Keep it simple, stupid)
 The KISS principle states that most systems work best if they are kept simple rather than made complicated. Simplicity should be a key goal in design, and unnecessary complexity should be avoided.
-## SoC (Separation of concerns)
+##### SoC (Separation of concerns)
 SoC is a design principle for separating a computer program into distinct sections such that each section addresses a separate concern. A concern is a set of information that affects the code of a computer program.
 
 A good example of SoC is  MVC (Model - View - Controller).
 
 If you decide to go with this approach be careful not to split your app into too many modules. You should only create a new module when it makes sense to do so. More modules equals more problems.
-## SOLID
+##### SOLID
 SOLID is extremely useful when writing OOP code. It talks about splitting your class into multiple subclasses, inheritance, abstraction, interfaces, and more.
 
 It consists of the following five concepts:
@@ -10969,9 +10969,9 @@ It consists of the following five concepts:
 -   The  **I**nterface segregation principle: "A client should not be forced to implement an interface that it doesn’t use."
 -   The  **D**ependency inversion principle: "Depend upon abstractions, not concretions."
 
-***Backend\Python\Good practices\Clean_code\003_Code_formatters.md***
+# Backend\Python\Good practices\Clean_code\003_Code_formatters.md
 
-# Code Formatters
+#### Code Formatters
 The most popular Python code formatters are:
 
 -   [black](https://github.com/psf/black)
@@ -10984,58 +10984,58 @@ The most popular Python linters are:
 -   [Pylint](https://pylint.pycqa.org/)
 -   [PyFlakes](https://github.com/PyCQA/pyflakes)
 -   [mypy](http://mypy-lang.org/)
-***Backend\Python\Good practices\Clean_code\004_Naming_conventions.md***
+# Backend\Python\Good practices\Clean_code\004_Naming_conventions.md
 
-# Naming conventions
+#### Naming conventions
 ```python
-# This is bad
-# represents the number of active users
+#### This is bad
+#### represents the number of active users
 au = 55
 
-# This is good
+#### This is good
 active_user_amount = 55
 ```
-***Backend\Python\Good practices\Clean_code\005_Variables.md***
+# Backend\Python\Good practices\Clean_code\005_Variables.md
 
-## Variables
-### 1. Use nouns for variable names
-### 2. Use descriptive/intention-revealing names
+##### Variables
+###### 1. Use nouns for variable names
+###### 2. Use descriptive/intention-revealing names
 Other developers should be able to figure out what a variable stores just by reading its name.
-### 3. Use pronounceable names
+###### 3. Use pronounceable names
 You should always use pronounceable names; otherwise, you'll have a hard time explaining your algorithms out loud.
-### 4. Avoid using ambiguous abbreviations
+###### 4. Avoid using ambiguous abbreviations
 Don't try to come up with your own abbreviations. It's better for a variable to have a longer name than a confusing name.
-### 5. Always use the same vocabulary
+###### 5. Always use the same vocabulary
 Avoid using synonyms when naming variables.
 ```python
-# This is bad
+#### This is bad
 client_first_name = 'Bob'
 customer_last_name = 'Smith'
 
-# This is good
+#### This is good
 client_first_name = 'Bob'
 client_last_name = 'Smith'
 ```
-### 6. Don't use "magic numbers"
+###### 6. Don't use "magic numbers"
 Magic numbers are strange numbers that appear in code, which do not have a clear meaning. Let's take a look at an example:
 ```python
 import random
 
-# This is bad
+#### This is bad
 def roll():
     return random.randint(0, 36)  # what is 36 supposed to represent?
 
-# This is good
+#### This is good
 ROULETTE_POCKET_COUNT = 36
 
 def roll():
     return random.randint(0, ROULETTE_POCKET_COUNT)
 ```
 Instead of using magic numbers, we can extract them into a meaningful variable.
-### 7. Use solution domain names
+###### 7. Use solution domain names
 If you use a lot of different data types in your algorithm or class and you can't figure them out from the variable name itself, don't be afraid to add data type suffix to your variable name. For example:
 ```python
-# This is good
+#### This is good
 score_list = [12, 33, 14, 24]
 word_dict = {
     'a': 'apple',
@@ -11043,12 +11043,12 @@ word_dict = {
     'c': 'cherry',
 }
 
-# This is bad  (because you can't figure out the data type from the variable name)
+#### This is bad  (because you can't figure out the data type from the variable name)
 names = ["Nick", "Mike", "John"]
 ```
-### 8. Don't add redundant context
+###### 8. Don't add redundant context
 ```python
-# This is bad
+#### This is bad
 class Person:
     def __init__(self, person_first_name, person_last_name, person_age):
         self.person_first_name = person_first_name
@@ -11056,7 +11056,7 @@ class Person:
         self.person_age = person_age
 
 
-# This is good
+#### This is good
 class Person:
     def __init__(self, first_name, last_name, age):
         self.first_name = first_name
@@ -11064,25 +11064,25 @@ class Person:
         self.age = age
 ```
 We're already inside the `Person` class, so there's no need to add a `person_` prefix to every class variable.
-***Backend\Python\Good practices\Clean_code\006_Functions.md***
+# Backend\Python\Good practices\Clean_code\006_Functions.md
 
-## Functions
-### 1. Use verbs for function names
-### 2. Do not use different words for the same concept
+##### Functions
+###### 1. Use verbs for function names
+###### 2. Do not use different words for the same concept
 Pick a word for each concept and stick to it. Using different words for the same concept will cause confusion.
 ```python
-# This is bad
+#### This is bad
 def get_name(): pass
 def fetch_age(): pass
 
-# This is good
+#### This is good
 def get_name(): pass
 def get_age(): pass
 ```
-### 3. Write short and simple functions
-### 4. Functions should only perform a single task
+###### 3. Write short and simple functions
+###### 4. Functions should only perform a single task
 ```python
-# This is bad
+#### This is bad
 def fetch_and_display_personnel():
     data = # ...
 
@@ -11090,7 +11090,7 @@ def fetch_and_display_personnel():
         print(person)
 
 
-# This is good
+#### This is good
 def fetch_personnel():
     return # ...
 
@@ -11098,11 +11098,11 @@ def display_personnel(data):
     for person in data:
         print(person)
 ```
-### 5. Keep your arguments at a minimum
+###### 5. Keep your arguments at a minimum
 
-***Backend\Python\Good practices\Design_wins\001_Avoid_type_abuse.md***
+# Backend\Python\Good practices\Design_wins\001_Avoid_type_abuse.md
 
-# Avoid type abuse
+#### Avoid type abuse
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-complete-extension/categories/2149347727/posts/2154129429
 
@@ -11135,9 +11135,9 @@ class User:
     last_name: str
     role: Role
 ```
-***Backend\Python\Good practices\Design_wins\002_Use_clear_names.md***
+# Backend\Python\Good practices\Design_wins\002_Use_clear_names.md
 
-# Use clear names
+#### Use clear names
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-complete-extension/categories/2149347727/posts/2154129452
 
@@ -11165,9 +11165,9 @@ class Contract:
     def compute_pay(self):
         return self.hours_worked * self.hourly_rate
 ```
-***Backend\Python\Good practices\Design_wins\003_Avoid_flags.md***
+# Backend\Python\Good practices\Design_wins\003_Avoid_flags.md
 
-# Avoid flags
+#### Avoid flags
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-complete-extension/categories/2149347727/posts/2154129460
 
@@ -11206,9 +11206,9 @@ class BitcoinWallet:
         print(f"Selling {amount * SATOSHI_TO_BTC_RATE} BTC.")
         self.balance -= amount
 ```
-***Backend\Python\Good practices\Design_wins\004_Do_not_use_too_many_args.md***
+# Backend\Python\Good practices\Design_wins\004_Do_not_use_too_many_args.md
 
-# Don't use too many arguments
+#### Don't use too many arguments
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-complete-extension/categories/2149347727/posts/2154129469
 
@@ -11296,9 +11296,9 @@ def main():
         datetime(2022, 7, 17),
     )
 ```
-***Backend\Python\Good practices\Project workflow\001_Project_workflow.md***
+# Backend\Python\Good practices\Project workflow\001_Project_workflow.md
 
-# Project workflow
+#### Project workflow
 
 Steps for automate project workflow with code quality ensured:
 * GitHub Actions for:
@@ -11310,13 +11310,13 @@ Steps for automate project workflow with code quality ensured:
 
 https://testdriven.io/blog/python-project-workflow/
 https://github.com/MateDawid/course_Python_Project_Workflow
-***Backend\Python\Good practices\Pythonic_Patterns\001_Strategy.md***
+# Backend\Python\Good practices\Pythonic_Patterns\001_Strategy.md
 
-# Strategy
+#### Strategy
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946547/posts/2160000087
 
-## Initial code
+##### Initial code
 
 ```python
 @dataclass
@@ -11341,7 +11341,7 @@ def main() -> None:
 * Discount calculated in Order class, that has plenty of responsibilities now
 * Discount type specified by string
 
-## Strategy pattern
+##### Strategy pattern
 
 ```mermaid
 classDiagram
@@ -11391,7 +11391,7 @@ classDiagram
 subclass
 * Order only needs Strategy class meeting expected interface (which in that case means having "compute" method).
 
-## Classic approach
+##### Classic approach
 
 ```python
 from abc import ABC, abstractmethod
@@ -11454,7 +11454,7 @@ class FixedDiscount:
         return 10_00
 ```
 
-## Callable approach
+##### Callable approach
 
 ```python
 from dataclasses import dataclass
@@ -11498,7 +11498,7 @@ def main() -> None:
 * `__call__` method overridden in both Discount classes
 * Discount classes accepting params to remove magic numbers
 
-## Functional approach
+##### Functional approach
 
 ```python
 from dataclasses import dataclass
@@ -11536,7 +11536,7 @@ def main() -> None:
 * In that case functions cannot deal with magic numbers
 
 
-## Functional approach with closures
+##### Functional approach with closures
 
 ```python
 from dataclasses import dataclass
@@ -11574,7 +11574,7 @@ def main() -> None:
 * Discount functions can accept additional arguments to remove magic numbers
 * Discount functions return functions with `DiscountFunction` type. 
 
-## Functional approach with partial
+##### Functional approach with partial
 
 ```python
 from dataclasses import dataclass
@@ -11613,13 +11613,13 @@ def main() -> None:
 
 * Classic functions definitions
 * Partial function declared in `main()` function
-***Backend\Python\Good practices\Pythonic_Patterns\002_Bridge.md***
+# Backend\Python\Good practices\Pythonic_Patterns\002_Bridge.md
 
-# Bridge
+#### Bridge
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946548/posts/2160000213
 
-## Initial code
+##### Initial code
 
 ```python
 def main() -> None:
@@ -11635,7 +11635,7 @@ def main() -> None:
 * Specific exchange method declared in `main()` function
 * No strategy for TradingBot specified yet
 
-## Bridge pattern
+##### Bridge pattern
 
 ```mermaid
 classDiagram
@@ -11684,12 +11684,12 @@ classDiagram
 * Bridge exists between `TradingBot` and `Exchange`
 * `TradingBot` strategies know nothing about `Exchange` subclasses
 
-## Classic Bridge Pattern
+##### Classic Bridge Pattern
 
-### Abstract classes for Exchange and TradingBot 
+###### Abstract classes for Exchange and TradingBot 
 
 ```python
-# exchange.py
+#### exchange.py
 from abc import ABC, abstractmethod
 
 
@@ -11707,7 +11707,7 @@ class Exchange(ABC):
         pass
 ```
 ```python
-# trading_bot.py
+#### trading_bot.py
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
@@ -11729,7 +11729,7 @@ class TradingBot(ABC):
 
 `TradingBot` receives `Exchange` abstract class as bridge connection between two classes.
 
-### Subclasses of Bridge components
+###### Subclasses of Bridge components
 
 ```python
 from exchange import Exchange
@@ -11761,7 +11761,7 @@ class Coinbase(Exchange):
 ```
 
 ```python
-# avg_trading_bot.py
+#### avg_trading_bot.py
 
 import statistics
 from dataclasses import dataclass
@@ -11786,9 +11786,9 @@ class AverageTradingBot(TradingBot):
 ```
 Subclasses of both abstract classes matches parent classes interfaces, so they can be connected by bridge pattern.
 
-### main.py file
+###### main.py file
 ```python
-# main.py
+#### main.py
 
 from avg_trading_bot import AverageTradingBot
 from coinbase import Coinbase
@@ -11819,17 +11819,17 @@ if __name__ == "__main__":
     main()
 ```
 
-***Backend\Python\Good practices\Pythonic_Patterns\003_Template_Method.md***
+# Backend\Python\Good practices\Pythonic_Patterns\003_Template_Method.md
 
-# Template method
+#### Template method
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946548/posts/2160000213
 
 Template method allows you to separate the algorithm from its parts. Algorithms stays the same, components changes.
 
-## Initial code
+##### Initial code
 ```python
-# main.py
+#### main.py
 from bitcoin import BitcoinTradingBot
 from ethereum import EthereumTradingBot
 
@@ -11843,7 +11843,7 @@ def main():
 
 ```
 ```python
-# bitcoin.py
+#### bitcoin.py
 
 class BitcoinTradingBot:
     ...
@@ -11857,7 +11857,7 @@ class BitcoinTradingBot:
         self.sell(amount)
 ```
 ```python
-# ethereum.py
+#### ethereum.py
 
 class EthereumTradingBot:
     ...
@@ -11872,7 +11872,7 @@ class EthereumTradingBot:
 ```
 * Two TradingBot classes with some differences, but with the same, crucial `.trade()` method.
 
-## Template method pattern
+##### Template method pattern
 
 ```mermaid
 classDiagram
@@ -11938,10 +11938,10 @@ classDiagram
 * `BitcoinTradingBot` and `EthereumTradingBot` subclasses of `TradingBot` with abstract methods like `buy()`, `sell()` 
 methods implemented
 
-## Classic Template method
+##### Classic Template method
 
 ```python
-# trading_bot.py
+#### trading_bot.py
 
 from abc import ABC, abstractmethod
 
@@ -11985,7 +11985,7 @@ class TradingBot(ABC):
 * `.trade()` method implementation
 
 ```python
-# bitcoin.py
+#### bitcoin.py
 from trading_bot import TradingBot
 
 
@@ -11994,7 +11994,7 @@ class BitcoinTradingBot(TradingBot):
 
 ```
 ```python
-# ethereum.py
+#### ethereum.py
 from trading_bot import TradingBot
 
 
@@ -12004,13 +12004,13 @@ class EthereumTradingBot(TradingBot):
 * `BitcoinTradingBot` and `EthereumTradingBot` as `TradingBot` subclasses
 * `BitcoinTradingBot` and `EthereumTradingBot` have their own implementations of `TradingBot` abstract methods
 * `BitcoinTradingBot` and `EthereumTradingBot` inherit `.trade()` method from `TradingBot` class.
-***Backend\Python\Good practices\Pythonic_Patterns\004_Abstract_Factory.md***
+# Backend\Python\Good practices\Pythonic_Patterns\004_Abstract_Factory.md
 
-# Abstract Factory
+#### Abstract Factory
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946549/posts/2160000491
 
-## Abstract Factory pattern
+##### Abstract Factory pattern
 
 ```mermaid
 classDiagram
@@ -12083,7 +12083,7 @@ classDiagram
 ```
 
 
-## Classic Abstract Factory
+##### Classic Abstract Factory
 
 ```python
 from abc import ABC, abstractmethod
@@ -12204,7 +12204,7 @@ def compute_tax(
 ```
 * Function for tax computing basing on passed TaxFactory
 
-## Functional approach
+##### Functional approach
 
 ```python
 from typing import Callable, Optional
@@ -12272,13 +12272,13 @@ def compute_tax(
     # return the total tax
     return income_tax + capital_tax
 ```
-***Backend\Python\Good practices\Pythonic_Patterns\005_Pipeline_patterns.md***
+# Backend\Python\Good practices\Pythonic_Patterns\005_Pipeline_patterns.md
 
-# Pipeline patterns
+#### Pipeline patterns
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946552/posts/2160000607
 
-## Chain of responsibility pattern
+##### Chain of responsibility pattern
 
 ```mermaid
 classDiagram
@@ -12341,7 +12341,7 @@ classDiagram
 * Client uses a Handler subclasses for processing request
 * Button, Panel and Window as subclasses of Handler abstract class
 
-## Chain of responsibility implementation
+##### Chain of responsibility implementation
 
 ```python
 from __future__ import annotations
@@ -12406,7 +12406,7 @@ def main() -> None:
     button.handle_click_event()
 ```
 
-## Sequence of functions
+##### Sequence of functions
 
 ```python
 from functools import partial, reduce
@@ -12414,7 +12414,7 @@ from typing import Callable
 
 ComposableFunction = Callable[[float], float]
 
-# Helper function for composing functions
+#### Helper function for composing functions
 def compose(*functions: ComposableFunction) -> ComposableFunction:
     return reduce(lambda f, g: lambda x: g(f(x)), functions)
 
@@ -12445,13 +12445,13 @@ if __name__ == "__main__":
     main()
 
 ```
-***Backend\Python\Good practices\Pythonic_Patterns\006_Notification_patterns.md***
+# Backend\Python\Good practices\Pythonic_Patterns\006_Notification_patterns.md
 
-# Notification patterns
+#### Notification patterns
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946554/posts/2160000668
 
-## Observer pattern
+##### Observer pattern
 
 ```mermaid
 classDiagram
@@ -12521,7 +12521,7 @@ def main() -> None:
     subject.do_something()
 ```
 
-## Mediator pattern
+##### Mediator pattern
 
 ```mermaid
 classDiagram
@@ -12631,10 +12631,10 @@ def main() -> None:
     button.click()
     print(f"Text field disabled: {text_field.disabled}")
 ```
-## Event Aggregator / Pub-Sub
+##### Event Aggregator / Pub-Sub
 
 ```python
-# event/core.py
+#### event/core.py
 
 from typing import Callable
 
@@ -12663,7 +12663,7 @@ def post_event(event_type: str, user: User) -> None:
 * `post_event` method for performing all handlers for particular event for given User
 
 ```python
-# event/email.py
+#### event/email.py
 from lib.db import User
 from lib.email import send_email
 
@@ -12708,7 +12708,7 @@ def setup_email_event_handlers() -> None:
 * Three EventHandler functions subscribed for email handling
 
 ```python
-#api/plan.py
+####api/plan.py
 from event.core import post_event
 from lib.db import find_user
 
@@ -12729,7 +12729,7 @@ handlers in `upgrade_plan` function
 
 
 ```python
-# main.py
+#### main.py
 from api.plan import upgrade_plan
 from api.user import password_forgotten, register_new_user
 from event.email import setup_email_event_handlers
@@ -12755,13 +12755,13 @@ def main() -> None:
 * In main function all different handlers are being set up - email, slack, and log
 * Business logic performed in  `register_new_user`, `password_forgotten`, `upgrade_plan` has `post_event` method used 
 inside for handling events 
-***Backend\Python\Good practices\Pythonic_Patterns\007_Registry.md***
+# Backend\Python\Good practices\Pythonic_Patterns\007_Registry.md
 
-# Registry
+#### Registry
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946555/posts/2160000778
 
-## Registry pattern
+##### Registry pattern
 ```mermaid
 classDiagram
 
@@ -12843,9 +12843,9 @@ classDiagram
 * PulseFactory, ReinforceFactory and RecalibrateFactory only create Pulse, Recalibrate and Reinforce classes
 * TaskRegistry handles creating objects of particular type 
 
-## Implementation
+##### Implementation
 ```python
-# registry.py
+#### registry.py
 
 from typing import Any, Protocol
 
@@ -12863,7 +12863,7 @@ class TaskFactory(Protocol):
 * Factory for Task class
 
 ```python
-# tasks.py
+#### tasks.py
 from dataclasses import dataclass
 from typing import Any
 
@@ -12915,7 +12915,7 @@ class ReinforceFactory:
 * Factories for Reinforce, Recalibrate and Pulse classes matching TaskFactory protocol
 
 ```python
-# registry.py
+#### registry.py
 
 from typing import Any, Protocol
 
@@ -12945,7 +12945,7 @@ class TaskRegistry:
 * `.create()` method for creating object for given task
 
 ```python
-# main.py
+#### main.py
 
 import json
 
@@ -12977,10 +12977,10 @@ def main() -> None:
 * Creating Task objects by registered TaskFactory for all tasks in JSON file
 * Running created Task object
 
-## Functional approach
+##### Functional approach
 
 ```python
-# registry.py
+#### registry.py
 
 from typing import Any, Callable
 
@@ -13004,7 +13004,7 @@ def run(arguments: dict[str, Any]) -> None:
 * Functions instead of TaskRegistry class methods
 
 ```python
-# main.py
+#### main.py
 
 import json
 
@@ -13078,7 +13078,7 @@ def main() -> None:
 
 ```
 ```python
-# inject.py
+#### inject.py
 
 from registry import register
 
@@ -13094,7 +13094,7 @@ register("inject", inject)
 * plugin registered
 
 ```python
-# loader.py
+#### loader.py
 import importlib
 
 
@@ -13104,13 +13104,13 @@ def load_plugins(plugins: list[str]) -> None:
 
 ```
 * Function for loading additional plugins defined.
-***Backend\Python\Good practices\Pythonic_Patterns\008_Command.md***
+# Backend\Python\Good practices\Pythonic_Patterns\008_Command.md
 
-# Command
+#### Command
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2149946559/posts/2156337466
 
-## Command pattern
+##### Command pattern
 ```mermaid
 classDiagram
     class Command {
@@ -13164,9 +13164,9 @@ classDiagram
 * `Document` performing some action by `Command` subclasses.
 * `TextController` invoking abstract `Command`
 
-## Classic Command Pattern
+##### Classic Command Pattern
 ```python
-# text/controller.py
+#### text/controller.py
 from dataclasses import dataclass, field
 
 from .edit import Edit
@@ -13196,7 +13196,7 @@ class TextController:
 * `undo_all` for clearing all changes performed by commands
 
 ```python
-# text/commands.py
+#### text/commands.py
 
 from dataclasses import dataclass, field
 
@@ -13261,7 +13261,7 @@ class Batch:
 * `Batch` command to execute multiple commands
 
 ```python
-# main.py
+#### main.py
 
 from text.commands import AppendText, Batch, ChangeTitle, Clear
 from text.controller import TextController
@@ -13308,9 +13308,9 @@ def main() -> None:
     print(processor)
 ```
 
-## Functional approach
+##### Functional approach
 ```python
-# text/commands.py
+#### text/commands.py
 
 from typing import Callable
 
@@ -13361,7 +13361,7 @@ def batch(edits: list[EditFunction]) -> UndoFunction:
 * Closure for returning undo function
 
 ```python
-# main.py
+#### main.py
 
 from functools import partial
 
@@ -13416,13 +13416,13 @@ if __name__ == "__main__":
     main()
 
 ```
-***Backend\Python\Good practices\Pythonic_Patterns\009_Callback.md***
+# Backend\Python\Good practices\Pythonic_Patterns\009_Callback.md
 
-# Callback
+#### Callback
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2150393709/posts/2160000927
 
-## Callback pattern
+##### Callback pattern
 
 ```python
 from __future__ import annotations
@@ -13454,13 +13454,13 @@ def main() -> None:
 * Button class having `click` method.
 * `click` method performing `on_click` function defined on class setup
 
-***Backend\Python\Good practices\Pythonic_Patterns\010_Function_wrapper.md***
+# Backend\Python\Good practices\Pythonic_Patterns\010_Function_wrapper.md
 
-# Function wrapper
+#### Function wrapper
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2150393709/posts/2160000931
 
-## Wrapper pattern
+##### Wrapper pattern
 
 ```python
 from dataclasses import dataclass
@@ -13514,13 +13514,13 @@ def main() -> None:
     print(f"Total: ${order.compute_total()/100:.2f}")
 ```
 * `loyalty_program_discount` as wrapper for `percentage_discount` with predefined discounts per `LoyaltyProgram`
-***Backend\Python\Good practices\Pythonic_Patterns\011_Function_builder.md***
+# Backend\Python\Good practices\Pythonic_Patterns\011_Function_builder.md
 
-# Function builder
+#### Function builder
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset-pythonic-patterns/categories/2150393709/posts/2160000936
 
-## Builder pattern
+##### Builder pattern
 
 ```python
 from dataclasses import dataclass
@@ -13574,9 +13574,9 @@ def main() -> None:
     print(f"Total: ${order.compute_total()/100:.2f}")
 ```
 * `loyalty_program_convertor` as function builder function, that returns discount function for Order class
-***Backend\Python\Iterables\001_Iterable.md***
+# Backend\Python\Iterables\001_Iterable.md
 
-# Iterable
+### Iterable
 Kompozyt zdolny do zwracania swoich elementów w pętli for. Są to np. typy sekwencyjne (listy, krotki, stringi), dict, set, file, itp.
 ```python
 class Iterable:
@@ -13595,12 +13595,12 @@ class Iterable:
 	def __iter__(self):
 		return Iterator(...)
 
-# Wywołanie metody __iter__ obiektu Iterable w celu utworzenia iteratora 
+### Wywołanie metody __iter__ obiektu Iterable w celu utworzenia iteratora 
 iterator = iter(iterable)
 ```
-***Backend\Python\Iterables\002_Iterator.md***
+# Backend\Python\Iterables\002_Iterator.md
 
-# Iterator
+### Iterator
 Hermetyzuje strategię sekwencyjnego dostępu do elementów kompozytu, bez względu na rzeczywistą ich organizację. Jego zadanie polega na dostarczaniu kolejnych elementów według ustalonego wzorca.
 ```python
 class Iterator:
@@ -13611,7 +13611,7 @@ class Iterator:
 
 iterator = iter(iterable)
 
-# Wywoływanie kolejnych elementów.
+### Wywoływanie kolejnych elementów.
 element_1 = next(iterator)
 element_2 = next(iterator)
 ```
@@ -13620,16 +13620,16 @@ Gdy nie ma już obiektów do pobrania, przy kolejnej próbie użycia funkcji **n
 Iterator można utworzyć również z "wartownikiem", będącym wartością przerywającą iterację.
 
 ```python
-# iterator = iter(callable, sentinel)
+### iterator = iter(callable, sentinel)
 
 def function():
 	return random.randrange(10)
 
 list(iter(function, 5))
 ```
-***Backend\Python\Iterables\003_Generators.md***
+# Backend\Python\Iterables\003_Generators.md
 
-# Generatory
+### Generatory
 ```python
 def get_next_even():                   # definicja generatora wygląda jak definicja zwykłej funkcji
     for n in range(2,20,2):            # range tworzący zakres od 2 do 20, przesuwając się o 2
@@ -13658,9 +13658,9 @@ def create_generator(start, stop, step):
 		x += step
 		
 generator = create_generator(0, 10, 2.5)
-# Logika zawarta w funkcji generatora wykonuje się dopiero po zastosowaniu funkcji next() lub w czasie iteracji w pętli
+### Logika zawarta w funkcji generatora wykonuje się dopiero po zastosowaniu funkcji next() lub w czasie iteracji w pętli
 
-# next(generator)
+### next(generator)
 for value in generator:
 	print(value)
 ```
@@ -13680,34 +13680,34 @@ with open('filename') as fp:
 		process(line)
 ```
 Generatory wykorzystują tzw. leniwą ewaluację, która pozwala strumieniowo przetwarzać duże ilości danych bez konieczności wczytywania ich w całości do pamięci.
-***Backend\Python\Iterables\004_Infinite_iterators.md***
+# Backend\Python\Iterables\004_Infinite_iterators.md
 
-# Iteratory nieskończone
+### Iteratory nieskończone
 ```python 
 from itertools import *
 
-# Kolejne wartości liczbowe
+### Kolejne wartości liczbowe
 for i in count(10, 1):
 	print(i)
 
-# 10
-# 11
-# 12
-# ...
+### 10
+### 11
+### 12
+### ...
 
-# Kolejne wartości z listy podawane cyklicznie
+### Kolejne wartości z listy podawane cyklicznie
 for i in cycle(['spring', 'summer', 'fall', 'winter']):
 	print(i)
 
-# Powtórzenie tej samej wartości podaną ilość razy, lub w nieskończoność
+### Powtórzenie tej samej wartości podaną ilość razy, lub w nieskończoność
 for i in repeat('hello', 3):
 	print(i)
 ```
 
-***Backend\Python\Iterables\005_Combinatoric_iterators.md***
+# Backend\Python\Iterables\005_Combinatoric_iterators.md
 
-# Iteratory kombinatoryczne
-## product
+### Iteratory kombinatoryczne
+#### product
 Iloczyn kartezjański dwóch lub więcej zbiorów (wszystkie możliwe kombinacje wartości).
 ```python 
 from itertools import *
@@ -13727,14 +13727,14 @@ for color, size, material in product(colors, sizes, materials):
 	# white S lycra
 	...
 
-# Kombinacja kilku wartości z tego samego zakresu
+### Kombinacja kilku wartości z tego samego zakresu
 list(product(range(10), repeat=4))
-# [(0, 0, 0, 0),
-# (0, 0, 0, 1),
+### [(0, 0, 0, 0),
+### (0, 0, 0, 1),
 ...
-# (9, 9, 9, 9)]
+### (9, 9, 9, 9)]
 ```
-## permutations
+#### permutations
 Możliwe permutacje dla podanego zbioru (możliwe kolejności obiektów w zbiorze).
 ```python 
 from itertools import *
@@ -13746,14 +13746,14 @@ for outcome in permutations(horses):
 		print(i, horse)
 	print()
 
-# 1 Duke
-# 2 Coco
-# 3 Star
-# 4 Dolly
-# 5 Gypsy
-# 
-# 1 Duke
-# 2 Coco
+### 1 Duke
+### 2 Coco
+### 3 Star
+### 4 Dolly
+### 5 Gypsy
+### 
+### 1 Duke
+### 2 Coco
 ...
 ```
 Możliwe jest również uzyskanie n-elementowych wariacji bez powtórzeń - tutaj w celu uzyskania pierwszych trzech miejsc na podium.
@@ -13766,12 +13766,12 @@ for outcome in permutations(horses, 3):
 	for i, horse in enumerate(outcome, 1):
 		print(i, horse)
 	print()
-# 1 Duke
-# 2 Coco
-# 3 Star
+### 1 Duke
+### 2 Coco
+### 3 Star
 ...
 ```
-## combinations
+#### combinations
 n-elementowe unikalne podzbiory bez względu na kolejność elementów.
 ```python 
 from itertools import *
@@ -13780,15 +13780,15 @@ horses = {'Coco', 'Dolly', 'Duke', 'Gypsy', 'Star'}
 
 for outcome in combinations(horses, 3):
 	print(outcome)
-# 1 Duke
-# 2 Coco
-# 3 Star
+### 1 Duke
+### 2 Coco
+### 3 Star
 ...
 ```
-***Backend\Python\Iterables\006_Other_iterators.md***
+# Backend\Python\Iterables\006_Other_iterators.md
 
-# Iteratory pozostałe
-## chain
+### Iteratory pozostałe
+#### chain
 Pozwala na iterowanie po kilku sekwencjach na raz. Po wyczerpaniu elementów w sekwencji chain przechodzi do pobierania elementów z kolejnej z nich.
 
 ```python 
@@ -13801,7 +13801,7 @@ c = list('abcd')
 for x in chain(a, b, c):
 	print(x)
 ```
-## zip
+#### zip
 Wbudowana funcja, pozwalająca na iterowanie po kilku listach jednocześnie. Ilość wynikowych elementów determinuje długość najkrótszej z sekwencji.
 ```python 
 from itertools import *
@@ -13813,8 +13813,8 @@ c = list('abcd')
 for x in zip(a, b, c):
 	print(x)
 
-# (1, 'lorem', 'a')
-# (2, 'ipsum', 'b')
+### (1, 'lorem', 'a')
+### (2, 'ipsum', 'b')
 ```
 Sekwencje tak utworzonych tupli można też odpakować przy użyciu zip.
 ```python 
@@ -13824,10 +13824,10 @@ zipped = [(1, 'a'), (2, 'b')]
 x, y = zip(*zipped)
 print(x)
 print(y)
-# (1, 2)
-# ('a', 'b')
+### (1, 2)
+### ('a', 'b')
 ```
-## groupby
+#### groupby
 Pozwala na grupowanie danych po wskazanym kluczu
 ```python 
 from itertools import *
@@ -13846,20 +13846,20 @@ category = lambda x: x[-1]
 for key, values in groupby(sorted(expenses, key=category), key=category):
 	print(key, list(values))
 
-# firma [(500, 'ZUS', 'firma'), ...]
-# rozrywka [...]
-# samochód [...]
+### firma [(500, 'ZUS', 'firma'), ...]
+### rozrywka [...]
+### samochód [...]
 ```
-## islice
+#### islice
 Pozwala na uzyskanie wycinka z iteratora.
 ```python 
 from itertools import *
 
 it = range(int(1e6))
-# Wycinek 10 pierwszych elementów z iteratora it zawierającego milion elementów
+### Wycinek 10 pierwszych elementów z iteratora it zawierającego milion elementów
 list(islice(it, 10)
 ```
-## Inne metody
+#### Inne metody
 * combinations_with_replacement
 * accumulate
 * count
@@ -13874,9 +13874,9 @@ list(islice(it, 10)
 * takewhile
 * tee
 * zip_longest
-***Backend\Python\Logging\001_Logging_basics.md***
+# Backend\Python\Logging\001_Logging_basics.md
 
-# Logging basics
+### Logging basics
 
 Sources: 
 * https://www.samyakinfo.tech/blog/logging-in-python
@@ -13895,20 +13895,20 @@ Logging is essential for several reasons:
 ```python
 import logging
 
-# Configure logging
+### Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Log messages
+### Log messages
 logger.debug("This is a debug message")
 logger.info("This is an info message")
 logger.warning("This is a warning message")
 logger.error("This is an error message")
 logger.critical("This is a critical message")
 ```
-***Backend\Python\Logging\002_Log_levels.md***
+# Backend\Python\Logging\002_Log_levels.md
 
-# Log levels
+### Log levels
 
 Sources: 
 * https://www.samyakinfo.tech/blog/logging-in-python
@@ -13923,9 +13923,9 @@ Sources:
 `ERROR`: Indicates a more severe issue that prevents a specific operation from completing successfully.
 
 `CRITICAL`: The highest log level, indicating a critical error that may lead to the termination of the application.
-***Backend\Python\Logging\003_Log_handlers.md***
+# Backend\Python\Logging\003_Log_handlers.md
 
-# Log handlers
+### Log handlers
 
 Sources: 
 * https://www.samyakinfo.tech/blog/logging-in-python
@@ -13933,28 +13933,28 @@ Sources:
 
 Log handlers in Python's logging module determine where log messages should go once they are created. Handlers are responsible for routing log messages to specific destinations, such as the console, files, email, or external services. In this part, we'll explore the concept of log handlers and how to use them effectively.
 
-## StreamHandler
+#### StreamHandler
 Directs log messages to the console(stream):
 
 ```python
 import logging
 
-# Configure logging
+### Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Create a StreamHandler and set its log level to DEBUG
+### Create a StreamHandler and set its log level to DEBUG
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 
-# Create a formatter and attach it to the handler
+### Create a formatter and attach it to the handler
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 
-# Create a logger and add the console handler
+### Create a logger and add the console handler
 logger = logging.getLogger(__name__)
 logger.addHandler(console_handler)
 
-# Log messages
+### Log messages
 logger.debug("This is a debug message")
 logger.info("This is an info message")
 logger.warning("This is a warning message")
@@ -13963,27 +13963,27 @@ logger.critical("This is a critical message")
 ```
 In this example, we create a StreamHandler, set its log level to DEBUG, create a formatter to customize the log message format, and attach the formatter to the handler. Finally, we add the handler to the logger.
 
-## FileHandler
+#### FileHandler
 Directs log messages to a file:
 ```python
 import logging
 
-# Configure logging
+### Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Create a FileHandler and set its log level to DEBUG
+### Create a FileHandler and set its log level to DEBUG
 file_handler = logging.FileHandler('app.log')
 file_handler.setLevel(logging.DEBUG)
 
-# Create a formatter and attach it to the handler
+### Create a formatter and attach it to the handler
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 
-# Create a logger and add the file handler
+### Create a logger and add the file handler
 logger = logging.getLogger(__name__)
 logger.addHandler(file_handler)
 
-# Log messages
+### Log messages
 logger.debug("This is a debug message")
 logger.info("This is an info message")
 logger.warning("This is a warning message")
@@ -13992,14 +13992,14 @@ logger.critical("This is a critical message")
 ```
 In this example, we create a FileHandler, set its log level, create a formatter, and attach it to the handler. The log messages will be written to a file named app.log.
 
-## RotatingFileHandler
+#### RotatingFileHandler
 Similar to FileHandler, but it rotates log files based on size and keeps a specified number of backup files.
 
 ```python
 rotating_file_handler = logging.RotatingFileHandler("logfile.log", maxBytes=1024, backupCount=3)
 logging.getLogger().addHandler(rotating_file_handler)
 ```
-## SMTPHandler
+#### SMTPHandler
 
 Sends log messages via email.
 ```python
@@ -14009,9 +14009,9 @@ smtp_handler = logging.handlers.SMTPHandler(mailhost=("smtp.example.com", 587),
                                             subject="Error in your application")
 logging.getLogger().addHandler(smtp_handler)
 ```
-***Backend\Python\Logging\004_Log_formatters.md***
+# Backend\Python\Logging\004_Log_formatters.md
 
-# Log Formatters
+### Log Formatters
 
 Sources: 
 * https://www.samyakinfo.tech/blog/logging-in-python
@@ -14019,27 +14019,27 @@ Sources:
 
 A log formatter is an object responsible for specifying the layout of log records. It determines how the information within a log message should be presented. Python's logging module provides a Formatter class that allows developers to create custom formatting rules.
 
-## Base Formatter
+#### Base Formatter
 
 ```python
 import logging
 
-# Configure logging
+### Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Create a StreamHandler and set its log level to DEBUG
+### Create a StreamHandler and set its log level to DEBUG
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 
-# Create a formatter with a custom format
+### Create a formatter with a custom format
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 
-# Create a logger and add the console handler
+### Create a logger and add the console handler
 logger = logging.getLogger(__name__)
 logger.addHandler(console_handler)
 
-# Log messages
+### Log messages
 logger.debug("This is a debug message")
 logger.info("This is an info message")
 logger.warning("This is a warning message")
@@ -14049,7 +14049,7 @@ logger.critical("This is a critical message")
 
 In this example, the Formatter class is used to create a formatter with a specific format string. The format string contains placeholders enclosed in %() that represent various attributes such as asctime, name, levelname, and message.
 
-## Custom Formatter
+#### Custom Formatter
 
 ```python
 import logging
@@ -14061,35 +14061,35 @@ class CustomFormatter(logging.Formatter):
             log_message += '\n' + self.formatException(record.exc_info)
         return log_message
 
-# Configure logging
+### Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Create a StreamHandler and set its log level to DEBUG
+### Create a StreamHandler and set its log level to DEBUG
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 
-# Create an instance of the custom formatter
+### Create an instance of the custom formatter
 custom_formatter = CustomFormatter()
 
-# Set the formatter for the console handler
+### Set the formatter for the console handler
 console_handler.setFormatter(custom_formatter)
 
-# Create a logger and add the console handler
+### Create a logger and add the console handler
 logger = logging.getLogger(__name__)
 logger.addHandler(console_handler)
 
-# Log messages
+### Log messages
 logger.debug("This is a debug message")
 logger.error("An error occurred", exc_info=True)
 
 ```
-***Backend\Python\Logging\005_Other_options.md***
+# Backend\Python\Logging\005_Other_options.md
 
-# Other options
+### Other options
 
 Source: https://realpython.com/python-logging
 
-## Date format
+#### Date format
 
 ```python
 >>> import logging
@@ -14103,7 +14103,7 @@ Source: https://realpython.com/python-logging
 2024-07-22 09:26 - ERROR - Something went wrong!
 ```
 
-## Logging to file
+#### Logging to file
 
 ```python
 >>> import logging
@@ -14119,7 +14119,7 @@ Source: https://realpython.com/python-logging
 >>> logging.warning("Save me!")
 ```
 
-## Displaying Variable Data
+#### Displaying Variable Data
 
 ```python
 >>> import logging
@@ -14151,7 +14151,7 @@ F-strings are eagerly evaluated. That means that they are interpolated even if t
 2024-07-22 14:51 - DEBUG - name=Samara
 ```
 
-## Capturing Stack Traces
+#### Capturing Stack Traces
 
 ```python
 >>> import logging
@@ -14189,7 +14189,7 @@ ZeroDivisionError: division by zero
 ```
 Calling logging.exception() is like calling logging.error(exc_info=True). Since the logging.exception() function always dumps exception information, you should only call logging.exception() from an exception handler.
 
-## Filtering Logs
+#### Filtering Logs
 
 There are three approaches to creating filters for logging. You can create a:
 
@@ -14224,15 +14224,15 @@ DEBUG - Just checking in!
 >>> logger.warning("Stay curious!")
 >>> logger.error("Stay put!")
 ```
-***Backend\Python\Memory\001_tracemalloc.md***
+# Backend\Python\Memory\001_tracemalloc.md
 
-# tracemalloc
+### tracemalloc
 
 Sources: 
 * https://tech.buzzfeed.com/finding-and-fixing-memory-leaks-in-python-413ce4266e7d
 * https://www.fugue.co/blog/diagnosing-and-fixing-memory-leaks-in-python.html
 
-## Basics
+#### Basics
 In the case of memory a well-behaved service will use memory and free memory. It performs like this chart reporting on the memory used over a three-month period.
 
 ![](_images/001_tracemalloc_good.png)
@@ -14256,7 +14256,7 @@ The output will look similar to this:
 ![](_images/001_tracemalloc_01.png)
 This shows the size of the memory allocation, the number of objects allocated and the average size each on a per module basis.
 
-## Snapshots comparison
+#### Snapshots comparison
 
 We take a snapshot at the start of our program and implement a callback that runs every few minutes to take a snapshot of the memory. Comparing two snapshots shows changes with memory allocation. We compare each snapshot to the one taken at the start. By observing any allocation that is increasing over time we may capture an object that is leaking memory. The method compare_to() is called on snapshots to compare it with another snapshot. The 'filename' parameter is used to group all allocations by module. This helps to narrow a search to a module that is leaking memory.
 
@@ -14273,7 +14273,7 @@ The output will look similar to this:
 
 This shows the size and the number of objects and a comparison of each and the average allocation size on a per module basis.
 
-## Leaking code detection
+#### Leaking code detection
 Once a suspect module is identified, it may be possible to find the exact line of code responsible for a memory allocation. tracemalloc provides a way to view a stack trace for any memory allocation. As with a Python exception traceback, it shows the line and module where an allocation occurred and all the calls that came before.
 ```python
 traces = current.statistics('traceback')
@@ -14285,10 +14285,10 @@ for stat in traces[1]:
 ![](_images/001_tracemalloc_03.png)
 Reading bottom to top, this shows a trace to a line in the socket module where a memory allocation took place. With this information it may be possible to finally isolate the cause of the memory leak.
 
-## The Search for Memory Leak
-***Backend\Python\Metaprogramming\001_Decorators.md***
+#### The Search for Memory Leak
+# Backend\Python\Metaprogramming\001_Decorators.md
 
-# Dekoratory
+### Dekoratory
 Funkcja, przyjmująca jako argument funkcję i zwracająca funkcję. 
 ```python
 def password():
@@ -14319,7 +14319,7 @@ password()
 ```
 Jednym z głównych celów zastosowania dekoratorów jest memoizacja, czyli cache'owania wyników funkcji w celu przyspieszenia obliczeń. Poniżej przykład zastosowania dekoratora cache'ującego wyniki rekurencyjnych wyników wywołań wyliczających składniki ciągu Fibonacciego. 
 ```python
-# import functools
+### import functools
 def cache(function):
 	history = {}
 	def wrapper(n):
@@ -14328,7 +14328,7 @@ def cache(function):
 		return history[n]
 	return wrapper
 	
-# @functools.lru_cache(maxsize=128)
+### @functools.lru_cache(maxsize=128)
 @cache
 def fib(n):
 	return 1 if n < 2 else fib(n-2) + fin(n-1)
@@ -14352,9 +14352,9 @@ def ignore(ExceptionClass):
 def divide(a, b):
 	return a / b
 ```
-***Backend\Python\Metaprogramming\002_Context_managers.md***
+# Backend\Python\Metaprogramming\002_Context_managers.md
 
-# Menedżer kontekstu
+### Menedżer kontekstu
 Obiekt implementujący interfejs składający się z dwóch magicznych metod - \_\_enter__ oraz \_\_exit__, które umożliwiają jego użycie w konstrukcji with. Menedżer kontekstu przydaje się w takim razie do zarządzania stanem, który musi zostać najpierw zainicjowany, a następnie uwolniony, żeby nie dopuścić do wycieków pamięci. Menedżer kontekstu można zdefiniować klasowo albo funkcyjnie.
 ```python
 from time import time
@@ -14412,16 +14412,16 @@ with logging() as value:
 ```
 Instrukcja yield dzieli zawiesza działanie funkcji i dzieli ją na dwie części. Pierwsza część odpowiada instrukcji \_\_enter__, w której dokonuje się inicjalizacji. Druga część (za yield) odpowiada za to instukcji \_\_exit__. Konieczne jest opakowanie słówa kluczowego yield blokiem try/finally, ponieważ w innym razie, w przypadku wystąpienia wyjątku nie doszłoby do "zamknięcia" menedżera kontekstu.
 
-***Backend\Python\Metaprogramming\003_Descriptior.md***
+# Backend\Python\Metaprogramming\003_Descriptior.md
 
-# Deskryptor
+### Deskryptor
 Można go sobie wyobrazić jako property wielokrotnego użytku, które może być wykorzystywane w wielu klasach. Zgodnie z definicją, jest to klasa definiująca jedną z trzech magicznych metod: \_\_get__, \_\_set__, \_\_delete__. Występują szczególne przypadki: 
 * data descriptor - definiuje wszystkie trzy metody
 * non data descriptor - definiuje tylko metodę \_\_get__. Pozwalają na leniwą inicjalizację atrybutów w klasie
 
 Pożej przykład zastosowania domknięcia wykorzystującego dekorator property do przypisania niezmiennych atrybutów w klasie.
 ```python
-# Zwrócenie wartości atrybutu _attr przy próbie wyciągnięcia atrybutu poprzez Class.attr
+### Zwrócenie wartości atrybutu _attr przy próbie wyciągnięcia atrybutu poprzez Class.attr
 def read_only(name):
 	@property
 	def getter(self):
@@ -14458,9 +14458,9 @@ class Person:
 		self._name = name
 		self._married = married
 ``` 
-***Backend\Python\Metaprogramming\004_new_magic_method.md***
+# Backend\Python\Metaprogramming\004_new_magic_method.md
 
-#  \_\_new__
+###  \_\_new__
 Metoda magiczna wywoływana przed \_\_init__. Jest to metoda klasowa zwracająca nowy obiekt klasy. Poniżej przykład definicji Singletona.
 ```python
 class Singleton:
@@ -14475,9 +14475,9 @@ b = Singleton()
 
 a is b, id(a) == id(b) # (True, True), obie zmienne wskazują na tę samą instancję obiektu
 ```
-***Backend\Python\Metaprogramming\005_Metaclasses.md***
+# Backend\Python\Metaprogramming\005_Metaclasses.md
 
-# Metaklasy
+### Metaklasy
 Najprostszym przykładem metaklasy jest type - jest on metaklasą dla wszystkich podstawowych (i nie tylko) typów w Pythonie np. int, float itp. Używając type można także zdefiniować nową klasę. Poniżej przykład zdefiniowania metaklasy przy użyciu funkcji.
 ```python
 def n_tuple(name, bases, attrs, n):
@@ -14505,9 +14505,9 @@ class Foo(metaclass=Meta):
 
 Foo.attr # 100
 ```
-***Backend\Python\Metaprogramming\006_Dataclass.md***
+# Backend\Python\Metaprogramming\006_Dataclass.md
 
-# Dataclass
+### Dataclass
 Chcąc uniknąć żmudnego definiowania klas można zastosować mechanizm dataclass. W wyniku takiego zabiegu można zastąpić taką typową klasę:
 ```python
 class Person:
@@ -14558,27 +14558,27 @@ class Person:
 	married: bool = False
 ```
 
-***Backend\Python\Object_oriented_programming\001_Objects_copying.md***
+# Backend\Python\Object_oriented_programming\001_Objects_copying.md
 
-# Kopiowanie obiektów
+### Kopiowanie obiektów
 Kopiowanie obiektów może odbywać się w sposób płytki i głęboki. W przypadku kopiowania płytkiego mutowalne elementy nie są rzeczywistą kopią pierwotnych elementów, ale kopią referencji do tych obiektów w pamięci
 ```python
 import copy
 
 x = [1, [2, 3]]
-# shallow copy - płytkie kopiowanie
-# y = x[:]
-# y = list(x)
+### shallow copy - płytkie kopiowanie
+### y = x[:]
+### y = list(x)
 y = copy.copy(x)
 
 y.append(5)
-# x = [1, [2,3]]
-# y = [1, [2,3], 5]
+### x = [1, [2,3]]
+### y = [1, [2,3], 5]
 
 y[1].append(5)
-# Jako, że lista jest mutowalna, to po dodaniu do niej elementu w jednej z list, element ten jest widoczny w obu kopiach listy
-# x = [1, [2, 3, 4]]
-# x = [1, [2, 3, 4], 5] 
+### Jako, że lista jest mutowalna, to po dodaniu do niej elementu w jednej z list, element ten jest widoczny w obu kopiach listy
+### x = [1, [2, 3, 4]]
+### x = [1, [2, 3, 4], 5] 
 ```
 Rozwiązaniem powyższego problemu może być użycie deepcopy, które rekurencyjnie kopiuje kolejne elementy z drzewa obiektu (nie ich referencje, jak w przypadku mutowalnych obiektów przy płytkim kopiowaniu).
 
@@ -14586,16 +14586,16 @@ Rozwiązaniem powyższego problemu może być użycie deepcopy, które rekurency
 import copy
 
 x = [1, [2, 3]]
-# deep copy - głębokie kopiowanie
+### deep copy - głębokie kopiowanie
 y = copy.deepcopy(x)
 
 y[1].append(5)
-# x = [1, [2, 3]]
-# x = [1, [2, 3, 4]] 
+### x = [1, [2, 3]]
+### x = [1, [2, 3, 4]] 
 ```
-***Backend\Python\Object_oriented_programming\002_Abstract_classes.md***
+# Backend\Python\Object_oriented_programming\002_Abstract_classes.md
 
-# Abstract Classes
+### Abstract Classes
 
 > Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535822/posts/2158612840
 
@@ -14643,19 +14643,19 @@ class Truck(Vehicle):
             f"Reserving truck {self.model} for {months} month(s) at date {start_date}, including a trailer."
         )
 ```
-***Backend\Python\Object_oriented_programming\003_Functions_overloading.md***
+# Backend\Python\Object_oriented_programming\003_Functions_overloading.md
 
-# Przeciążanie funkcji
+### Przeciążanie funkcji
 Python nie obsługuje przeciążania funkcji i metod, ale można za to dostosować działanie funkcji w zależności od przyjętych przez nią argumentów. Najprościej zrobić to przez użycie isinstance, ale jest to antywzorzec. Zamiast tego można wykorzystać metodę singledispatch.
 ```python
 from functools import singledispatch
 
-# Zdefiniowanie wzorca funkcji
+### Zdefiniowanie wzorca funkcji
 @singledispatch
 def pretty_print(x):
 	print(x)
 
-# Zarejestrowanie specjalnego działania funkcji po podaniu jej listy oraz tupli jako argumentu
+### Zarejestrowanie specjalnego działania funkcji po podaniu jej listy oraz tupli jako argumentu
 @pretty_print.register(list)
 @pretty_print.register(tuple)
 def _(items):
@@ -14676,9 +14676,9 @@ def add(x, y):
 def add(x, y):
 	return f'{x} + {y}'
 ```
-***Backend\Python\Object_oriented_programming\004_Operators_overloading.md***
+# Backend\Python\Object_oriented_programming\004_Operators_overloading.md
 
-# Przeciążanie operatorów
+### Przeciążanie operatorów
 Przykład przeciążania operatora dodawania i dodawania prawostronnego klasy namedtuple.
 
 ```python
@@ -14695,7 +14695,7 @@ class Vector(namedtuple('Vector', 'x y')):
 		return self + other
 ```
 
-# __repr__ i __str__
+### __repr__ i __str__
 Metoda \_\_str__ powinna zwracać reprezentację obiektu do czytania przez ludzi, natomiast metoda \_\_repr__ powinna zawierać zapis (najlepiej kod Pythona) umożliwiający odtworzenie danego obiektu po wklejeniu do funkcji eval.
 ```python
 class Vector:
@@ -14712,9 +14712,9 @@ a = Vector(3, -4)
 str(a) # 'A vector of 3, -4'
 b = eval(repr(a)) # Nowa instancja wektora Vector(3, -4)
 ```
-***Backend\Python\Object_oriented_programming\005_Class_methods.md***
+# Backend\Python\Object_oriented_programming\005_Class_methods.md
 
-# Metody klasowe
+### Metody klasowe
 Metoda klasowa to taka, która zawiera odwołanie nie do konkretnej instancji obiektu, ale do samej klasy. Może być wywoływana bez inicjowania obiektu.
 ```python
 from collections import namedtuple
@@ -14740,9 +14740,9 @@ class Color(namedtuple('Color', 'r g b')):
 
 Color.monaco_blue() # zwraca obiekt z metody klasowej Color(0.2, 0.5, 0.75)
 ```
-***Backend\Python\Object_oriented_programming\006_Static_methods.md***
+# Backend\Python\Object_oriented_programming\006_Static_methods.md
 
-# Metody statyczne
+### Metody statyczne
 Nie posiadają odniesienia ani do danego obiektu, ani do samej klasy - zachowują się bardziej jak zwykłe funkcje, niż metody. Z optymalizacyjnego punktu widzenia nie są one dobrym rozwiązaniem, ponieważ wiążę się z dodatkowym kosztem ze względu na przeglądanie przez Pythona przestrzeni nazw w trakcie działania programu. Jedynym logicznym zastosowaniem @staticmethod jest ich pogrupowanie pod jedną, wspólną przestrzenią nazw klasy
 ```python
 from collections import namedtuple
@@ -14769,9 +14769,9 @@ class Color(namedtuple('Color', 'r g b')):
 		return Color(*[sum(x) for x in zip(self, other)])
 ```
 
-***Backend\Python\Object_oriented_programming\007_property.md***
+# Backend\Python\Object_oriented_programming\007_property.md
 
-# @property
+### @property
 Dekorator @property, pozwala na utworzenie właściwości obiektu, do której dostęp można uzyskać przy użyciu kropki, tak samo jak do atrybutów definiowanych w konstruktorze. Właściwości obiektu są jednak możliwe do nadpisania tylko po zdefiniowaniu settera.
 ```python
 class Person:
@@ -14797,9 +14797,9 @@ class Person:
 	def married(self):
 		del self._married
 ```
-***Backend\Python\Object_oriented_programming\008_Protocols.md***
+# Backend\Python\Object_oriented_programming\008_Protocols.md
 
-# Protocols
+### Protocols
 
 > Sources: 
 > * https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535822/posts/2158612869
@@ -14813,12 +14813,12 @@ from dataclasses import dataclass
 import datetime
 import math
 
-# Protocol class with .reserve() method declared
+### Protocol class with .reserve() method declared
 class Vehicle(Protocol):
     def reserve(self, start_date: datetime, days: int):
         ...
 
-# Dataclass with .reserve() method implemented. No need to inherit Vehicle class.
+### Dataclass with .reserve() method implemented. No need to inherit Vehicle class.
 @dataclass
 class Car:
     model: str
@@ -14831,7 +14831,7 @@ class Car:
     def renew_license(self, new_license_date: datetime):
         print(f"Renewing license of car {self.model} to {new_license_date}.")
 
-# Another class with .reserver() method.
+### Another class with .reserver() method.
 @dataclass
 class Truck:
     model: str
@@ -14846,12 +14846,12 @@ class Truck:
             f"Reserving truck {self.model} for {months} month(s) at date {start_date}, including a trailer."
         )
 
-# Typing vehicle as Vehicle is fine here, because both Car and Truck have .reserve() methods, so for typing system (duck typing) they are "the same" 
+### Typing vehicle as Vehicle is fine here, because both Car and Truck have .reserve() methods, so for typing system (duck typing) they are "the same" 
 def reserve_now(vehicle: Vehicle):
     vehicle.reserve(datetime.now(), 40)
 ```
 
-## Generic protocols
+#### Generic protocols
 ```python
 from typing import Protocol, TypeVar
 
@@ -14894,10 +14894,10 @@ class Adder(Protocol):
     def add[T: int | float](self, x: T, y: T) -> T:
         ...
 
-# ...
+### ...
 ```
 
-## Class vars
+#### Class vars
 ```python
 from abc import abstractmethod
 from typing import ClassVar, Protocol
@@ -14930,7 +14930,7 @@ class ProtocolMembersDemo(Protocol):
         ...
 ```
 
-## Recursive protocols
+#### Recursive protocols
 You can also define recursive protocols, which are protocols that reference themselves in their definition. To reference a protocol, you must provide its name as strings.
 
 ```python
@@ -14955,7 +14955,7 @@ class LinkedListNode(Protocol):
     def __str__(self) -> str:
         return f"{self.value} -> {self.next_node}"
 ```
-## Predefined protocols
+#### Predefined protocols
 |Class|	Methods|
 |-|-|
 |Container|	.__contains__()|
@@ -14978,9 +14978,9 @@ class LinkedListNode(Protocol):
 |AsyncIterator|	.__anext__() and .__aiter__()|
 |AsyncGenerator|	.asend(), .athrow(), .aclose(), .__aiter__(), and .__anext__()|
 |Buffer|	.__buffer__()|
-***Backend\Python\Profiling\001_Profiling.md***
+# Backend\Python\Profiling\001_Profiling.md
 
-# Profiling
+### Profiling
 
 Source: https://www.freecodecamp.org/news/python-debugging-handbook/#profiling
 
@@ -14990,7 +14990,7 @@ Profiling involves analyzing the performance of your code to identify bottleneck
 * Optimize Code: Once bottlenecks are identified, developers can focus on optimizing specific functions or code blocks to enhance overall performance.
 * Memory Usage Analysis: Profiling tools can also help in analyzing memory consumption, aiding in the detection of memory leaks and inefficient memory usage.
 
-## cProfile
+#### cProfile
 
 cProfile is a built-in module that provides a deterministic profiling of Python programs. It records the time each function takes to execute, making it easier to identify performance bottlenecks.
 
@@ -15006,7 +15006,7 @@ if __name__ == "__main__":
 ```
 This will output a detailed report of function calls, their execution time, and the percentage of total time spent in each function.
 
-## profile
+#### profile
 
 profile:
 The profile module is similar to cProfile but is implemented in pure Python. It provides a more detailed analysis of function calls and can be used when a more fine-grained profiling is needed.
@@ -15021,7 +15021,7 @@ if __name__ == "__main__":
 ```
 Both cProfile and profile produce similar outputs, but the former is generally preferred for its lower overhead.
 
-## snakeviz
+#### snakeviz
 
 While the built-in modules provide textual reports, visualizing the results can make it easier to understand and analyze. One popular tool for this is snakeviz.
 
@@ -15041,9 +15041,9 @@ if __name__ == "__main__":
     snakeviz.view('profile_results')
 ```
 This will open a browser window displaying an interactive visualization of the profiling results.
-***Backend\Python\Profiling\002_Line_profiling.md***
+# Backend\Python\Profiling\002_Line_profiling.md
 
-# Line profiling
+### Line profiling
 
 Source: https://www.freecodecamp.org/news/python-debugging-handbook/#profiling
 
@@ -15070,9 +15070,9 @@ if __name__ == "__main__":
 ```
 
 This will show a detailed report with the time spent on each line within the example_function.
-***Backend\Python\Profiling\003_Memory_profiling.md***
+# Backend\Python\Profiling\003_Memory_profiling.md
 
-# Line profiling
+### Line profiling
 
 Source: https://www.freecodecamp.org/news/python-debugging-handbook/#profiling
 
@@ -15096,9 +15096,9 @@ if __name__ == "__main__":
 When executed, this will display a line-by-line analysis of memory usage during the execution of the example_function
 
 Understanding memory usage is crucial for optimizing code. The memory_profiler module helps in profiling memory consumption.
-***Backend\Python\Servers\001_Gunicorn_vs_uvicorn.md***
+# Backend\Python\Servers\001_Gunicorn_vs_uvicorn.md
 
-# Gunicorn vs Uvicorn
+### Gunicorn vs Uvicorn
 
 Source: https://ismatsamadov.medium.com/gunicorn-vs-uvicorn-369635b92809
 
@@ -15108,7 +15108,7 @@ Gunicorn and Uvicorn are two popular options, but they excel in different ways.
 
 In the world of Python web development, you’ll encounter two terms that might seem interchangeable at first glance: GUVICORN and UVICORN. But these two players serve distinct purposes in running your web applications. Let’s break down their roles and when to use each one, with a touch of fun to make it easier to remember!
 
-## Gunicorn
+#### Gunicorn
 
 * **Built for WSGI applications**: Gunicorn shines when dealing with WSGI frameworks like Django or Flask. It can handle many guests (requests) efficiently, even with limited resources.
 * **Synchronous processing**: Gunicorn follows a traditional approach, handling one guest (request) at a time. This works well for most web applications.
@@ -15123,7 +15123,7 @@ GUVICORN, is like a resourceful engineer. It can take your brave knight, Uvicorn
 * Taming Uvicorn for WSGI Servers: GUVICORN allows you to leverage Uvicorn’s ASGI prowess even with WSGI servers like Gunicorn, a popular option for production environments. Gunicorn excels at managing worker processes, ensuring your application can handle heavy traffic.
 * Best of Both Worlds: With GUVICORN, you get the asynchronous magic of Uvicorn for development and the battle-tested stability of Gunicorn for production.
 
-## Uvicorn 
+#### Uvicorn 
 
 * **Built for ASGI applications**: Uvicorn is designed for modern ASGI frameworks like Starlette or FastAPI. It can leverage asynchronous processing to handle a large influx of guests (requests) simultaneously.
 * **Asynchronous processing**: Uvicorn can juggle multiple guests (requests) at once, ideal for real-time features like chat applications or live updates.
@@ -15135,41 +15135,41 @@ Key Points about Uvicorn:
 * Development Server: Uvicorn shines during development. It’s lightweight and easy to use, allowing you to quickly test and debug your web application as you code.
 * Limited Worker Support: While Uvicorn can spin up multiple worker processes, its capabilities in this area are more basic compared to GUVICORN.
 
-## Analogy
+#### Analogy
 
 * **Gunicorn**: Imagine a party host who takes coat checks one by one (synchronous processing). They handle each guest efficiently but can get overwhelmed with a large crowd.
 * **Uvicorn**: This host has multiple assistants who tag coats simultaneously (asynchronous processing). This allows them to handle a large number of guests efficiently, especially for high-traffic situations.
 
-## Examples
+#### Examples
 * Choosing Gunicorn: If you’re building a traditional Django blog or a data processing API with Flask, Gunicorn is a solid choice.
 * Choosing Uvicorn: If you’re creating a real-time chat application with Starlette or a high-performance API with FastAPI, Uvicorn’s asynchronous processing will give you an edge.
 
-## Building a FastAPI Application with GUVicorn or UVicorn
+#### Building a FastAPI Application with GUVicorn or UVicorn
 
 ```python
 from fastapi import FastAPI
 
-# Create an instance of the FastAPI class
+### Create an instance of the FastAPI class
 app = FastAPI()
 
-# Define a route and corresponding handler function
+### Define a route and corresponding handler function
 @app.get("/")
 async def read_root():
     return {"message": "Hello, World!"}
 ```
 
-### For GUVicorn
+##### For GUVicorn
 ```commandline
 gunicorn -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000
 ```
 
-### For UVicorn
+##### For UVicorn
 ```commandline
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
-***Backend\Python\Setup\001_pyenv.md***
+# Backend\Python\Setup\001_pyenv.md
 
-# pyenv / pyenv-win
+### pyenv / pyenv-win
 pyenv is tool that simplifies installing and switching between different versions of Python on the same machine. It keeps the system version of Python intact, which is required for some operating systems to run properly, while still making it easy to switch Python versions based on a specific project's requirements.
 
 Installing Python versions:
@@ -15215,12 +15215,12 @@ $ pyenv versions
 $ python -V
 Python 3.10.2
 ```
-***Backend\Python\Setup\002_Poetry.md***
+# Backend\Python\Setup\002_Poetry.md
 
-# Poetry
+### Poetry
 Dependency management tool for Python. Works well with pyenv.
 
-## New project
+#### New project
 ```commandline
 $ poetry new sample-project
 $ cd sample-project
@@ -15238,7 +15238,7 @@ sample-project
     └── test_sample_project.py
 ```
 
-## pyproject.toml
+#### pyproject.toml
 Dependencies are managed inside the pyproject.toml file:
 ```toml
 [tool.poetry]
@@ -15257,7 +15257,7 @@ pytest = "^5.2"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 ```
-## Add new dependency
+#### Add new dependency
 To add new a dependency, simply run:
 ```commandline
 $ poetry add [--dev] <package name>
@@ -15277,16 +15277,16 @@ This downloads and installs Flask from PyPI inside the virtual environment manag
 python = "^3.10"
 Flask = "^2.0.3"
 ```
-## Running command in virtual environment
+#### Running command in virtual environment
 To run a command inside the virtual environment, prefix the command with poetry run. For example, to run tests with pytest:
 ```commandline
 $ poetry run python -m pytest
 ```
 poetry run <command> will run commands inside the virtual environment. It doesn't activate the virtual environment, though.
 
-***Backend\Python\Setup\003_Initing_new_project.md***
+# Backend\Python\Setup\003_Initing_new_project.md
 
-# Initing new project
+### Initing new project
 Let's take a look on how to manage a Flask project using pyenv and Poetry.
 
 First, create a new directory called "flask_example" and move inside it:
@@ -15385,21 +15385,21 @@ $ poetry run python -m flask run
 ```
 
 The ```poetry run``` command runs a command inside Poetry's virtual environment.
-***Backend\Python\Sorting\001_Base_sorting.md***
+# Backend\Python\Sorting\001_Base_sorting.md
 
-# Sortowanie
+### Sortowanie
 W Pythonie dane można posortować na dwa sposoby używając wbudowanych mechanizmów.
 ```python 
 [2, 1, 3].sort() # sortuje istniejącą listę
 sorted([2, 1, 3]) # tworzy posortowaną kopię podanej listy
 ```
-***Backend\Python\Sorting\002_Operator_module.md***
+# Backend\Python\Sorting\002_Operator_module.md
 
-# Moduł operator
+### Moduł operator
 
 W celu ułatwienia przekazywania klucza sortowania do metody sorted można posłużyć się modułem operator.
 
-# operator.itemgetter
+### operator.itemgetter
 ```python 
 from operator import *
 
@@ -15411,7 +15411,7 @@ people = [
 
 sorted(people, key=itemgetter(0, 1)) # itemgetter wyciąga elementy z kolejno z indeksów 0 i 1 w formie krotki dla każdego z obiektów listy people. Lista jest posortowana najpierw względem pierwszej podanej wartości, a następnie drugiej
 ```
-# operator.attrgetter
+### operator.attrgetter
 ```python 
 from operator import *
 from collections import namedtuple
@@ -15426,7 +15426,7 @@ people = [
 
 sorted(people, key=attrgetter('first_name', 'last_name')) # attrgetter wyciąga atrybuty kolejno 'first_name' i 'last_name' i sortuje listę obiektów na ich podstawie
 ```
-# operator.methodcaller
+### operator.methodcaller
 ```python 
 from operator import *
 from collections import namedtuple
@@ -15443,41 +15443,41 @@ people = [
 
 sorted(people, key=methodcaller('get_length')) # methodcaller sortuje listę na podstawie wartości zwróconych przez metodę, której nazwa przekazana jest w argumencie
 ```
-***Backend\Python\Syntax\001_lambda.md***
+# Backend\Python\Syntax\001_lambda.md
 
-# lambda  
+### lambda  
 Lambda w Pythonie to funkcja, która może przyjąć każdą liczbę argumentów, ale mieć tylko jedno wyrażenie. Co ważne, jest to funkcja anonimowa, a zatem nie jest powiązana z żadnym identyfikatorem. Pozwala wyeliminować funkcję zainicjowane na potrzeby funkcji wyższego rzędu i przekazać jej parametry.
 ```python
-# lambda argument : wyrażenie
-# lambda x:x+2
+### lambda argument : wyrażenie
+### lambda x:x+2
 
 L = [('Anna',82), ('Robert',33), ('Arthur',40), ('John',56)]
-# Funkcja sorted pobiera sekwencję danych do posortowania i klucz, po którym będzie sortować.
-# Sekwencją jest lista L, a kluczem lambda, która dla kolejnego elementu listy L (czyli tupli)
-# zwraca drugi element danej tupli.
+### Funkcja sorted pobiera sekwencję danych do posortowania i klucz, po którym będzie sortować.
+### Sekwencją jest lista L, a kluczem lambda, która dla kolejnego elementu listy L (czyli tupli)
+### zwraca drugi element danej tupli.
 L_sorted = sorted(L, key = lambda x:x[1])
 ```
-***Backend\Python\Syntax\002_map_and_filter.md***
+# Backend\Python\Syntax\002_map_and_filter.md
 
-# map i filter
+### map i filter
 ```python
 names = ['jan kot', 18, 'ANNA KRÓL', 'jÓzef BYK', ['nie', 'wasza','sprawa'], 'ROBERT wąŻ']
 
-# filter(funkcja,sekwencja)
-# elementy z listy names przekazywane są do lambdy, która sprawdza czy ich typ to string
-# jeśli tak, to element zostaje dodany do listy names_cleaned
+### filter(funkcja,sekwencja)
+### elementy z listy names przekazywane są do lambdy, która sprawdza czy ich typ to string
+### jeśli tak, to element zostaje dodany do listy names_cleaned
 names_cleaned = list(filter(lambda x:type(x) is str, names))
 
-# map(funkcja,sekwencja)
-# elementy z listy names_cleaned przekazane są do lambdy
-# która najpierw zamienia wszystkie litery danego stringa na małe,
-# a następnie pierwsza literę każdego słowa zmienia na dużą
-# tak zmodyfikowany string zostaje dodany do listy names_corrected
+### map(funkcja,sekwencja)
+### elementy z listy names_cleaned przekazane są do lambdy
+### która najpierw zamienia wszystkie litery danego stringa na małe,
+### a następnie pierwsza literę każdego słowa zmienia na dużą
+### tak zmodyfikowany string zostaje dodany do listy names_corrected
 names_corrected = list(map(lambda x: x.lower().title(), names_cleaned))
 ```
-***Backend\Python\Syntax\003_Decorators.md***
+# Backend\Python\Syntax\003_Decorators.md
 
-# Dekoratory
+### Dekoratory
 ```python
 def add_stars(function):     # definicja dekoratora niczym nie różni się od definicji zwykłej funkcji
     def decorated_function():   # wewnątrz dekoratowa tworzymy WEWNĘTRZNĄ funkcję, w której udekorujemy funkcję pobraną jako argument
@@ -15490,9 +15490,9 @@ def add_stars(function):     # definicja dekoratora niczym nie różni się od d
 def f():                         # definicja funkcji f()
     print("Cześć, jestem f()")
 ```
-***Backend\Python\Syntax\004_List_comprehension.md***
+# Backend\Python\Syntax\004_List_comprehension.md
 
-# List Ccomprehension
+### List Ccomprehension
 ```python
 L = [1,2,3,4,5,6]
 L1 = [x for x in range(5)]        # elementy z zakresu od 0 do 4
@@ -15504,25 +15504,25 @@ L4 = ['Parzysta' if x%2 == 0 else 'Nieparzysta' for x in range(5)]
 L5 = [(x, x+10) for x in L]       # dwuelementowe tuple, które na indeksie 0 mają kolejny element z listy L
                                   # a na indeksie 1 ten sam element zwiększony o 10
 ```
-# Zagnieżdżone List Comprehension
+### Zagnieżdżone List Comprehension
 ```python
-# 2-D List
+### 2-D List
 matrix = [[1, 2, 3], [4, 5], [6, 7, 8, 9]]
   
-# Nested List Comprehension to flatten a given 2-D matrix
+### Nested List Comprehension to flatten a given 2-D matrix
 flatten_matrix = [val for sublist in matrix for val in sublist]
 
-# [val
-# for sublist in matrix
-# for val in sublist]
+### [val
+### for sublist in matrix
+### for val in sublist]
 ```
-***Backend\Python\Syntax\005_slots.md***
+# Backend\Python\Syntax\005_slots.md
 
-# __slots__
+### __slots__
 
 Source: https://medium.com/@apps.merkurev/dont-forget-about-slots-in-python-c397f414c490
 
-## Base usage
+#### Base usage
 
 Python’s __slots__ is a simple yet powerful feature that is often overlooked and misunderstood by many. By default, Python stores instance attributes in a dictionary called __dict__ that belongs to the instance itself. This common approach is associated with significant overhead. However, this behavior can be altered by defining a class attribute called __slots__.
 
@@ -15545,16 +15545,16 @@ book.rating = 4.98
 print(book.title)  # Learning Python
 print(book.rating)  # 4.98
 
-# This will raise AttributeError: 'Book' object has no attribute '__dict__'
+### This will raise AttributeError: 'Book' object has no attribute '__dict__'
 print(book.__dict__)
 ```
 
 So, what are the benefits of using __slots__ over the traditional __dict__? There are three main aspects:
 
-### I. Faster access to instance attributes
+##### I. Faster access to instance attributes
 This might be hard to notice in practice, but it is indeed the case.
 
-### II. Memory savings
+##### II. Memory savings
 This is probably the main argument for using __slots__. We save memory because we are not storing instance attributes in a hash table (__dict__), thus avoiding the additional overhead associated with using a hash table.
 
 ```python
@@ -15582,7 +15582,7 @@ print(f'SlotPoint: {asizeof.asizeof(p)} bytes')  # SlotPoint: 112656 bytes
 ```
 In our example, the memory savings were almost twofold. However, the savings will not be as significant if the object has more attributes or if their types are complex. The savings might only amount to a few percent.
 
-### III. More secure access to instance attributes
+##### III. More secure access to instance attributes
 __dict__ allows us to define new attributes on the fly and use them. __slots__ restricts us to what is listed in it:
 
 ```python
@@ -15597,11 +15597,11 @@ book.title = 'Learning Python'  # no error, a new attribute is created
 print(book.title)  # Learning Python
 
 book = SlotBook()
-# This will raise AttributeError: 'SlotBook' object has no attribute 'title'
+### This will raise AttributeError: 'SlotBook' object has no attribute 'title'
 book.title = 'Learning Python'
 ```
 
-## Inheriting from class using __slots__
+#### Inheriting from class using __slots__
 Whether to use __slots__ or not depends on the specific case. It might be beneficial in some cases and problematic in others, especially in more complex scenarios, like when inheriting from a class that has defined __slots__. In this case, the interpreter ignores the inherited __slots__ attribute, and __dict__ reappears in the subclass:
 ```python
 class SlotBook:
@@ -15615,9 +15615,9 @@ book.title = 'Learning Python'  # no error, a new attribute is created
 print(book.title)  # Learning Python
 ```
 
-***Backend\Python\TDD\001_How_to_test.md***
+# Backend\Python\TDD\001_How_to_test.md
 
-# How to test?
+### How to test?
 
 Three guidelines that (hopefully) most developers will agree with that will help you write valuable tests:
 
@@ -15632,9 +15632,9 @@ Three guidelines that (hopefully) most developers will agree with that will help
 2. Each piece of behavior should be tested once -- and only once. Testing the same behavior more than once does not mean that your software is more likely to work. Tests need to be maintained too. If you make a small change to your code base and then twenty tests break, how do you know which functionality is broken? When only a single test fails, it's much easier to find the bug.
 
 3. Each test must be independent from other tests. Otherwise, you'll have hard time maintaining and running the test suite.
-***Backend\Python\TDD\002_Project_structure.md***
+# Backend\Python\TDD\002_Project_structure.md
 
-# Project structure
+### Project structure
 
 ```
 ├── sum
@@ -15654,9 +15654,9 @@ Keeping your tests together in single package allows you to:
 - Reuse pytest configuration across all tests
 - Reuse fixtures across all tests
 - Simplify the running of tests
-***Backend\Python\TDD\003_Test_doctstring.md***
+# Backend\Python\TDD\003_Test_doctstring.md
 
-# Test docstring
+### Test docstring
 
 Test docstring may contain details based on GIVEN, WHEN, THEN model. Example:
 
@@ -15705,10 +15705,10 @@ def test_create_article_already_exists():
     with pytest.raises(AlreadyExists):
         cmd.execute()
 ```
-***Backend\Python\TDD\004_End_to_end.md***
+# Backend\Python\TDD\004_End_to_end.md
 
-# End-to-end testing
-## Prepare end-to-end test
+### End-to-end testing
+#### Prepare end-to-end test
 We have a working API at this point that's fully tested. We can now look at how to write some end-to-end (e2e) tests. Since we have a simple API we can write a single e2e test to cover the following scenario:
 
 1. create a new article
@@ -15739,7 +15739,7 @@ def test_create_list_get(client):
 
     assert response.status_code == 200
 ```
-## Register marker
+#### Register marker
 Register a marker called e2e with pytest by adding the following code to pytest.ini:
 ```ini
 [pytest]
@@ -15760,13 +15760,13 @@ To run all tests except e2e:
 (venv)$ python -m pytest tests -m 'not e2e'
 ```
 e2e tests are more expensive to run and require the app to be up and running, so you probably don't want to run them at all times.
-***Backend\Python\Types_and_hints\001_Static_dynamic_stron_week_typing.md***
+# Backend\Python\Types_and_hints\001_Static_dynamic_stron_week_typing.md
 
-# Static vs. dynamic and strong vs. weak typing
+### Static vs. dynamic and strong vs. weak typing
 
 Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535947
 
-## Static vs dynamic typing
+#### Static vs dynamic typing
 
 Those types of typings indicates in which moment type information are required.
 
@@ -15774,20 +15774,20 @@ Those types of typings indicates in which moment type information are required.
 
 `Dynamic` - on runtime
 
-## Strong vs weak typing
+#### Strong vs weak typing
 
 Those types indicate if type of variable may change during code execution depending on usage. 
 
 `Strong` - Types don't change during code execution - Python `print(1 + '1')` will raise an error
 
 `Weak` - Types may change during code execution - JavaScript `console.log(1 + "1")` won't raise an error
-***Backend\Python\Types_and_hints\002_Type_hints.md***
+# Backend\Python\Types_and_hints\002_Type_hints.md
 
-# Type hints
+### Type hints
 
 Source: https://academy.arjancodes.com/products/the-software-designer-mindset/categories/2150535947/posts/2158623370
 
-## Base type hints
+#### Base type hints
 
 ```python
 def add_three(x: int) -> int:
@@ -15797,7 +15797,7 @@ def add_three(x: int) -> int:
 `x: int` -> `x` argument is suggested to be integer, if not no error will be raised, but it informs, that function was created for int arguments.
 `-> int` -> function will return `int`
 
-## Callables
+#### Callables
 
 ```python
 from typing import Callable
@@ -15815,9 +15815,9 @@ def main():
 ```Callable[[int], int]``` -> defines type for Callable (function in this case), that takes int as argument (`[int]`) and returns int (second `int` in declaration)
 
 ```my_var: IntFunction``` -> typing variable with custom type
-***Backend\SQL\001_Create_new_table.md***
+# Backend\SQL\001_Create_new_table.md
 
-# Tworzenie nowej tabeli
+## Tworzenie nowej tabeli
 ```sql
 CREATE TABLE table (column type, ...);
 
@@ -15828,24 +15828,24 @@ CREATE TABLE genres (
 	FOREIGN KEY(show_id) REFERENCES shows(id)
 );
 ```
-***Backend\SQL\002_Insert_row.md***
+# Backend\SQL\002_Insert_row.md
 
-# Dodanie wiersza tabeli
+## Dodanie wiersza tabeli
 ```sql
 INSERT INTO genres (show_id, genre) VALUES(159, "Comedy");
 ```
 
-***Backend\SQL\003_Update_row.md***
+# Backend\SQL\003_Update_row.md
 
-### Zmiana istniejącej wartości
+#### Zmiana istniejącej wartości
 ```sql
 UPDATE favorites SET title = "The Office" WHERE title = "Thevoffice";
 ```
 Przy zmianie wartości kluczowa jest klauzula WHERE - bez niej wszystkie rekordy w bazie danych zostaną nadpisane nową wartością pola.
 
-***Backend\SQL\004_Create_index.md***
+# Backend\SQL\004_Create_index.md
 
-# Tworzenie indeksów
+## Tworzenie indeksów
 ```sql
 CREATE INDEX "title_index" ON "shows" ("title");
 ```
@@ -15856,29 +15856,29 @@ Indeks to struktura danych podobna do B-tree, gdzie dzięki zorganizowaniu węz�
 Computer Science
 ================
 
-***Computer Science\Algorithms\001_Complexity.md***
+# Computer Science\Algorithms\001_Complexity.md
 
-# Analiza algorytmów
+## Analiza algorytmów
 Algorytmy można analizować na przykład na bazie ich złożoności obliczeniowej.
-## 1. Czas stały - O(1)
+### 1. Czas stały - O(1)
 Najbardziej efektywny, wymaga wykonania jednego kroku niezależnie od wielkości danych wejściowych. Przykład: Wyciągnięcie pojedynczego elementu z listy.
-## 2. Czas logarytmiczny - O(log n)
+### 2. Czas logarytmiczny - O(log n)
 Liczba kroków jest proporcjonalna do logarytmu wielkości danych wejściowych, zatem rośnie wolniej od nich. Przykład: algorytm wyszukiwania binarnego.
-## 3. Czas liniowy - O(n)
+### 3. Czas liniowy - O(n)
 Liczba kroków jest wprost proporcjonalna do ilości danych wejściowych. Przykład: Wyświetlenie każdego elementu listy. 
-## 4. Czas logarytmiczno-liniowy - O(n log n)
+### 4. Czas logarytmiczno-liniowy - O(n log n)
 Liczba kroków jest iloczynem złożoności logarytmicznej i liniowej. Dzieje się tak, gdy np. algorytm wykonuje n razy czynność o złożoności O(log n). Przykład: algorytm merge sort.
-## 5. Czas kwadratowy - O(n**2)
+### 5. Czas kwadratowy - O(n**2)
 Liczba kroków wprost proporcjonalna do kwadratu wielkości danych wejściowych. Przykład: Sortowanie bąbelkowe.
-## 6. Czas sześcienny - O(n**3)
+### 6. Czas sześcienny - O(n**3)
 Liczba kroków wprost proporcjonalna do sześcianu wielkości danych wejściowych. Przykład: Trzy zagnieżdżone pętle.
-## 7. Czas wykładniczy - O(c**n)
+### 7. Czas wykładniczy - O(c**n)
 Najgorsza możliwa złożoność. Liczba kroków jest równa pewnej stałej podniesionej do potęgi równej wielkości danych wejściowych. Przykład: program odgadujący hasło o długości n metodą brute force (sprawdzanie każdej możliwej kombinacji).
 
-***Computer Science\Algorithms\002_Searching.md***
+# Computer Science\Algorithms\002_Searching.md
 
-# Wyszukiwanie
-## 1. Wyszukiwanie liniowe
+## Wyszukiwanie
+### 1. Wyszukiwanie liniowe
 Algorytm, który przegląda kolejno wszystkie wartości dostępne w zbiorze danych i porównuje je z poszukiwaną wartością. Wyszukiwanie liniowe stosowane jest na danych nieposortowanych.
 ```python
 def linear_search(a_list, n):
@@ -15887,7 +15887,7 @@ def linear_search(a_list, n):
 			return True
 	return False
 ```
-## 2. Wyszukiwanie binarne
+### 2. Wyszukiwanie binarne
 Algorytm wyszukiwania użyteczny jedynie dla posortowanych danych. Algorytm wyszukuje wskazaną wartość dzieląc analizowany zbiór danych na połowy.
 ```python
 def binary_search(a_list, n):
@@ -15904,39 +15904,39 @@ def binary_search(a_list, n):
 				first = mid + 1
 	return False
 ```
-***Computer Science\Algorithms\003_Sorting.md***
+# Computer Science\Algorithms\003_Sorting.md
 
-# Sortowanie
-## 1. Sortowanie bąbelkowe
+## Sortowanie
+### 1. Sortowanie bąbelkowe
 Algorytm sortowania, który przegląda listę liczb, porównuje każdą liczbę z następną i zamienia je miejscami, jeśli są zapisane w nieodpowiedniej kolejności.
-## 2. Sortowanie przez wstawianie
+### 2. Sortowanie przez wstawianie
 Stabilny algorytm sortowania, w którym dane są porządkowane w sposób przypominający sortowanie talii kart. W trakcie całego procesu zbiór dzieli się na dwie cześci - posortowaną i nieposortowaną. Na samym początku w części posortowanej znajduje się pierwszy element zbioru. Porównujemy pierwszy element listy nieposortowanej z ostatnim elementem listy posortowanej i zamieniamy je miejscami aż do momentu, gdy będą w odpowiedniej kolejności. Powtarzamy ten krok aż do ostatniego elementu listy nieposortowanej.
-## 3. Sortowanie przez scalanie
+### 3. Sortowanie przez scalanie
 Stabilny algorytm rekurencyjny (typu "dziel i rządź"), który dzieli listę na połowy tak długo, aż uzyska listy o długości jednego elementu, które następnie łączy w odpowiedniej kolejności.
-### Algorytmy typu "Dziel i rządź"
+#### Algorytmy typu "Dziel i rządź"
 Algorytmy, które rekurencyjnie dzielą problem na dwa lub więcej podproblemów, aż do momentu, gdy będą one na tyle proste, że będzie je można łatwo rozwiązać.
-## 4. Timsort
+### 4. Timsort
 Algorytm wykorzystywany we wbudowanych funkcja Pythona sort i sorted. Stanowi on hybrydowe połączenie sortowania przez scalanie oraz sortowania przez wstawianie.
-***Computer Science\Algorithms\004_Euclidean_algorithm.md***
+# Computer Science\Algorithms\004_Euclidean_algorithm.md
 
-# Algorytm Euklidesa
+## Algorytm Euklidesa
 Najefektywniejszy sposób znajdowania wspólnego czynnika. Składa się z następujących kroków:
 * Podzielenie liczby x przez y i wyznaczenie reszty z dzielenia,
 * Zastąpienie liczby y resztą z dzielenia oraz liczby x liczbą y i ponowne wykonanie dzielenia,
 * Poprzedni krok powtarzany jest do momentu otrzymania reszty dzielenia równej 0
 * Ostatni dzielnik jest największym wspólnym czynnikiem
-***Computer Science\Data structures\001_Array.md***
+# Computer Science\Data structures\001_Array.md
 
-# Tablice
+## Tablice
 Python jako swoją implementację abstrakcyjnej struktury danych tablicy stosuje listy, wykorzystujące nadmierną alokację (zabezpieczają się większą ilością pamięci niż zajmują przechowywane dane). 
 Chcąc wykorzystać "klasyczny" rodzaj tablicy wykorzystywany jest moduł array.
 ```python
 import array
 
-# pierwszy parametr określa typ danych (tutaj float), drugi to lista wartości
+## pierwszy parametr określa typ danych (tutaj float), drugi to lista wartości
 arr = array.array('f', (1.0, 1.5, 2.0, 2.5))
 ``` 
-## Zadanie - Przesuwanie zer
+### Zadanie - Przesuwanie zer
 Zadanie polega na wyszukaniu w tablicy wszystkich zer i przesunięcie ich na sam koniec bez zmieniania kolejności pozostąłych elementów tablicy. 
 ```python
 def move_zeros(a_list):
@@ -15953,9 +15953,9 @@ a_list = [8, 0, 3, 0, 12]
 move_zeros(a_list)
 print(a_list) #  [8, 3, 12, 0, 0]
 ```
-***Computer Science\Data structures\002_Linked_list.md***
+# Computer Science\Data structures\002_Linked_list.md
 
-# Lista połączona
+## Lista połączona
 Implementacja abstrakcyjnego typu danych listy. Pozwala na dodawanie, usuwanie oraz wyszukiwanie elementów. Elementy listy nie są indeksowane, ponieważ komputer nie przechowuje ich w jednym, ciągłym obszarze pamięci. Zamiast tego lista połączona stanowi łańcuch wierzchołków, z których każdy zawiera jakieś dane oraz adres następnego wierzchołka listy.
 * Wyszukiwanie elementu na liście połączonej wymaga w najgorszym wypadku przeszukania wszystkich elementów listy  - złożoność O(n).
 * Dodawanie i usuwanie elementów jest za to operacją o stałym czasie - złożoność O(1). 
@@ -15980,11 +15980,11 @@ class LinkedList:
 			current = current.next
 		current.next = Node(data)
 ```
-## 1. Lista jednokierunkowa
+### 1. Lista jednokierunkowa
 Typ listy połączonej, w której każdy wierzchołek zawiera tylko jeden wskaźnik - odwołujący się do następnego elementu listy.
-### 2. Lista dwukierunkowa (podwójnie połączona)
+#### 2. Lista dwukierunkowa (podwójnie połączona)
 Lista połączona, która zawiera dwa wskaźniki: jeden wskazuje na następny wierzchołek, a drugi na poprzedni.
-### 3. deque
+#### 3. deque
 Python nie zawiera wbudowanej implementacji list kierunkowych, natomiast udostępnia strukturę danych deque, która wewnętrznie używa takich list.
 ```python
 from collections import deque
@@ -15993,21 +15993,21 @@ d = deque()
 d.append('Harry')
 d.append('Potter')
 ```
-***Computer Science\Data structures\003_Queue.md***
+# Computer Science\Data structures\003_Queue.md
 
-# Kolejki
-## 1. Kolejka
+## Kolejki
+### 1. Kolejka
 Podstawowy rodzaj kolejki, który wykorzystuje schemat FIFO (First in, first out). Działa na wzór kolejki np. na poczcie. Elementy mogą być dodawane na koniec kolejki i zdejmowane z jej początku.
-## 2. Stos
+### 2. Stos
 Kolejka, stosująca schemat LIFO (Last in, first out). Działa na wzór np. stosu książek. Zawartość stosu może być dodawana lub zdejmowana z tzw. szczytu.
-## 3. Kolejka priorytetowa
+### 3. Kolejka priorytetowa
 Często nazywana kopcem binarnym. Elementy kopca są wstawiane wraz z priorytetem w pierwsze wolne miejsce na dole kopca. Zdejmowany jest element o najwyższym, lub najniższym priorytecie.
 
 ![Priority Queue Data Structure](https://cdn.programiz.com/sites/tutorial2program/files/insert-1_0.png)
 
-***Computer Science\Test-Driven Development\001_Test-Driven Development.md***
+# Computer Science\Test-Driven Development\001_Test-Driven Development.md
 
-# Test-Driven Development
+## Test-Driven Development
 
 Source: https://testdriven.io/courses/django-rest-framework/tdd-search-filtering/#H-0-test-driven-development
 
@@ -16048,17 +16048,17 @@ def sum_two_numbers(x, y):
 DevOps
 ======
 
-***DevOps\Commandline\001_pwd.md***
+# DevOps\Commandline\001_pwd.md
 
-# pwd
+## pwd
 Komenda zwracająca katalog, w którym obecnie się znajdujemy (rozwinięcie skrótu - Print Working Directory).
 
 ```commandline 
 pwd
 ``` 
-***DevOps\Commandline\002_ls.md***
+# DevOps\Commandline\002_ls.md
 
-# ls
+## ls
 Komenda zwracająca wylistowaną zawartość bieżącego katalogu
 ```commandline 
 ls       // simple list
@@ -16066,55 +16066,55 @@ ls -a    // list including hidden files
 ls -l    // list with details (file sizes, modification dates, etc.)
 ls -al   // list with hidden files and details (file sizes, modification dates, etc.)
 ``` 
-***DevOps\Commandline\003_mkdir.md***
+# DevOps\Commandline\003_mkdir.md
 
-# mkdir
+## mkdir
 Komenda tworząca katalog w bieżącym katalogu.
 ```commandline 
 mkdir dirname                                // creates dir 'dirname' 
 mkdir -p directory1/directory2/directory3    // creates nested directory with all parent directories (if they don't exists)
 ```
-***DevOps\Commandline\004_cd.md***
+# DevOps\Commandline\004_cd.md
 
-# cd
+## cd
 Komenda przenosząca do innego katalogu.
 ```commandline 
 cd ..       // goes to the parent directory
 cd dirname  // goes to 'dirname' directory (if exists) 
 ``` 
-***DevOps\Commandline\005_touch.md***
+# DevOps\Commandline\005_touch.md
 
-# touch
+## touch
 Komenda tworząca nowy plik
 ```commandline 
 touch newfile1.txt      // creates new file
 ``` 
-***DevOps\Commandline\006_cp.md***
+# DevOps\Commandline\006_cp.md
 
-# cp
+## cp
 Komenda kopiująca wskazany plik do wskazanego folderu
 ```commandline 
 cp newfile1.txt testdir     // copies newfile1.txt to testdir
 ```
-***DevOps\Commandline\007_mv.md***
+# DevOps\Commandline\007_mv.md
 
-# mv
+## mv
 Komenda przenosząca wskazany plik do wskazanego folderu. Może również służyć do zmiany nazwy wskazanych plików.
 ```commandline 
 mv newfile1.txt testdir     // moves newfile1.txt to testdir
 mv newfile1.txt cheese.txt  // changes newfile1.txt name to cheese.txt
 ``` 
-***DevOps\Commandline\008_rm.md***
+# DevOps\Commandline\008_rm.md
 
-# rm
+## rm
 Komenda usuwająca wskazany plik/folder
 ```commandline 
 rm test.txt      // deletes test.txt file
 rm -rf testdir   // removes testdir and all it contents. Flag -rf is needed to delete directory
 ``` 
-***DevOps\Commandline\009_cat.md***
+# DevOps\Commandline\009_cat.md
 
-# cat
+## cat
 Komenda służąca do konkatenacji (łączenia) plików, ale może być również wykorzystana do wyświetlenia plików czy stworzenia nowego pliku.
 ```commandline 
 $ cat plik1.txt plik2.txt
@@ -16127,12 +16127,12 @@ Możemy wynik tego działania zapisać do nowego pliku:
 $ cat plik1.txt plik2.txt > plik3.txt
 ```
 
-***DevOps\Docker\Basics\001_Docker.md***
+# DevOps\Docker\Basics\001_Docker.md
 
-# Docker
+### Docker
 Source: https://testdriven.io/blog/docker-for-beginners
 
-## Docker Engine
+#### Docker Engine
 When people refer to Docker, they're typically referring to Docker Engine.
 
 Docker Engine is the underlying open source containerization technology for building, managing, and running containerized applications. It's a client-server application with the following components:
@@ -16141,20 +16141,20 @@ Docker Engine is the underlying open source containerization technology for buil
 2. Docker Engine API is a RESTful API that's used to interact with Docker daemon.
 3. Docker client (called docker) is the command line interface used for interacting with Docker daemon. So, when you use a command like docker build, you're using Docker client, which in turn leverages Docker Engine API to communicate with Docker daemon.
 
-## Docker Desktop
+#### Docker Desktop
 
 These days, when you try to install Docker, you'll come across Docker Desktop. While Docker Engine is included with Docker Desktop, it's important to understand that Docker Desktop is not the same as Docker Engine. Docker Desktop is an integrated development environment for Docker containers. It makes it much easier to get your operating system configured for working with Docker.
 
-## Docker Concepts
+#### Docker Concepts
 
 At the heart of Docker, there are three core concepts:
 
 1. Dockerfile - a text file that serves as a blueprint for your container. In it, you define a list of instructions that Docker uses to build an image.
 2. Image - a read-only embodiment of the Dockerfile. It's built out of layers -- each layer corresponds to a single line of instructions from a Dockerfile.
 3. Container - running a Docker image produces a container, which is a controlled environment for your application. If we draw parallels with object-oriented programming, a container is an instance of a Docker image.
-***DevOps\Docker\Basics\002_Dockerfile.md***
+# DevOps\Docker\Basics\002_Dockerfile.md
 
-# Dockerfile
+### Dockerfile
 Source: https://testdriven.io/blog/docker-for-beginners
 
 Again, a Dockerfile is a text file that contains instructions for Docker on how to build an image. By default, a Dockerfile has no extension, but you can add one if you need more than one -- e.g., Dockerfile.prod.
@@ -16176,7 +16176,7 @@ COPY . .
 CMD uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## CMD and ENTRYPOINT
+#### CMD and ENTRYPOINT
 
 Some Docker instructions are so similar it can be hard to understand why both commands are needed. One of those "couples" are CMD and ENTRYPOINT.
 
@@ -16206,13 +16206,13 @@ ENTRYPOINT ["./entrypoint.sh"]
 And this is what the entrypoint.sh file might look like:
 
 ```bash
-#!/bin/sh
+###!/bin/sh
 
 python manage.py migrate
 python manage.py collectstatic --noinput
 ```
 
-## ADD and COPY
+#### ADD and COPY
 
 Another pair similar to one another is ADD and COPY.
 
@@ -16230,24 +16230,24 @@ You should prefer COPY over ADD unless you specifically need one of the two addi
 Examples of ADD and COPY instruction usage:
 
 ```dockerfile
-# copy local files on the host to the destination
+### copy local files on the host to the destination
 COPY /source/path  /destination/path
 COPY ./requirements.txt .
 
-# download external file and copy to the destination
+### download external file and copy to the destination
 ADD http://external.file/url  /destination/path
 ADD --keep-git-dir=true https://github.com/moby/buildkit.git#v0.10.1 /buildkit
 
-# copy and extract local compresses files
+### copy and extract local compresses files
 ADD source.file.tar.gz /destination/path
 ```
-***DevOps\Docker\Basics\003_Docker_image.md***
+# DevOps\Docker\Basics\003_Docker_image.md
 
-# Docker image
+### Docker image
 
 Source: https://testdriven.io/blog/docker-for-beginners/#image
 
-## What image is?
+#### What image is?
 
 An image might be the most confusing concept of the three. You create a Dockerfile and then use a container, but an image lies between those two.
 
@@ -16259,7 +16259,7 @@ The most important image-related tasks are:
 * listing all the built images
 * removing images
 
-## Building image
+#### Building image
 
 To build an image from a Dockerfile, you use the docker image build command. This command requires one argument: either a path or URL of the context.
 
@@ -16292,7 +16292,7 @@ Notes:
 * For the image that was built without a name or tag, you can only reference it via its image ID. Not only is it difficult to remember, but, again, it might not be unique (which is the case above). You should avoid this.
 * For the image that only has a name (-t hello_world), the tag is automatically set to latest. You should avoid this as well. For more, review Version Docker Images.
 
-## Listing
+#### Listing
 The docker image ls command lists all built images.
 
 Example:
@@ -16306,7 +16306,7 @@ alpine/git      latest    692618a0d74d   2 weeks ago     43.4MB
 todo_app        test      999740882932   3 weeks ago     1.03GB
 ```
 
-## Removing
+#### Removing
 There are two use cases for removing images:
 
 * You want to remove one or more selected images
@@ -16314,13 +16314,13 @@ There are two use cases for removing images:
 
 For the first case, you use `docker image rm;` for the second, you use `docker image prune`.
 
-***DevOps\Docker\Basics\004_Docker_container.md***
+# DevOps\Docker\Basics\004_Docker_container.md
 
-# Docker container
+### Docker container
 
 Source: https://testdriven.io/blog/docker-for-beginners/#container
 
-## What container is?
+#### What container is?
 
 The third concept you need to understand is a container, which is a controlled environment for your application. An image becomes a container when it's run on Docker Engine. It's the end goal: You use Docker so you can have a container for your application.
 
@@ -16331,7 +16331,7 @@ The main operations you can do with a container are
 * stopping a container
 * removing a container
 
-## Running
+#### Running
 
 You can either create a new container of an image and run it, or you can start an existing container that was previously stopped.
 
@@ -16340,7 +16340,7 @@ The docker container run command actually combines two other commands, docker co
 ```commandline
 $ docker container run my_image
 
-# the same as:
+### the same as:
 
 $ docker container create my_image
 88ce9c60aeabbb970012b5f8dbae6f34581fa61ec20bd6d87c6831fbb5999263
@@ -16375,7 +16375,7 @@ Another difference from docker container run is that docker container start by d
 $ docker container start -a reverent_sammet
 ```
 
-## Listing
+#### Listing
 
 You can list all running containers with docker container ls.
 
@@ -16405,7 +16405,7 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED              STAT
 4. We already discussed the need for specifying a command for starting a container... COMMAND tells you which command was used ("/bin/sh -c 'uvicorn…").
 5. STATUS is useful when you don't know why your container isn't working (Up 2 hours means your container is running, Exited or Created means it's not)
 
-## Stopping
+#### Stopping
 
 To stop a container, use docker container stop. The name or ID of the stopped container is then returned.
 
@@ -16417,7 +16417,7 @@ $ docker container stop 73bd69d041ae
 73bd69d041ae
 ```
 
-## Removing
+#### Removing
 Similar to images, to remove a container, you can either:
 
 * remove one or more selected containers via docker container rm.
@@ -16439,9 +16439,9 @@ Deleted Containers:
 0eb20b715f42bc5a053dc7878b3312c761058a25fc1efaffb7920b3b4e48df03
 1273cf44c551f8ab9302e6d090e3c4e135ca6f7e1ab3d90a62bcbf5e83ba9342
 ```
-***DevOps\Docker\Basics\005_Docker_commands.md***
+# DevOps\Docker\Basics\005_Docker_commands.md
 
-# Docker commands
+### Docker commands
 
 | Command                                     | Alias	        | Usage                             |
 |---------------------------------------------|---------------|-----------------------------------|
@@ -16456,9 +16456,9 @@ Deleted Containers:
 | docker container rm	                        | docker rm     | 	Remove a container               |
 | docker container prune                      | 	N/A          | 	Remove all stopped containers    |
 | docker container logs <CONTAINER ID / name> | N/A | Show container logs |
-***DevOps\Docker\Basics\006_Volume.md***
+# DevOps\Docker\Basics\006_Volume.md
 
-# Volume
+### Volume
 Volume to przestrzeń w kontenerze, gdzie mogą być wykonywane trwałe operacje na plikach, które będą widoczne nawet po usunięciu kontenera. Aby określić ścieżkę do volume'a należy użyć klauzuli **VOLUME** w Dockerfile:
 ```commandline 
 VOLUME [<PATH 1>, ... <PATH n>]
@@ -16477,9 +16477,9 @@ docker container run ... --mount 'src=<VOLUME_NAME>, dst=<VOLUME_PATH>' ...
 ``` 
 **VOLUME_NAME** to nazwa volume'a pobrana z komendy *docker volume ls*, natomiast **VOLUME_PATH** to ścieżka zdefiniowana przez nas w Dockerfile'u.
 
-***DevOps\Docker\Basics\007_Bind_mount.md***
+# DevOps\Docker\Basics\007_Bind_mount.md
 
-# Bind mount
+### Bind mount
 Podłączenie konkretnego folderu z używanego hosta do obraz (np. konkretnej ścieżki do folderu na komputerze, gdzie kontener jest uruchomiony lokalnie).
 ```commandline 
 docker container run ... <HOST_PATH>:<CONTAINER_PATH> ...
@@ -16488,16 +16488,16 @@ docker container run ... <HOST_PATH>:<CONTAINER_PATH> ...
 
 Synchronizacja działa w dwie strony. Jeżli plik zostanie utworzony w kontenerze, to również zostanie przeniesiony do hosta.
 
-***DevOps\Docker\Dockerfile_best_practices\001_Multi-stage_Builds.md***
+# DevOps\Docker\Dockerfile_best_practices\001_Multi-stage_Builds.md
 
-# Multi-stage Builds
+### Multi-stage Builds
 
 Source: https://testdriven.io/blog/docker-best-practices/#use-multi-stage-builds
 
 Multi-stage Docker builds allow you to break up your Dockerfiles into several stages. For example, you can have a stage for compiling and building your application, which can then be copied to subsequent stages. Since only the final stage is used to create the image, the dependencies and tools associated with building your application are discarded, leaving a lean and modular production-ready image.
 
 ```dockerfile
-# temp stage
+### temp stage
 FROM python:3.12.2-slim as builder
 
 WORKDIR /app
@@ -16512,7 +16512,7 @@ COPY requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
 
 
-# final stage
+### final stage
 FROM python:3.12.2-slim
 
 WORKDIR /app
@@ -16531,9 +16531,9 @@ REPOSITORY                 TAG                    IMAGE ID       CREATED        
 docker-single              latest                 8d6b6a4d7fb6   16 seconds ago   259MB
 docker-multi               latest                 813c2fa9b114   3 minutes ago    156MB
 ```
-***DevOps\Docker\Dockerfile_best_practices\002_Order_Dockerfile_commands_appropriately.md***
+# DevOps\Docker\Dockerfile_best_practices\002_Order_Dockerfile_commands_appropriately.md
 
-# Order Dockerfile Commands Appropriately
+### Order Dockerfile Commands Appropriately
 
 Source: https://testdriven.io/blog/docker-best-practices/#order-dockerfile-commands-appropriately
 
@@ -16571,9 +16571,9 @@ Notes:
 * Always put layers that are likely to change as low as possible in the Dockerfile.
 * Combine RUN apt-get update and RUN apt-get install commands. (This also helps to reduce the image size. We'll touch on this shortly.)
 * If you want to turn off caching for a particular Docker build, add the --no-cache=True flag.
-***DevOps\Docker\Dockerfile_best_practices\003_Use_Small_Docker_Base_Images.md***
+# DevOps\Docker\Dockerfile_best_practices\003_Use_Small_Docker_Base_Images.md
 
-# Use Small Docker Base Images
+### Use Small Docker Base Images
 
 Source: https://testdriven.io/blog/docker-best-practices/#use-small-docker-base-images
 
@@ -16597,9 +16597,9 @@ python       3.12.2-alpine3.19      c54b53ca8371     40 hours ago     51.8MB
 While the Alpine flavor, based on Alpine Linux, is the smallest, it can often lead to increased build times if you can't find compiled binaries that work with it. As a result, you may end up having to build the binaries yourself, which can increase the image size (depending on the required system-level dependencies) and the build times (due to having to compile from the source).
 
 In the end, it's all about balance. When in doubt, start with a *-slim flavor, especially in development mode, as you're building your application. You want to avoid having to continually update the Dockerfile to install necessary system-level dependencies when you add a new Python package. As you harden your application and Dockerfile(s) for production, you may want to explore using Alpine for the final image from a multi-stage build.
-***DevOps\Docker\Dockerfile_best_practices\004_Minimize_number_of_layers.md***
+# DevOps\Docker\Dockerfile_best_practices\004_Minimize_number_of_layers.md
 
-# Minimize the Number of Layers
+### Minimize the Number of Layers
 
 Source: https://testdriven.io/blog/docker-best-practices/#minimize-the-number-of-layers
 
@@ -16658,9 +16658,9 @@ RUN apt-get update && apt-get install -y \
 ```
 
 Additionally, it's crucial to perform clean-up actions within the same RUN instruction to avoid unnecessary bloat in your Docker images. This approach ensures that temporary files or cache used during installation are not included in the final image layer, effectively reducing the image size. For example, after installing packages with apt-get, use && apt-get clean && rm -rf /var/lib/apt/lists/* to remove the package lists and any temporary files created during the installation process, as demonstrated above. This practice is essential for keeping your Docker images as lean and efficient as possible.
-***DevOps\Docker\Dockerfile_best_practices\005_Use_unprivilaged_containers.md***
+# DevOps\Docker\Dockerfile_best_practices\005_Use_unprivilaged_containers.md
 
-# Use Unprivileged Containers
+### Use Unprivileged Containers
 
 Source: https://testdriven.io/blog/docker-best-practices/#use-unprivileged-containers
 
@@ -16693,9 +16693,9 @@ uid=1001(app) gid=1001(app) groups=1001(app)
 ```
 
 
-***DevOps\Docker\Dockerfile_best_practices\006_Prefer_COPY_over_ADD.md***
+# DevOps\Docker\Dockerfile_best_practices\006_Prefer_COPY_over_ADD.md
 
-# Prefer COPY Over ADD
+### Prefer COPY Over ADD
 
 Source: https://testdriven.io/blog/docker-best-practices/#prefer-copy-over-add
 
@@ -16714,19 +16714,19 @@ While they look like they serve the same purpose, ADD has some additional functi
 * ADD can be used for the same thing as well as downloading external files. Also, if you use a compressed file (tar, gzip, bzip2, etc.) as the <src> parameter, ADD will automatically unpack the contents to the given location.
 
 ```dockerfile
-# copy local files on the host to the destination
+### copy local files on the host to the destination
 COPY /source/path  /destination/path
 ADD /source/path  /destination/path
 
-# download external file and copy to the destination
+### download external file and copy to the destination
 ADD http://external.file/url  /destination/path
 
-# copy and extract local compresses files
+### copy and extract local compresses files
 ADD source.file.tar.gz /destination/path
 ```
-***DevOps\Docker\Dockerfile_best_practices\007_Cache_Python_packages_to_Docker_host.md***
+# DevOps\Docker\Dockerfile_best_practices\007_Cache_Python_packages_to_Docker_host.md
 
-# Cache Python Packages to the Docker Host
+### Cache Python Packages to the Docker Host
 
 Source: https://testdriven.io/blog/docker-best-practices/#cache-python-packages-to-the-docker-host
 
@@ -16739,9 +16739,9 @@ Add a volume to the docker run as `-v $HOME/.cache/pip-docker/:/root/.cache/pip`
 Moving the cache from the docker image to the host can save you space in the final image.
 
 
-***DevOps\Docker\Dockerfile_best_practices\008_Run_only_one_process_per_container.md***
+# DevOps\Docker\Dockerfile_best_practices\008_Run_only_one_process_per_container.md
 
-# Run Only One Process Per Container
+### Run Only One Process Per Container
 
 Source: https://testdriven.io/blog/docker-best-practices/#run-only-one-process-per-container
 
@@ -16753,19 +16753,19 @@ Let's assume your application stack consists of a two web servers and a database
 2. Reusability - Perhaps you have another service that needs a containerized database. You can simply reuse the same database container without bringing two unnecessary services along with it.
 3. Logging - Coupling containers makes logging much more complex. We'll address this in further detail later in this article.
 4. Portability and Predictability - It's much easier to make security patches or debug an issue when there's less surface area to work with.
-***DevOps\Docker\Dockerfile_best_practices\009_Prefer_array_over_string_syntax.md***
+# DevOps\Docker\Dockerfile_best_practices\009_Prefer_array_over_string_syntax.md
 
-# Prefer Array Over String Syntax
+### Prefer Array Over String Syntax
 
 Source: https://testdriven.io/blog/docker-best-practices/#prefer-array-over-string-syntax
 
 You can write the CMD and ENTRYPOINT commands in your Dockerfiles in both array (exec) or string (shell) formats:
 
 ```dockerfile
-# array (exec)
+### array (exec)
 CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
 
-# string (shell)
+### string (shell)
 CMD "gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app"
 ```
 
@@ -16779,19 +16779,19 @@ So, since most shells don't process signals to child processes, if you use the s
 ```dockerfile
 FROM ubuntu:24.04
 
-# BAD: shell format
+### BAD: shell format
 ENTRYPOINT top -d
 
-# GOOD: exec format
+### GOOD: exec format
 ENTRYPOINT ["top", "-d"]
 ```
 
 Try both of these. Take note that with the shell format flavor, `CTRL-C` won't kill the process. Instead, you'll see `^C^C^C^C^C^C^C^C^C^C^C`.
 
 
-***DevOps\Docker\Dockerfile_best_practices\010_Understand_difference_between_ENTRYPOINT_and_CMD.md***
+# DevOps\Docker\Dockerfile_best_practices\010_Understand_difference_between_ENTRYPOINT_and_CMD.md
 
-# Understand the Difference Between ENTRYPOINT and CMD
+### Understand the Difference Between ENTRYPOINT and CMD
 
 Source: https://testdriven.io/blog/docker-best-practices/#understand-the-difference-between-entrypoint-and-cmd
 
@@ -16800,7 +16800,7 @@ There are two ways to run commands in a container:
 ```dockerfile
 CMD ["gunicorn", "config.wsgi", "-b", "0.0.0.0:8000"]
 
-# and
+### and
 
 ENTRYPOINT ["gunicorn", "config.wsgi", "-b", "0.0.0.0:8000"]
 ```
@@ -16834,9 +16834,9 @@ docker run <image_name> 6
 This will start the container with six Gunicorn workers rather then four.
 
 
-***DevOps\Docker\Dockerfile_best_practices\011_Include_HEALHCHECK.md***
+# DevOps\Docker\Dockerfile_best_practices\011_Include_HEALHCHECK.md
 
-# Include a HEALTHCHECK Instruction
+### Include a HEALTHCHECK Instruction
 
 Source: https://testdriven.io/blog/docker-best-practices/#include-a-healthcheck-instruction
 
@@ -16908,13 +16908,13 @@ Options:
 * `timeout`: Max time to wait for the response.
 * `start_period`: When to start the health check. It can be used when additional tasks are performed before the containers are ready, like running migrations.
 * `retries`: Maximum retries before designating a test as failed.
-***DevOps\Docker\Dockerfile_best_practices\012_Optimizing_Dockefile_build_with_poetry.md***
+# DevOps\Docker\Dockerfile_best_practices\012_Optimizing_Dockefile_build_with_poetry.md
 
-# Optimizing Dockerfile build with poetry
+### Optimizing Dockerfile build with poetry
 
 Source: https://medium.com/@albertazzir/blazing-fast-python-docker-builds-with-poetry-a78a66f5aed0
 
-## Project structure
+#### Project structure
 
 ``` 
 .
@@ -16952,7 +16952,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 ```
 
-## Naive approach
+#### Naive approach
 
 ```dockerfile
 FROM python:3.11-buster
@@ -16966,7 +16966,7 @@ RUN poetry install
 ENTRYPOINT ["poetry", "run", "python", "-m", "annapurna.main"]
 ```
 
-## First improvements
+#### First improvements
 
 ```dockerfile
 FROM python:3.11-buster
@@ -16989,7 +16989,7 @@ ENTRYPOINT ["poetry", "run", "python", "-m", "annapurna.main"]
 * Poetry will complain if a README.md is not found (I don’t really share this choice) and as such I create an empty one. 
 * Avoid installing development dependencies with `poetry install --without dev` , as you won’t need linters and tests suites in your production environment.
 
-## Cleaning Poetry cache
+#### Cleaning Poetry cache
 
 ```dockerfile
 FROM python:3.11-buster
@@ -17016,7 +17016,7 @@ ENTRYPOINT ["poetry", "run", "python", "-m", "annapurna.main"]
 * When removing the cache folder make sure this is done in the same RUN command. If it’s done in a separate RUN command the cache will still be part of the previous Docker layer (the one containing poetry install ), effectively rendering your optimization useless.
 * While doing this I’m also setting a few Poetry environment variables to further strengthen the determinism of my build. The most controversial one is POETRY_VIRTUALENVS_CREATE=1. What’s the point why would I want to create a virtual environment inside a Docker container? I honestly prefer this solution over who disables this flag, as it makes sure that my environment will be as isolated as possible and above all that my installation will not mess up with the system Python or, even worse, with Poetry itself.
 
-## Installing dependencies before copying code 
+#### Installing dependencies before copying code 
 
 ```dockerfile
 FROM python:3.11-buster
@@ -17045,10 +17045,10 @@ ENTRYPOINT ["poetry", "run", "python", "-m", "annapurna.main"]
 * The solution here is to provide Poetry with the minimal information needed to build the virtual environment and only later COPY our codebase. We can achieve this with the --no-root option, which instructs Poetry to avoid installing the current project into the virtual environment.
 * The additional RUN poetry install --without dev instruction is needed to install your project in the virtual environment. This can be useful for example for installing any custom script. Depending on your project you may not even need this step. Anyways, this layer execution will be super fast since the project dependencies have already been installed.
 
-## Using Docker multi-stage builds
+#### Using Docker multi-stage builds
 
 ```dockerfile
-# The builder image, used to build the virtual environment
+### The builder image, used to build the virtual environment
 FROM python:3.11-buster as builder
 
 RUN pip install poetry==1.4.2
@@ -17065,7 +17065,7 @@ RUN touch README.md
 
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
-# The runtime image, used to just run the code provided its virtual environment
+### The runtime image, used to just run the code provided its virtual environment
 FROM python:3.11-slim-buster as runtime
 
 ENV VIRTUAL_ENV=/app/.venv \
@@ -17081,7 +17081,7 @@ ENTRYPOINT ["python", "-m", "annapurna.main"]
 * Poetry isn’t even installed in the runtime stage. Poetry is in fact an unnecessary dependency for running your Python application once your virtual environment is built. We just need to play with environment variables (such as the VIRTUAL_ENV variable) to let Python recognize the right virtual environment.
 * For simplicity I removed the second installation step (`RUN poetry install --without dev `) as I don’t need it for my toy project, although one could still add it in the runtime image in a single instruction: `RUN pip install poetry && poetry install --without dev && pip uninstall poetry` .
 
-## Buildkit Cache Mounts
+#### Buildkit Cache Mounts
 
 ```dockerfile
 FROM python:3.11-buster as builder
@@ -17119,9 +17119,9 @@ DOCKER_BUILDKIT=1 docker build --target=runtime .
 * This final trick is not known to many as it’s rather newer compared to the other features I presented. It leverages Buildkit cache mounts, which basically instruct Buildkit to mount and manage a folder for caching reasons. The interesting thing is that such cache will persist across builds!
 * By plugging this feature with Poetry cache (now you understand why I did want to keep caching?) we basically get a dependency cache that is re-used every time we build our project. The result we obtain is a fast dependency build phase when building the same image multiple times on the same environment.
 * Note how the Poetry cache is not cleared after installation, as this would prevent to store and re-use the cache across builds. This is fine, as Buildkit will not persist the managed cache in the built image (plus, it’s not even our runtime image).
-***DevOps\Docker\Docker_compose\001_Docker_compose_file.md***
+# DevOps\Docker\Docker_compose\001_Docker_compose_file.md
 
-# Plik docker_compose
+### Plik docker_compose
 Plik *docker-compose.yaml* pozwala na zdefiniowanie zależności między kontenerami, wolumenami i sieciami w uporządkowany sposób. 
 
 Schemat pliku:
@@ -17151,7 +17151,7 @@ Przykładowe zastosowanie docker-compose do uruchomienia obrazu Elasticsearch.
 ```dockerfile
 version: '3.7'
 
-# docker container run -p 9200:9200 -e cluster.name=kursdockera -v $(pwd)/esdata:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+### docker container run -p 9200:9200 -e cluster.name=kursdockera -v $(pwd)/esdata:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 
 services:
 	elasticsearch:
@@ -17164,9 +17164,9 @@ services:
 		ports:
 			- 9200:9200
 ```
-***DevOps\Docker\Docker_compose\002_Docker_compose_commands.md***
+# DevOps\Docker\Docker_compose\002_Docker_compose_commands.md
 
-# Komendy dla docker compose
+### Komendy dla docker compose
 ```commandline 
 docker compose up
 ``` 
@@ -17184,16 +17184,16 @@ docker compose down
 ``` 
 Zatrzymanie i usunięcie konterów, usunięcie sieci.
 
-***DevOps\Docker\General_best_practices\001_Using_Python_Virtual_Environments.md***
+# DevOps\Docker\General_best_practices\001_Using_Python_Virtual_Environments.md
 
-# Using Python Virtual Environments
+### Using Python Virtual Environments
 
 In most cases, virtual environments are unnecessary as long as you stick to running only a single process per container. Since the container itself provides isolation, packages can be installed system-wide. That said, you may want to use a virtual environment in a multi-stage build rather than building wheel files.
 
 Example with wheels:
 
 ```dockerfile
-# temp stage
+### temp stage
 FROM python:3.12.2-slim as builder
 
 WORKDIR /app
@@ -17208,7 +17208,7 @@ COPY requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
 
 
-# final stage
+### final stage
 FROM python:3.12.2-slim
 
 WORKDIR /app
@@ -17222,7 +17222,7 @@ RUN pip install --no-cache /wheels/*
 Example with virtualenv:
 
 ```dockerfile
-# temp stage
+### temp stage
 FROM python:3.12.2-slim as builder
 
 WORKDIR /app
@@ -17240,7 +17240,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 
-# final stage
+### final stage
 FROM python:3.12.2-slim
 
 COPY --from=builder /opt/venv /opt/venv
@@ -17250,9 +17250,9 @@ WORKDIR /app
 ENV PATH="/opt/venv/bin:$PATH"
 ```
 
-***DevOps\Docker\General_best_practices\002_Set_Memory_and_CPU_limits.md***
+# DevOps\Docker\General_best_practices\002_Set_Memory_and_CPU_limits.md
 
-# Set Memory and CPU Limits
+### Set Memory and CPU Limits
 
 Source: https://testdriven.io/blog/docker-best-practices/#set-memory-and-cpu-limits
 
@@ -17286,9 +17286,9 @@ services:
 Take note of the `reservations` field. It's used to set a soft limit, which takes priority when the host machine has low memory or CPU resources.
 
 
-***DevOps\Docker\General_best_practices\003_Log_to_stdout_or_stderr.md***
+# DevOps\Docker\General_best_practices\003_Log_to_stdout_or_stderr.md
 
-# Log to stdout or stderr
+### Log to stdout or stderr
 
 Source: https://testdriven.io/blog/docker-best-practices/#log-to-stdout-or-stderr
 
@@ -17297,9 +17297,9 @@ Applications running within your Docker containers should write log messages to 
 You can then configure the Docker daemon to send your log messages to a centralized logging solution (like CloudWatch Logs or Papertrail).
 
 
-***DevOps\Docker\General_best_practices\004_Use_Shared_Memory_Mount_for_Gunicorn_Heartbeat.md***
+# DevOps\Docker\General_best_practices\004_Use_Shared_Memory_Mount_for_Gunicorn_Heartbeat.md
 
-# Use a Shared Memory Mount for Gunicorn Heartbeat
+### Use a Shared Memory Mount for Gunicorn Heartbeat
 
 Source: https://testdriven.io/blog/docker-best-practices/#use-a-shared-memory-mount-for-gunicorn-heartbeat
 
@@ -17312,18 +17312,18 @@ Fortunately, there is a simple fix: Change the heartbeat directory to a memory-m
 ```commandline
 gunicorn --worker-tmp-dir /dev/shm config.wsgi -b 0.0.0.0:8000
 ```
-***DevOps\Docker\General_best_practices\005_Secure_Communication_with_TLS.md***
+# DevOps\Docker\General_best_practices\005_Secure_Communication_with_TLS.md
 
-# Secure Communication with TLS
+### Secure Communication with TLS
 
 Source: https://testdriven.io/blog/docker-best-practices/#secure-communication-with-tls
 
 When a Docker daemon is exposed to the network or accessed over a network, securing the communication channel is crucial to prevent unauthorized access and ensure the integrity and confidentiality of the data being transmitted. Using TLS (Transport Layer Security) helps in encrypting the communication between the Docker client and the Docker daemon, making it significantly more secure.
 
 To set up TLS for Docker, you'll need to generate SSL certificates: a CA (Certificate Authority) certificate, a server certificate for the Docker daemon, and a client certificate for the Docker client. These certificates are used to encrypt the communication and authenticate the client and server to each other.
-***DevOps\Docker\Images_best_practices\001_Version_Docker_Images.md***
+# DevOps\Docker\Images_best_practices\001_Version_Docker_Images.md
 
-# Version Docker Images
+### Version Docker Images
 
 Source: https://testdriven.io/blog/docker-best-practices/#version-docker-images
 
@@ -17355,9 +17355,9 @@ Here, we used the following to form the tag:
 4. Semantic version: 0.1.4
 
 It's essential to pick a tagging scheme and be consistent with it. Since commit hashes make it easy to tie an image tag back to the code quickly, it's highly recommended to include them in your tagging scheme.
-***DevOps\Docker\Images_best_practices\002_No_secrets_in_images.md***
+# DevOps\Docker\Images_best_practices\002_No_secrets_in_images.md
 
-# Don't Store Secrets in Images
+### Don't Store Secrets in Images
 
 Source: https://testdriven.io/blog/docker-best-practices/#dont-store-secrets-in-images
 
@@ -17385,16 +17385,16 @@ Also, you can help prevent leaking secrets by adding common secret files and fol
 ```
 Finally, be explicit about what files are getting copied over to the image rather than copying all files recursively:
 ```dockerfile
-# BAD
+### BAD
 COPY . .
 
-# GOOD
+### GOOD
 copy ./app.py .
 ```
 
 Being explicit also helps to limit cache-busting.
 
-## Environment Variables
+#### Environment Variables
 You can pass secrets via environment variables, but they will be visible in all child processes, linked containers, and logs, as well as via docker inspect. It's also difficult to update them.
 
 ```commandline
@@ -17420,7 +17420,7 @@ This is the most straightforward approach to secrets management. While it's not 
 
 Passing secrets in using a shared volume is a better solution, but they should be encrypted, via Vault or AWS Key Management Service (KMS), since they are saved to disc.
 
-## Build-time Arguments
+#### Build-time Arguments
 
 You can pass secrets in at build-time using build-time arguments, but they will be visible to those who have access to the image via docker history.
 
@@ -17437,17 +17437,17 @@ $ docker build --build-arg "DATABASE_PASSWORD=SuperSecretSauce" .
 If you only need to use the secrets temporarily as part of the build -- e.g., SSH keys for cloning a private repo or downloading a private package -- you should use a multi-stage build since the builder history is ignored for temporary stages:
 
 ```dockerfile
-# temp stage
+### temp stage
 FROM python:3.12.2-slim as builder
 
-# secret
+### secret
 ARG SSH_PRIVATE_KEY
 
-# install git
+### install git
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git
 
-# use ssh key to clone repo
+### use ssh key to clone repo
 RUN mkdir -p /root/.ssh/ && \
     echo "${PRIVATE_SSH_KEY}" > /root/.ssh/id_rsa
 RUN touch /root/.ssh/known_hosts &&
@@ -17455,25 +17455,25 @@ RUN touch /root/.ssh/known_hosts &&
 RUN git clone git@github.com:testdrivenio/not-real.git
 
 
-# final stage
+### final stage
 FROM python:3.12.2-slim
 
 WORKDIR /app
 
-# copy the repository from the temp image
+### copy the repository from the temp image
 COPY --from=builder /your-repo /app/your-repo
 
-# use the repo for something!
+### use the repo for something!
 ```
 The multi-stage build only retains the history for the final image. Keep in mind that you can use this functionality for permanent secrets that you need for your application, like a database credential.
 
 You can also use the new --secret option in Docker build to pass secrets to Docker images that do not get stored in the images.
 ```dockerfile
-# "docker_is_awesome" > secrets.txt
+### "docker_is_awesome" > secrets.txt
 
 FROM alpine
 
-# shows secret from default secret location:
+### shows secret from default secret location:
 RUN --mount=type=secret,id=mysecret cat /run/secrets/mysecret
 ```
 This will mount the secret from the secrets.txt file.
@@ -17483,17 +17483,17 @@ Build the image:
 ```commandline
 docker build --no-cache --progress=plain --secret id=mysecret,src=secrets.txt .
 
-# output
+### output
 ...
-#4 [1/2] FROM docker.io/library/alpine
-#4 sha256:665ba8b2cdc0cb0200e2a42a6b3c0f8f684089f4cd1b81494fbb9805879120f7
-#4 CACHED
+###4 [1/2] FROM docker.io/library/alpine
+###4 sha256:665ba8b2cdc0cb0200e2a42a6b3c0f8f684089f4cd1b81494fbb9805879120f7
+###4 CACHED
 
-#5 [2/2] RUN --mount=type=secret,id=mysecret cat /run/secrets/mysecret
-#5 sha256:75601a522ebe80ada66dedd9dd86772ca932d30d7e1b11bba94c04aa55c237de
-#5 0.635 docker_is_awesome#5 DONE 0.7s
+###5 [2/2] RUN --mount=type=secret,id=mysecret cat /run/secrets/mysecret
+###5 sha256:75601a522ebe80ada66dedd9dd86772ca932d30d7e1b11bba94c04aa55c237de
+###5 0.635 docker_is_awesome#5 DONE 0.7s
 
-#6 exporting to image
+###6 exporting to image
 ```
 
 Finally, check the history to see if the secret is leaking:
@@ -17507,9 +17507,9 @@ IMAGE          CREATED         CREATED BY                                      S
 <missing>      4 weeks ago     /bin/sh -c #(nop) ADD file:aad4290d27580cc1a…   5.6MB
 ```
 
-***DevOps\Docker\Images_best_practices\003_dockerignore_file.md***
+# DevOps\Docker\Images_best_practices\003_dockerignore_file.md
 
-## Use a .dockerignore File
+#### Use a .dockerignore File
 
 Source: https://testdriven.io/blog/docker-best-practices/#use-a-dockerignore-file
 
@@ -17549,9 +17549,9 @@ In summary, a properly structured .dockerignore can help:
 * Speed up the build process
 * Prevent unnecessary cache invalidation
 * Prevent leaking secrets
-***DevOps\Docker\Images_best_practices\004_Lint_and_scan_Dockerfiles_and_images.md***
+# DevOps\Docker\Images_best_practices\004_Lint_and_scan_Dockerfiles_and_images.md
 
-# Lint and Scan Your Dockerfiles and Images
+### Lint and Scan Your Dockerfiles and Images
 
 Source: https://testdriven.io/blog/docker-best-practices/#lint-and-scan-your-dockerfiles-and-images
 
@@ -17573,9 +17573,9 @@ You can see it in action online at https://hadolint.github.io/hadolint/. There's
 You can couple linting your Dockerfiles with scanning images and containers for vulnerabilities.
 
 
-***DevOps\Docker\Images_best_practices\005_Sign_and_verify_images.md***
+# DevOps\Docker\Images_best_practices\005_Sign_and_verify_images.md
 
-# Sign and Verify Images
+### Sign and Verify Images
 
 Source: https://testdriven.io/blog/docker-best-practices/#sign-and-verify-images
 
@@ -17599,53 +17599,53 @@ notary.docker.io does not have trust data for docker.io/namespace/unsigned-image
 ```
 
 You can learn about signing images from the Signing Images with [Docker Content Trust documentation](https://docs.docker.com/engine/security/trust/#signing-images-with-docker-content-trust).
-***DevOps\GIT\001_Basics.md***
+# DevOps\GIT\001_Basics.md
 
-# Podstawy
+## Podstawy
 `GIT` - rozproszony system kontroli wersji  
 `remote (origin)` - centralne repozytorium  
 `local` - lokalne repozytorium  
 `working directory` - kod, nad którym wciąż pracujemy znajduje się w tym obszarze. Aby przenieść go do staging area, należy użyć komendy **git add**  
 `staging area` - przestrzeń, w której znajdują się pliki, które planujemy dodać do commita. Jest to krok pośredni między pracą nad plikiem, a wysłaniem do go centralnego repozytorium  
   
-***DevOps\GIT\002_Base_commands.md***
+# DevOps\GIT\002_Base_commands.md
 
-# Podstawowe komendy
-## git config
+## Podstawowe komendy
+### git config
 
 ```bash  
 git config --global user.name "<username>"
 git config --global user.email "<email>"
 ```  
-## git init  
+### git init  
 ```bash  
 git init
 ```  
-## git remote  
+### git remote  
 ```bash  
 git remote add origin "<remote_repository_url>"
 ```  
-## git clone  
+### git clone  
 Klonowanie repozytorium z podanego linka  
 ```bash  
 git clone "<remote_repository_url>"
 ```  
-## git status  
+### git status  
 Stan aktualnego brancha w porównaniu do ostatniego commita  
 ```bash  
 git status
 ```  
-## git log  
+### git log  
 Historia commitów na aktualnym branchu (od najnowszego do najstarszego)  
 ```bash  
 git log
 ```  
-## git branch  
+### git branch  
 Lista branchy w lokalnym repozytorium oraz wyświetlenia nazwy aktualnego brancha  
 ```bash  
 git branch
 ``` 
-## git checkout  
+### git checkout  
 ```bash  
 git checkout <nazwa_brancha>        // przełączenie się na inną, istniejącą gałąź
 git checkout  -b "<nazwa_brancha>"  // stworzenie nowego brancha na bazie aktualnego brancha i przełączenie się na niego
@@ -17653,57 +17653,57 @@ git checkout -                      // przełączenie się na wcześniej używan
 git checkout <nazwa_pliku>          // zresetowanie zawartości brancha do tej, z ostatniego commita
 ```  
 
-## git reset  
+### git reset  
 ```bash  
 git reset --hard // cofnięcie gałęzi do stanu z ostatniego commita
 ```  
-***DevOps\GIT\003_Pushing_changes_to_remote.md***
+# DevOps\GIT\003_Pushing_changes_to_remote.md
 
-# Wypchanie zmian na serwer
-## git add  
+## Wypchanie zmian na serwer
+### git add  
 Dodanie plików do z working directory do staging area,  
 ```bash  
 git add <nazwa_pliku> [<kolejne_nazwy_plików>]
 git add --all
 ```  
-## git commit  
+### git commit  
 Dodanie plików do z working directory do staging area,  
 ```bash  
 git commit -m "<nazwa_commita>"   // tworzy commit z nadaną nazwą
 git commit -am "<nazwa_commita>"  // dodaje wszystkie ZMIENIONE pliki na staging i tworzy commit z nadaną nazwą. NOWE pliki należy dodać do commita ręcznie przy użyciu git add
 ```  
-## git push  
+### git push  
 Wypychanie zmian na aktualnym branchu z lokalnego repozytorium do repozytorium centralnego   
 ```bash  
 git push
 ```  
-***DevOps\GIT\004_Pulling_changes_from_remote.md***
+# DevOps\GIT\004_Pulling_changes_from_remote.md
 
-# Pobieranie zmian z serwera
-## git pull  
+## Pobieranie zmian z serwera
+### git pull  
 Aktualizowanie lokalnego repozytorium o nowe commity z repozytorium centralnego z aktualnego brancha   
 ```bash  
 git pull
 git pull --rebase
 ```  
-## git fetch  
+### git fetch  
 Aktualizowanie lokalnego repozytorium o nowe branche powstałe w repozytorium zewnętrznym  
 ```bash  
 git fetch
 ```  
-## git merge  
+### git merge  
 Ta komenda łączy wszystkie zmiany powstałe we wskazanej w komendzie gałęzi w jeden wspólny commit (merge commit) i dołącza je do brancha, na którym obecnie się znajdujemy, jako najnowszy commit.  
 ```bash  
 git merge <nazwa-brancha>
 ```  
   
-## git rebase  
+### git rebase  
 Komenda zaciąga historię commitów oraz zmiany ze wskazanego brancha, a zmiany, które commity, które zostały w międzyczasie utworzone na obecnej gałęzi przesunięte są w historii commitów jako najnowsze  
 ```bash  
 git rebase <nazwa-brancha>
 ```
 
-## rebase czy merge?  
+### rebase czy merge?  
 Aby zachować liniową historię commitów najlepiej zastosować podany zestaw komend przed zmergowaniem zmian na branch master. Mergując zmiany bez wcześniejszego wykonania rebase'a  tworzymy tzw. merge commita, który burzy liniową strukturę historii commitów i tworzy w niej rozgałęzienia, które trudniej potem rozwiązać.  
 ```bash  
 git checkout feature-branch // przeniesienie na aktualnego brancha
@@ -17712,10 +17712,10 @@ git checkout master         // przeniesienie na aktualnego brancha
 git merge feature-branch    // dodanie zmian z feature-brancha na branch master
 ```
 
-***DevOps\GIT\005_Interactive_rebase.md***
+# DevOps\GIT\005_Interactive_rebase.md
 
-# Interaktywny rebase
-## Uruchomienie interaktywnego rebase
+## Interaktywny rebase
+### Uruchomienie interaktywnego rebase
 Interaktywny rebase pozwala na edytowanie historii commitów, łączenie wielu commitów w jeden commit, usuwanie niechcianych commitów.
 ```bash  
 git rebase -i <hash commita poprzedzającego commit od którego chcemy edytować historię>
@@ -17728,7 +17728,7 @@ pick cd7ab52 Commit 1
 pick xd7ab12 Commit 2
 pick cz2ac42 Commit 3
 ``` 
-## Zmiana nazwy commita
+### Zmiana nazwy commita
 Jeżeli chcemy zmienić nazwę któregoś z commitów komendę **pick** należy zamienić na komendę **reword** lub **r** i zatwierdzić zmiany poprzez kliknięcie **ESC** oraz wpisanie **:wq**
 ```bash  
 pick cd7ab52 Commit 1
@@ -17736,7 +17736,7 @@ r xd7ab12 Commit 2
 pick cz2ac42 Commit 3
 ``` 
 W nowym oknie wchodzimy do trybu edycji, podajemy nową nazwę commita i zatwierdzamy zmiany poprzez kliknięcie **ESC** oraz wpisanie **:wq**
-## Łączenie commitów
+### Łączenie commitów
 Jeżeli chcemy połączyć wskazany commit z commitem znajdującym się powyżej, komendę **pick** należy zamienić na komendę **fixup** lub **f** i zatwierdzić zmiany poprzez kliknięcie **ESC** oraz wpisanie **:wq**
 ```bash  
 pick cd7ab52 Commit 1
@@ -17746,9 +17746,9 @@ pick cz2ac42 Commit 3
 Frontend
 ========
 
-***Frontend\JavaScript\001_Basics\001_Variables.md***
+# Frontend\JavaScript\001_Basics\001_Variables.md
 
-# Zmienne
+### Zmienne
 -   `var` - służy do definiowania globalnych zmiennych
 ```
 var age = 20;
@@ -17763,16 +17763,16 @@ let counter = 1;
 ```
 const PI = 3.14;
 ```
-***Frontend\JavaScript\001_Basics\002_String_formatting.md***
+# Frontend\JavaScript\001_Basics\002_String_formatting.md
 
-# Formatowanie stringów
+### Formatowanie stringów
 ```javascript
 let number = 1
 let formattedString = `Number: ${number}`
 ```
-***Frontend\JavaScript\001_Basics\003_Ternary_operator.md***
+# Frontend\JavaScript\001_Basics\003_Ternary_operator.md
 
-# Ternary Operator
+### Ternary Operator
 Skrócony zapis bloku if - else. Przy jego użyciu taki zapis:
 ```js
 if (a < b)  {        
@@ -17787,9 +17787,9 @@ Można zastąpić takim zapisem:
 ```js
 (a < b) ? a + b : a - b;
 ```
-***Frontend\JavaScript\001_Basics\004_Object.md***
+# Frontend\JavaScript\001_Basics\004_Object.md
 
-# Object
+### Object
 Struktura podobna do słowników w Pythonie. Przykład użycia:
 ```javascript
 let person = {
@@ -17798,9 +17798,9 @@ let person = {
 };
 ```
 ![Harry Potter](https://cs50.harvard.edu/web/2020/notes/5/images/console.png)
-***Frontend\JavaScript\001_Basics\005_Functions.md***
+# Frontend\JavaScript\001_Basics\005_Functions.md
 
-# Funkcje
+### Funkcje
 Funkcje można zdefiniować na kilka sposobów:
 * Funkcja nazwana
 ```javascript
@@ -17829,9 +17829,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 ```
-***Frontend\JavaScript\001_Basics\006_map_filter_reduce.md***
+# Frontend\JavaScript\001_Basics\006_map_filter_reduce.md
 
-# map
+### map
 ```js
 let fruits = ["pawpaw", "orange", "banana"];   
 
@@ -17839,7 +17839,7 @@ let mappedFruits = fruits.map(item => item + "s");
 
 console.log(mappedFruits); // ["pawpaws", "oranges", "bananas"]
 ```
-# filter
+### filter
 ```js
 let fruits = ["pawpaw", "orange", "banana", "grape"];
     
@@ -17847,15 +17847,15 @@ let filteredFruits = fruits.filter(fruit => fruit.length > 5);
 
 console.log(filteredFruits);  // ["pawpaw", "orange", "banana"]
 ```
-# reduce
+### reduce
 ```js
 let evenNumbers = [2, 4, 6, 8, 10]; 
     
 evenNumbers.reduce((sum, current) => sum += current, 0);
 ```
-***Frontend\JavaScript\002_DOM_operations\001_querySelector.md***
+# Frontend\JavaScript\002_DOM_operations\001_querySelector.md
 
-# querySelector
+### querySelector
 Pozwala na wyszukiwanie elementów DOM na bazie podanego query. Zwraca pierwszy element pasujący do zapytania.
 ```javascript
 // Wyszukiwanie w całym dokumencie pierwszego elementu z id "name"
@@ -17868,7 +17868,7 @@ let body = document.querySelector('body');
 body.style.backgroundColor = 'red';
 ```
 
-# querySelectorAll
+### querySelectorAll
 Pozwala na wyszukiwanie elementów DOM na bazie podanego query. Zwraca listę obiektów pasujących do zapytania,
 ```javascript
 // Wyszukiwanie w całym dokumencie pierwszego elementu z id "name"
@@ -17877,9 +17877,9 @@ let buttons = document.querySelectorAll('button');
 
 
 
-***Frontend\JavaScript\002_DOM_operations\002_addEventListener.md***
+# Frontend\JavaScript\002_DOM_operations\002_addEventListener.md
 
-# addEventListener
+### addEventListener
 Pozwala na zdefiniowanie zachowania strony w momencie, gdy user wykona jakieś działanie, np. kliknie w odpowiedni element.
 ```javascript
 // Kliknięcie elementu o id "name" powoduje zalogowanie do consoli słowa "CLICKED"
@@ -17900,9 +17900,9 @@ document.addEventListener('DOMContentLoaded', function() {
 ```
 
 
-***Frontend\JavaScript\002_DOM_operations\003_dataset.md***
+# Frontend\JavaScript\002_DOM_operations\003_dataset.md
 
-# dataset
+### dataset
 Specjalny rodzaj atrybutów dla elementów DOM.
 ```html
 ...
@@ -17919,9 +17919,9 @@ document.querySelectorAll('button').forEach(function(button) {
     let color = button.dataset.color;
 });
 ```
-***Frontend\JavaScript\002_DOM_operations\004_fetch.md***
+# Frontend\JavaScript\002_DOM_operations\004_fetch.md
 
-# fetch
+### fetch
 Pozwala na wykonanie zapytania pod wskazanym adresem URL.
 ```javascript
  fetch('https://api.exchangeratesapi.io/latest?base=USD')
@@ -17930,16 +17930,16 @@ Pozwala na wykonanie zapytania pod wskazanym adresem URL.
      console.log(data);
  });
 ```
-***Frontend\JavaScript\002_DOM_operations\005_Local_storage.md***
+# Frontend\JavaScript\002_DOM_operations\005_Local_storage.md
 
-# Local storage
+### Local storage
 Dane składowane w oknie przeglądarki. Wykorzystuje dwie podstawowe funkcje:
 -   `localStorage.getItem(key)`
 -   `localStorage.setItem(key, value)`
 
-***Frontend\React\001_Basics\001_Project_init.md***
+# Frontend\React\001_Basics\001_Project_init.md
 
-# Przygotowanie projektu
+### Przygotowanie projektu
 Żeby uruchomić aplikację reactową we własnym środowisku konieczne jest zainstalowanie [Node.js](https://nodejs.org/en).
 Po jego instalacji w konsoli możliwe jest użycie polecenia, które zbuduje podstawowy schemat aplikacji.
 ```commandline
@@ -17952,9 +17952,9 @@ Gdy aplikcja jest już gotowa, możliwe jest jej uruchomienie na lokalnym serwer
 Tak przygotowany projekt pozwala na utworzenie single page app poprzez edycję pliku **nazwa-aplikacji/src/App.js**, którego zawartość jest eksportowana do **nazwa-aplikacji/src/index.js**, który to jest wykorzystwany w **nazwa-aplikacji/public/index.html**.
 
 
-***Frontend\React\002_Components\001_Creating_component.md***
+# Frontend\React\002_Components\001_Creating_component.md
 
-# Tworzenie komponentów
+### Tworzenie komponentów
 Podstawowy element wykorzystywany w React'cie. Komponent to javascriptowa funkcja, która zwraca znaczniki HTML. Nie ma ograniczenia co do wielkości komponentu - może zwracać np. button (jak w przykładzie poniżej) lub nawet całą stronę.
 ```js
 function MyButton() {  
@@ -17964,9 +17964,9 @@ function MyButton() {
 }
 ```
 **WAŻNE:** Reactowe komponenty zawsze zaczynają się z dużej litery - pozwala to odróżnić je od zwykłych znaczników HTML.
-***Frontend\React\002_Components\002_Nesting_components.md***
+# Frontend\React\002_Components\002_Nesting_components.md
 
-# Zagnieżdżanie komponentów
+### Zagnieżdżanie komponentów
 Tak zadeklarowany komponent można zagnieździć w innym komponencie:
 ```js
 export default function MyApp() {  
@@ -17978,9 +17978,9 @@ export default function MyApp() {
 	);  
 }
 ```
-***Frontend\React\002_Components\003_className_in_component.md***
+# Frontend\React\002_Components\003_className_in_component.md
 
-# Nadawanie klas w komponentach
+### Nadawanie klas w komponentach
 Aby zdefiniować klasę dla elementu w komponencie konieczne jest użycie **className** zamiast **class**.
 ```html
 <img  className="avatar"  />
@@ -17993,9 +17993,9 @@ W kontekście nadawania stylów działanie **className** jest takie samo jak **c
 	border-radius: 50%;  
 }
 ```
-***Frontend\React\002_Components\004_Variables_displaying.md***
+# Frontend\React\002_Components\004_Variables_displaying.md
 
-# Wyświetlanie zmiennych
+### Wyświetlanie zmiennych
 Aby zagnieździć wartość zmiennej w składniku komponentu umieszcza się taką zmienną w nawiasach klamrowych.
 ```js
 const user = {  
@@ -18021,9 +18021,9 @@ return (
 );  
 }
 ```
-***Frontend\React\003_Rendering\001_List_rendering.md***
+# Frontend\React\003_Rendering\001_List_rendering.md
 
-# Renderowanie list elementów
+### Renderowanie list elementów
 Aby wyświetlić listę elementów można przygotować przygotować taką listę elementów przy użyciu pętli for lub funkcji map(). Poniżej przykład zmapowania obiektów na reprezentujące je \<li>.
 ```js
 const products = [  
@@ -18050,15 +18050,15 @@ function App() {
 }
 ```
 **WAŻNE:** ważne zdefiniowanie atrybutu **key** w \<li> jako unikalnego identyfikatora dla elementu listy (np. id z bazy danych), ponieważ React wykorzystuje ten atrybut do operacji na wskazanym obiekcie.
-***Frontend\React\003_Rendering\002_Conditional_rendering.md***
+# Frontend\React\003_Rendering\002_Conditional_rendering.md
 
-# Renderowanie warunkowe
+### Renderowanie warunkowe
 Elementy mogą być wyświetlane lub nie w zależności od sprawdzanych warunków. Poza tradycyjną konstrukcją if / else możliwe jest użycie typowych dla JavaScriptu skrótów:
 * `{cond ? <A /> : <B />}`  => jeżeli `cond`, wyświetl `<A />`, w innym wypadku wyświetl `<B />`
 * `{cond && <A />}`  => jeżeli `cond`, wyświetl `<A />`, w innym wypadku nie wyświetlaj niczego
-***Frontend\React\004_Hooks\001_useState.md***
+# Frontend\React\004_Hooks\001_useState.md
 
-# useState
+### useState
 Aby wykorzystać stan aplikacji i dynamiczne wyświetlanie jego zmian konieczne jest zaimportowanie hooka useState z biblioteki Reacta poprzez umieszczenie w pliku następującego polecenia:
 
 ```js
@@ -18072,7 +18072,7 @@ Zmienna **variable** to zmienna zawierająca bieżący stan aplikacji (w przykł
 ```js
 setVariable(1);
 ```
-## Stan pojedynczego komponentu
+#### Stan pojedynczego komponentu
 Stan może być zapamiętany w kontekście pojedynczego komponentu. W tym celu zmienna stanu oraz odpowiadająca jej funkcja aktualizująca muszą zostać zadeklarowane wewnątrz definicji komponentu. Poniżej przykład wyświetlenia dwóch buttonów z osobnymi licznikami kliknięć.
 
 ```js
@@ -18102,7 +18102,7 @@ function App() {
     );
 }
 ```
-## Wspólny stan dla wielu komponentów
+#### Wspólny stan dla wielu komponentów
 W celu współdzielenia stanu przez wiele komponentów konieczne jest umieszczenie definicji zmiennej zawierającej stan w komponencie zawierającym komponenty, które mają z tego wspólnego stanu korzystać. 
 Chcąc, aby w przykładzie z punktu 4.1.1. oba buttony aktualizowały jeden, wspólny licznik konieczny będzie następujący refactoring:
 ```js

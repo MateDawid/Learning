@@ -27,7 +27,7 @@ class ListCreateAPIView(mixins.ListModelMixin,
 |RetrieveDestroyAPIView|	read-delete for single instance	|get, delete	|RetrieveModelMixin, DestroyModelMixin|
 |RetrieveUpdateDestroyAPIView|	read-update-delete for single instance|	get, put, patch, delete	|RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin|
 
-![003_Concrete_views.png](003_Concrete_views.png)
+![004_Concrete_views.png](_images/004_Concrete_views.png)
 
 All classes that extend from a concrete view need:
 

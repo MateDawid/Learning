@@ -32,7 +32,7 @@ b'username:password'
 This method is stateless, so the client must supply the credentials with each and every request. It's suitable for API calls along with simple auth workflows that do not require persistent sessions.
 
 ### Flow
-![001_Flow.png](_images/001_Flow.png)
+![001_Flow.png](..\Notes\Backend\Authentication\_images\001_Flow.png)
 ### Pros
 * Since there aren't many operations going on, authentication can be faster with this method.
 * Easy to implement.
@@ -53,7 +53,7 @@ HTTP Digest Authentication (or Digest Access Authentication) is a more secure fo
 
 ### Flow
 
-![002_Flow.png](_images/002_Flow.png)
+![002_Flow.png](..\Notes\Backend\Authentication\_images\002_Flow.png)
 
 ### Pros
 
@@ -81,7 +81,7 @@ Session-based auth is stateful. Each time a client requests the server, the serv
 
 ### Flow
 
-![003_Flow.png](_images/003_Flow.png)
+![003_Flow.png](..\Notes\Backend\Authentication\_images\003_Flow.png)
 
 ### Pros
 * Faster subsequent logins, as the credentials are not required.
@@ -117,7 +117,7 @@ JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be t
 
 ### Flow
 
-![004_Flow.png](_images/004_Flow.png)
+![004_Flow.png](..\Notes\Backend\Authentication\_images\004_Flow.png)
 
 ## Pros
 * It's stateless. The server doesn't need to store the token as it can be validated using the signature. This makes the request faster as a database lookup is not required.
@@ -676,7 +676,7 @@ STORAGES = {
     },
 }
 ```
-![static_files_develop.png](_images/static_files_develop.png)
+![static_files_develop.png](..\Notes\Backend\Django\Config\_images\static_files_develop.png)
 
 ##### Production mode
 * Use a web server like Nginx to route traffic destined for your static files directly to the static root (configured via STATIC_ROOT)
@@ -1260,7 +1260,7 @@ The service layer speaks the specific domain language of the software, can acces
 
 Here's a very simple diagram, positioning the service layer in our Django apps:
 
-![](_images/006_Service.png)
+![](..\Notes\Backend\Django\Good practices\_images\006_Service.png)
 
 A service can be:
 
@@ -2302,7 +2302,7 @@ If you are looking for a standard way to structure your error responses, check R
 
 DRF has an excellent guide on how exceptions are being handled, so make sure to read it first - https://www.django-rest-framework.org/api-guide/exceptions/
 
-![](_images/022_Error_and_exceptions.png)
+![](..\Notes\Backend\Django\Good practices\_images\022_Error_and_exceptions.png)
 
 Basically, if the exception handler cannot handle the given exception & returns None, this will result in an unhandled exception & a 500 Server Error. This is often good, because you won't be silencing errors, that you need to pay attention to.
 
@@ -4495,7 +4495,7 @@ In this case, we still need to create a custom Manager and QuerySet.
 
 Source: https://medium.com/@ksarthak4ever/django-request-response-cycle-2626e9e8606e
 
-![005_request_path.png](_images/005_request_path.png)
+![005_request_path.png](..\Notes\Backend\Django\Performance\_images\005_request_path.png)
 
 #### WSGI
 As we know a Web server is a program that uses HTTP (Hypertext Transfer Protocol) to serve the files that form Web pages to users, in response to their requests, which are forwarded by their computers’ HTTPclients.
@@ -5477,16 +5477,16 @@ The moral of the story is - whenever you see a pattern emerging, create addition
 
 #### Other topics
 
-![](_images/003_Factories.png)
+![](..\Notes\Backend\Django\Testing\_images\003_Factories.png)
 
 #### Traits
 
-![](_images/003_Factories_traits.png)
+![](..\Notes\Backend\Django\Testing\_images\003_Factories_traits.png)
 
 #### SubFactory vs RelatedFactory
 
-![](_images/003_Factories_sub_vs_related.png)
-![](_images/003_Factories_4.png)
+![](..\Notes\Backend\Django\Testing\_images\003_Factories_sub_vs_related.png)
+![](..\Notes\Backend\Django\Testing\_images\003_Factories_4.png)
 # Backend\Django\Urls\001_All_url_patterns.md
 
 ### Listing all url patterns in project
@@ -5497,7 +5497,7 @@ from django.urls import get_resolver
 patterns = get_resolver().url_patterns
 ```
 Example output:
-![img.png](_images/img.png)
+![img.png](..\Notes\Backend\Django\Urls\_images\img.png)
 # Backend\Django\Urls\002_Defining_URL_params.md
 
 ### Defining URL params
@@ -5900,7 +5900,7 @@ Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#c
 4. dispatch() triggers a method for a specific HTTP method or http_method_not_allowed().
 5. An HttpResponse is returned.
 
-![](_images/003_CBV_Flow.png)
+![](..\Notes\Backend\Django\Views\_images\003_CBV_Flow.png)
 # Backend\Django\Views\004_Generic_class_based_views.md
 
 ### Generic Class-based views
@@ -6441,7 +6441,7 @@ Unlike has_permission, has_object_permission isn't always executed by default:
 
 #### Difference between has_permission and has_object_permission
 
-![002_has_permissions_differences.png](_images/002_has_permissions_differences.png)
+![002_has_permissions_differences.png](..\Notes\Backend\Django REST Framework\Permissions\_images\002_has_permissions_differences.png)
 
 List views, only has_permission is executed and the request is either granted or refused access. If access is refused, the objects never get retrieved.
 
@@ -6453,7 +6453,7 @@ Detail views, has_permission is executed and then only if permission is granted,
 
 Source: https://testdriven.io/blog/built-in-permission-classes-drf/
 
-![003_built_in_permissions.png](_images/003_built_in_permissions.png)
+![003_built_in_permissions.png](..\Notes\Backend\Django REST Framework\Permissions\_images\003_built_in_permissions.png)
 
 All of those classes, except the last one, DjangoObjectPermissions, override just the has_permission method and inherits the has_object_permission from the BasePermission class. has_object_permission in the BasePermission class always returns True, so it has no impact on object-level access restriction.
 
@@ -6507,7 +6507,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 ```
 You need to set the permissions for the specific user or group:
 
-![003_DjangoModelPermissions.png](_images/003_DjangoModelPermissions.png)
+![003_DjangoModelPermissions.png](..\Notes\Backend\Django REST Framework\Permissions\_images\003_DjangoModelPermissions.png)
 
 #### DjangoModelPermissionsOrAnonReadOnly
 
@@ -6608,7 +6608,7 @@ class ExpiredObjectSuperuserOnly(permissions.BasePermission):
 
 #### Custom error message
 
-![004_Error_message.png](_images/004_Error_message.png)
+![004_Error_message.png](..\Notes\Backend\Django REST Framework\Permissions\_images\004_Error_message.png)
 
 Take note of the error message. It's not very informative. The user has no idea why their access was denied. We can create a custom error message by adding a message attribute to our permission class:
 ```python
@@ -7858,7 +7858,7 @@ REST_FRAMEWORK = {
 }
 ```
 
-![versioning.png](_images/versioning_01.png)
+![versioning.png](..\Notes\Backend\Django REST Framework\Versioning\_images\versioning_01.png)
 
 #### URLPathVersioning
 
@@ -7927,9 +7927,9 @@ REST_FRAMEWORK = {
 Now a subdomain can serve a different version of the app.
 
 Main domain:
-![versioning_02.png](_images/versioning_02.png)
+![versioning_02.png](..\Notes\Backend\Django REST Framework\Versioning\_images\versioning_02.png)
 Subdomain:
-![versioning_03.png](_images/versioning_03.png)
+![versioning_03.png](..\Notes\Backend\Django REST Framework\Versioning\_images\versioning_03.png)
 
 #### QueryParameterVersioning
 
@@ -7959,7 +7959,7 @@ Source: https://testdriven.io/blog/drf-views-part-1/
 #### Intro
 APIView class is a base for all the views that you might choose to use in your DRF application.
 
-![001_APIView.png](_images/001_APIView.png)
+![001_APIView.png](..\Notes\Backend\Django REST Framework\Views\_images\001_APIView.png)
 
 #### Example
 ```python
@@ -8164,7 +8164,7 @@ class ListCreateAPIView(mixins.ListModelMixin,
 |RetrieveDestroyAPIView|	read-delete for single instance	|get, delete	|RetrieveModelMixin, DestroyModelMixin|
 |RetrieveUpdateDestroyAPIView|	read-update-delete for single instance|	get, put, patch, delete	|RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin|
 
-![003_Concrete_views.png](003_Concrete_views.png)
+![004_Concrete_views.png](..\Notes\Backend\Django REST Framework\Views\_images\004_Concrete_views.png)
 
 All classes that extend from a concrete view need:
 
@@ -8189,7 +8189,7 @@ There are four types of ViewSets, from the most basic to the most powerful:
 * ReadOnlyModelViewSet
 * ModelViewSet
 
-![005_ViewSet.png](_images/005_ViewSet.png)
+![005_ViewSet.png](..\Notes\Backend\Django REST Framework\Views\_images\005_ViewSet.png)
 
 #### Base ViewSet
 
@@ -14235,11 +14235,11 @@ Sources:
 #### Basics
 In the case of memory a well-behaved service will use memory and free memory. It performs like this chart reporting on the memory used over a three-month period.
 
-![](_images/001_tracemalloc_good.png)
+![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_good.png)
 
 A microservice that leaks memory over time will exhibit a saw-tooth behavior as memory increases until some point (for example, maximum memory available) where the service is shut down, freeing all the memory and then restarted.
 
-![](_images/001_tracemalloc_bad.png)
+![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_bad.png)
 
 If a code review does not turn up any viable suspects, then it is time to turn to tools for tracking down memory leaks. The first tool should provide a way to chart memory usage over time. At BuzzFeed we use DataDog to monitor microservices performance. Leaks may accumulate slowly over time, several bytes at a time. In this case it is necessary to chart the memory growth to see the trend.
 
@@ -14253,7 +14253,7 @@ for i, stat in enumerate(snapshot.statistics(‘filename’)[:5], 1):
     logging.info(“top_current”,i=i, stat=str(stat))
 ```
 The output will look similar to this:
-![](_images/001_tracemalloc_01.png)
+![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_01.png)
 This shows the size of the memory allocation, the number of objects allocated and the average size each on a per module basis.
 
 #### Snapshots comparison
@@ -14269,7 +14269,7 @@ for i, stat in enumerate(stats[:5], 1):
 
 The output will look similar to this:
 
-![](_images/001_tracemalloc_02.png)
+![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_02.png)
 
 This shows the size and the number of objects and a comparison of each and the average allocation size on a per module basis.
 
@@ -14282,7 +14282,7 @@ for stat in traces[1]:
     for line in stat.traceback.format():
         logging.info(info)
 ```
-![](_images/001_tracemalloc_03.png)
+![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_03.png)
 Reading bottom to top, this shows a trace to a line in the socket module where a memory allocation took place. With this information it may be possible to finally isolate the cause of the memory leak.
 
 #### The Search for Memory Leak

@@ -1,5 +1,6 @@
 import os
 import re
+from pathlib import Path
 from typing import TextIO
 
 NOTES_ROOT = r"..\Notes\\"
@@ -34,21 +35,47 @@ def get_table_of_content(searched_dir: str, input_dict: dict, excluded_dirs: lis
     return input_dict
 
 
+def get_fixed_image_line(line: str, line_images: list, header_file: str):
+    for alt, filename, resize in line_images:
+        if filename.startswith("http"):
+            continue
+        else:
+            images_dir_path = os.path.dirname(header_file)
+            fixed_filename = Path(images_dir_path, filename)
+            if not os.path.exists(fixed_filename):
+                raise Exception(f'get_fixed_image_line: Path {fixed_filename} does not exist!')
+        if resize:
+            resize = resize.strip()
+            line = line.replace(f"![{alt}]({filename} {resize})", f"![{alt}]({fixed_filename} {resize})")
+        else:
+            line = line.replace(f"![{alt}]({filename})", f"![{alt}]({fixed_filename})")
+
+    return line
+
+
 def write_content(file: TextIO, content_dict: dict, depth: int) -> None:
+    def add_new_header():
+        if depth == 0:
+            file.write(f'{header}\n{len(header) * "="}\n\n')
+        write_content(file=file, content_dict=header_content, depth=depth + 1)
+
+    def add_new_content():
+        file.write(f'# {header_content.replace(NOTES_ROOT, "")}\n\n')
+        with open(header_content, mode='r', encoding="utf8") as content_file:
+            for line in content_file.readlines():
+                if line.startswith('#'):
+                    file.write(f'{"#" * (depth - 1)}{line}')
+                elif images := re.findall(r"!\[([^]]*)\]\(([^\s]+)(\s\".*\")*\)", line):
+                    file.write(get_fixed_image_line(line=line, line_images=images, header_file=header_content))
+                else:
+                    file.write(line)
+            file.write('\n')
+
     for header, header_content in content_dict.items():
         if isinstance(header_content, dict):
-            if depth == 0:
-                file.write(f'{header}\n{len(header) * "="}\n\n')
-            write_content(file=file, content_dict=header_content, depth=depth+1)
+            add_new_header()
         elif isinstance(header_content, str):
-            file.write(f'# {header_content.replace(NOTES_ROOT, "")}\n\n')
-            with open(header_content, mode='r', encoding="utf8") as content_file:
-                for line in content_file.readlines():
-                    if line.startswith('#'):
-                        file.write(f'{"#" * (depth - 1)}{line}')
-                    else:
-                        file.write(line)
-                file.write('\n')
+            add_new_content()
 
 
 if __name__ == '__main__':

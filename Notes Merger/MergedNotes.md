@@ -32,7 +32,7 @@ b'username:password'
 This method is stateless, so the client must supply the credentials with each and every request. It's suitable for API calls along with simple auth workflows that do not require persistent sessions.
 
 ### Flow
-![001_Flow.png](..\Notes\Backend\Authentication\_images\001_Flow.png)
+![001_Flow.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Authentication/_images/001_Flow.png)
 ### Pros
 * Since there aren't many operations going on, authentication can be faster with this method.
 * Easy to implement.
@@ -53,7 +53,7 @@ HTTP Digest Authentication (or Digest Access Authentication) is a more secure fo
 
 ### Flow
 
-![002_Flow.png](..\Notes\Backend\Authentication\_images\002_Flow.png)
+![002_Flow.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Authentication/_images/002_Flow.png)
 
 ### Pros
 
@@ -81,7 +81,7 @@ Session-based auth is stateful. Each time a client requests the server, the serv
 
 ### Flow
 
-![003_Flow.png](..\Notes\Backend\Authentication\_images\003_Flow.png)
+![003_Flow.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Authentication/_images/003_Flow.png)
 
 ### Pros
 * Faster subsequent logins, as the credentials are not required.
@@ -117,7 +117,7 @@ JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be t
 
 ### Flow
 
-![004_Flow.png](..\Notes\Backend\Authentication\_images\004_Flow.png)
+![004_Flow.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Authentication/_images/004_Flow.png)
 
 ## Pros
 * It's stateless. The server doesn't need to store the token as it can be validated using the signature. This makes the request faster as a database lookup is not required.
@@ -676,7 +676,7 @@ STORAGES = {
     },
 }
 ```
-![static_files_develop.png](..\Notes\Backend\Django\Config\_images\static_files_develop.png)
+![static_files_develop.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Config/_images/static_files_develop.png)
 
 ##### Production mode
 * Use a web server like Nginx to route traffic destined for your static files directly to the static root (configured via STATIC_ROOT)
@@ -819,7 +819,7 @@ Wyświetlenie formularza w HTML.
     <a href="{% url 'module:index' %}">View Tasks</a>
 {% endblock %}
 ```
-# Backend\Django\Good practices\001_Separating_business_logic.md
+# Backend\Django\Good_practices\001_Separating_business_logic.md
 
 ### Separating business logic
 
@@ -1003,7 +1003,7 @@ class TestSetDefault:
 As you can see we have easier tests and more maintainable code. In this case, we implement unit tests for our business logic that are fast and validate its flow. And then integration tests for the manager that validate the data operations and its dependencies with the database.
 
 The key in this structure is that our business logic is not aware of data integrity or how it is stored, that is the job of the managers. This way we can unit test every flow and leave the integrity checks for the integration tests of the data layer.
-# Backend\Django\Good practices\002_Model_validation.md
+# Backend\Django\Good_practices\002_Model_validation.md
 
 ### Model validation
 
@@ -1079,7 +1079,7 @@ class Course(BaseModel):
         ]
 ```
 
-# Backend\Django\Good practices\003_Model_properties.md
+# Backend\Django\Good_practices\003_Model_properties.md
 
 ### Model properties
 
@@ -1131,7 +1131,7 @@ Properties should be something else (service, selector, utility) in the followin
 * If the calculation is more complex.
 
 Keep in mind that those rules are vague, because context is quite often important. Use your best judgement!
-# Backend\Django\Good practices\004_Model_methods.md
+# Backend\Django\Good_practices\004_Model_methods.md
 
 ### Model methods
 
@@ -1211,7 +1211,7 @@ Models should be something else (service, selector, utility) in the following ca
 * If the calculation is more complex.
 
 Keep in mind that those rules are vague, because context is quite often important. Use your best judgement!
-# Backend\Django\Good practices\005_Model_testing.md
+# Backend\Django\Good_practices\005_Model_testing.md
 
 ### Model testing
 
@@ -1246,7 +1246,7 @@ A few things to note here:
 
 * We assert that a validation error is going to be raised if we call full_clean.
 * We are not hitting the database at all, since there's no need for that. This can speed up certain tests.
-# Backend\Django\Good practices\006_Service.md
+# Backend\Django\Good_practices\006_Service.md
 
 ### Service
 
@@ -1260,7 +1260,7 @@ The service layer speaks the specific domain language of the software, can acces
 
 Here's a very simple diagram, positioning the service layer in our Django apps:
 
-![](..\Notes\Backend\Django\Good practices\_images\006_Service.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Good_practices/_images/006_Service.png)
 
 A service can be:
 
@@ -1278,7 +1278,7 @@ In most cases, a service can be simple function that:
 * Does business logic - from simple model creation to complex cross-cutting concerns, to calling external services & tasks.
 
 
-# Backend\Django\Good practices\007_Service_examples.md
+# Backend\Django\Good_practices\007_Service_examples.md
 
 ### Service examples
 
@@ -1423,7 +1423,7 @@ class FileAdmin(admin.ModelAdmin):
         except ValidationError as exc:
             self.message_user(request, str(exc), messages.ERROR)
 ```
-# Backend\Django\Good practices\008_Service_naming_convention.md
+# Backend\Django\Good_practices\008_Service_naming_convention.md
 
 ### Service naming conventions
 
@@ -1437,7 +1437,7 @@ This is what we prefer in HackSoft's projects. This seems odd at first, but it h
 
 * Namespacing. It's easy to spot all services starting with user_ and it's a good idea to put them in a users.py module.
 * Greppability. Or in other words, if you want to see all actions for a specific entity, just grep for user_.
-# Backend\Django\Good practices\009_Service_modules.md
+# Backend\Django\Good_practices\009_Service_modules.md
 
 ### Service naming conventions
 
@@ -1463,7 +1463,7 @@ There are lots of flavors here:
 * You can create a folder-module, jwt/__init__.py, and put the code there.
 * Basically, the structure is up to you. If you feel it's time to restructure and refactor - do so.
 
-# Backend\Django\Good practices\010_Service_selectors.md
+# Backend\Django\Good_practices\010_Service_selectors.md
 
 ### Service - selectors
 
@@ -1491,7 +1491,7 @@ As you can see, user_get_visible_for is another selector.
 You can return querysets, or lists or whatever makes sense to your specific case.
 
 
-# Backend\Django\Good practices\011_Service_testing.md
+# Backend\Django\Good_practices\011_Service_testing.md
 
 ### Service - testing
 
@@ -1613,7 +1613,7 @@ class ItemBuyTests(TestCase):
 
         payment_charge_mock.assert_called_once()
 ```
-# Backend\Django\Good practices\012_API_and_Serializers.md
+# Backend\Django\Good_practices\012_API_and_Serializers.md
 
 ### API and Serializers
 
@@ -1658,7 +1658,7 @@ In case you are using DRF's serializers, here are our rules:
 For our APIs we use the following naming convention: <Entity><Action>Api.
 
 Here are few examples: UserCreateApi, UserSendResetPasswordApi, UserDeactivateApi, etc.
-# Backend\Django\Good practices\013_API_List.md
+# Backend\Django\Good_practices\013_API_List.md
 
 ### List API
 
@@ -1840,7 +1840,7 @@ class LimitOffsetPagination(_LimitOffsetPagination):
 What we basically did is reverse-engineered the generic APIs.
 
 > 👀 Again, if you need something else for pagination, you can always implement it & use it in the same manner. There are cases, where the selector needs to take care of the pagination. We approach those cases the same way we approach filtering.
-# Backend\Django\Good practices\014_API_Detail.md
+# Backend\Django\Good_practices\014_API_Detail.md
 
 ### Detail API
 
@@ -1861,7 +1861,7 @@ class CourseDetailApi(SomeAuthenticationMixin, APIView):
 
         return Response(serializer.data)
 ```
-# Backend\Django\Good practices\015_API_Create.md
+# Backend\Django\Good_practices\015_API_Create.md
 
 ### Create API
 
@@ -1882,7 +1882,7 @@ class CourseCreateApi(SomeAuthenticationMixin, APIView):
 
         return Response(status=status.HTTP_201_CREATED)
 ```
-# Backend\Django\Good practices\016_API_Update.md
+# Backend\Django\Good_practices\016_API_Update.md
 
 ### Update API
 
@@ -1903,7 +1903,7 @@ class CourseUpdateApi(SomeAuthenticationMixin, APIView):
 
         return Response(status=status.HTTP_200_OK)
 ```
-# Backend\Django\Good practices\017_Fetching_objects.md
+# Backend\Django\Good_practices\017_Fetching_objects.md
 
 ### Fetching objects
 
@@ -1936,7 +1936,7 @@ This is a very basic utility, that handles the exception and returns None instea
 
 Whatever you do, make sure to keep it consistent.
 
-# Backend\Django\Good practices\018_Nested_serializers.md
+# Backend\Django\Good_practices\018_Nested_serializers.md
 
 ### Nested serializers
 
@@ -1974,7 +1974,7 @@ def inline_serializer(*, fields, data=None, **kwargs):
 
     return serializer_class(**kwargs)
 ```
-# Backend\Django\Good practices\019_Advanced_serialization.md
+# Backend\Django\Good_practices\019_Advanced_serialization.md
 
 ### Advanced serialization
 
@@ -2049,7 +2049,7 @@ As you can see, this is a pretty generic example, but the idea is simple:
 Even though this is labeled as "advanced serialization", the pattern is really powerful and can be used for all serializations.
 
 Such serializer functions usually live in a serializers.py module, in the corresponding Django app.
-# Backend\Django\Good practices\020_Urls.md
+# Backend\Django\Good_practices\020_Urls.md
 
 ### Urls
 
@@ -2142,7 +2142,7 @@ urlpatterns = [
 Some people prefer the first way of doing it, others prefer the visible tree-like structure. This is up to you & your team.
 
 
-# Backend\Django\Good practices\021_Settings.md
+# Backend\Django\Good_practices\021_Settings.md
 
 ### Settings
 
@@ -2273,7 +2273,7 @@ There are 2 things worth mentioning here:
 
 * Don't put .env in your source control, since this will leak credentials.
 * Rather put an .env.example with empty values for everything, so new developers can figure out what's being used.
-# Backend\Django\Good practices\022_Error_and_exceptions.md
+# Backend\Django\Good_practices\022_Error_and_exceptions.md
 
 ### Errors & Exception Handling
 
@@ -2302,7 +2302,7 @@ If you are looking for a standard way to structure your error responses, check R
 
 DRF has an excellent guide on how exceptions are being handled, so make sure to read it first - https://www.django-rest-framework.org/api-guide/exceptions/
 
-![](..\Notes\Backend\Django\Good practices\_images\022_Error_and_exceptions.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Good_practices/_images/022_Error_and_exceptions.png)
 
 Basically, if the exception handler cannot handle the given exception & returns None, this will result in an unhandled exception & a 500 Server Error. This is often good, because you won't be silencing errors, that you need to pay attention to.
 
@@ -2770,7 +2770,7 @@ As you can see, we can mold exception handling to our needs.
 You can start handling more stuff - for example - translating django.core.exceptions.ObjectDoesNotExist to rest_framework.exceptions.NotFound.
 
 You can even handle all exceptions, but then, you should be sure those exceptions are being logged properly, otherwise you might silence something that's important.
-# Backend\Django\Good practices\023_Testing.md
+# Backend\Django\Good_practices\023_Testing.md
 
 ### Testing
 
@@ -2830,7 +2830,7 @@ If we are to split the utils.py module into submodules, the same will happen for
 * project_name/common/utils/files.py
 * project_name/common/tests/utils/test_files.py
 We try to match the structure of our modules with the structure of their respective tests.
-# Backend\Django\Good practices\024_Celery.md
+# Backend\Django\Good_practices\024_Celery.md
 
 ### Celery
 
@@ -3057,7 +3057,7 @@ Few key things:
 * We always put a link to crontab.guru to explain the cron. Otherwise it's unreadable.
 * Everything is in one place.
 * ⚠️ We use, almost exclusively, a cron schedule. If you plan on using the other schedule objects, provided by Celery, please read thru their documentation & the important notes - https://django-celery-beat.readthedocs.io/en/latest/#example-creating-interval-based-periodic-task - about pointing to the same schedule object. ⚠️
-# Backend\Django\Good practices\025_Model_update_cookbook.md
+# Backend\Django\Good_practices\025_Model_update_cookbook.md
 
 ### Model update cookbook
 
@@ -4495,7 +4495,7 @@ In this case, we still need to create a custom Manager and QuerySet.
 
 Source: https://medium.com/@ksarthak4ever/django-request-response-cycle-2626e9e8606e
 
-![005_request_path.png](..\Notes\Backend\Django\Performance\_images\005_request_path.png)
+![005_request_path.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Performance/_images/005_request_path.png)
 
 #### WSGI
 As we know a Web server is a program that uses HTTP (Hypertext Transfer Protocol) to serve the files that form Web pages to users, in response to their requests, which are forwarded by their computers’ HTTPclients.
@@ -5477,16 +5477,16 @@ The moral of the story is - whenever you see a pattern emerging, create addition
 
 #### Other topics
 
-![](..\Notes\Backend\Django\Testing\_images\003_Factories.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Testing/_images/003_Factories.png)
 
 #### Traits
 
-![](..\Notes\Backend\Django\Testing\_images\003_Factories_traits.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Testing/_images/003_Factories_traits.png)
 
 #### SubFactory vs RelatedFactory
 
-![](..\Notes\Backend\Django\Testing\_images\003_Factories_sub_vs_related.png)
-![](..\Notes\Backend\Django\Testing\_images\003_Factories_4.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Testing/_images/003_Factories_sub_vs_related.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Testing/_images/003_Factories_4.png)
 # Backend\Django\Urls\001_All_url_patterns.md
 
 ### Listing all url patterns in project
@@ -5497,7 +5497,7 @@ from django.urls import get_resolver
 patterns = get_resolver().url_patterns
 ```
 Example output:
-![img.png](..\Notes\Backend\Django\Urls\_images\img.png)
+![img.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Urls/_images/img.png)
 # Backend\Django\Urls\002_Defining_URL_params.md
 
 ### Defining URL params
@@ -5900,7 +5900,7 @@ Source: https://testdriven.io/blog/django-class-based-vs-function-based-views/#c
 4. dispatch() triggers a method for a specific HTTP method or http_method_not_allowed().
 5. An HttpResponse is returned.
 
-![](..\Notes\Backend\Django\Views\_images\003_CBV_Flow.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Views/_images/003_CBV_Flow.png)
 # Backend\Django\Views\004_Generic_class_based_views.md
 
 ### Generic Class-based views
@@ -5934,7 +5934,7 @@ Allow in-depth displaying of date-based data.
 * DayArchiveView
 * TodayArchiveView
 * DateDetailView
-# Backend\Django REST Framework\Authentication\001_Credentials_based_authentication.md
+# Backend\Django_REST_Framework\Authentication\001_Credentials_based_authentication.md
 
 ### Credentials-based Authentication
 
@@ -6069,7 +6069,7 @@ Response:
 }
 ```
 
-# Backend\Django REST Framework\Authentication\002_Email_verification_and_password_reset.md
+# Backend\Django_REST_Framework\Authentication\002_Email_verification_and_password_reset.md
 
 ### Email Verification and Password Reset
 
@@ -6219,7 +6219,7 @@ $ curl -XPOST -H "Content-type: application/json" -d '{
   }' 'http://localhost:8000/api/auth/password/reset/' | jq
 ```
 After you send the request you'll receive aa email.
-# Backend\Django REST Framework\Authentication\003_Authentication_types.md
+# Backend\Django_REST_Framework\Authentication\003_Authentication_types.md
 
 ### Authentication types
 #### BasicAuthentication
@@ -6321,7 +6321,7 @@ REST_FRAMEWORK = {
 | Signed            | Complicated setup |
 | Can be encrypted  | &nbsp;            |
 | Can set to expire | &nbsp;            |
-# Backend\Django REST Framework\Basics\001_DRF_Basics.md
+# Backend\Django_REST_Framework\Basics\001_DRF_Basics.md
 
 ### DRF Basics
 
@@ -6348,7 +6348,7 @@ For a system to be "RESTful" -- i.e., compliant with REST -- it needs to abide b
 | PUT    | 	Update | 	single resource   | 	Update a single resource	               | api/shopping-items/<uuid> |
 | PATCH  | 	Update | 	single resource   | 	Update a single resource	               | api/shopping-items/<uuid> |
 | DELETE | 	Delete | 	single resource	  | Delete a single resource	                | api/shopping-items/<uuid> |
-# Backend\Django REST Framework\Permissions\001_View_permissions.md
+# Backend\Django_REST_Framework\Permissions\001_View_permissions.md
 
 ### View Permissions
 
@@ -6390,7 +6390,7 @@ class APIView(View):
                     code=getattr(permission, 'code', None)
                 )
 ```
-# Backend\Django REST Framework\Permissions\002_Permission_classes.md
+# Backend\Django_REST_Framework\Permissions\002_Permission_classes.md
 
 ### Permission classes
 
@@ -6441,19 +6441,19 @@ Unlike has_permission, has_object_permission isn't always executed by default:
 
 #### Difference between has_permission and has_object_permission
 
-![002_has_permissions_differences.png](..\Notes\Backend\Django REST Framework\Permissions\_images\002_has_permissions_differences.png)
+![002_has_permissions_differences.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Permissions/_images/002_has_permissions_differences.png)
 
 List views, only has_permission is executed and the request is either granted or refused access. If access is refused, the objects never get retrieved.
 
 Detail views, has_permission is executed and then only if permission is granted, has_object_permission is executed after the object is retrieved.
 
-# Backend\Django REST Framework\Permissions\003_Built_in_permission_classes.md
+# Backend\Django_REST_Framework\Permissions\003_Built_in_permission_classes.md
 
 ### Built-in permission classes
 
 Source: https://testdriven.io/blog/built-in-permission-classes-drf/
 
-![003_built_in_permissions.png](..\Notes\Backend\Django REST Framework\Permissions\_images\003_built_in_permissions.png)
+![003_built_in_permissions.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Permissions/_images/003_built_in_permissions.png)
 
 All of those classes, except the last one, DjangoObjectPermissions, override just the has_permission method and inherits the has_object_permission from the BasePermission class. has_object_permission in the BasePermission class always returns True, so it has no impact on object-level access restriction.
 
@@ -6507,7 +6507,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 ```
 You need to set the permissions for the specific user or group:
 
-![003_DjangoModelPermissions.png](..\Notes\Backend\Django REST Framework\Permissions\_images\003_DjangoModelPermissions.png)
+![003_DjangoModelPermissions.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Permissions/_images/003_DjangoModelPermissions.png)
 
 #### DjangoModelPermissionsOrAnonReadOnly
 
@@ -6519,7 +6519,7 @@ Anonymous users can see the objects but can't interact with them.
 
 While DjangoModelPermissions limits the user's permission for interacting with a model (all the instances), DjangoObjectPermissions limits the interaction to a single instance of the model (an object). To use DjangoObjectPermissions you'll need a permission backend that supports object-level permissions, like django-guardian.
 
-# Backend\Django REST Framework\Permissions\004_Custom_permission_classes.md
+# Backend\Django_REST_Framework\Permissions\004_Custom_permission_classes.md
 
 ### Custom permission classes
 
@@ -6608,7 +6608,7 @@ class ExpiredObjectSuperuserOnly(permissions.BasePermission):
 
 #### Custom error message
 
-![004_Error_message.png](..\Notes\Backend\Django REST Framework\Permissions\_images\004_Error_message.png)
+![004_Error_message.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Permissions/_images/004_Error_message.png)
 
 Take note of the error message. It's not very informative. The user has no idea why their access was denied. We can create a custom error message by adding a message attribute to our permission class:
 ```python
@@ -6627,7 +6627,7 @@ class ExpiredObjectSuperuserOnly(permissions.BasePermission):
         else:
             return True
 ```
-# Backend\Django REST Framework\Permissions\005_Global_permissions.md
+# Backend\Django_REST_Framework\Permissions\005_Global_permissions.md
 
 ### Global permissions
 
@@ -6644,7 +6644,7 @@ REST_FRAMEWORK = {
 }
 ```
 DEFAULT_PERMISSION_CLASSES will only work for the views or objects that don't have permissions explicitly set.
-# Backend\Django REST Framework\Permissions\006_Combining_and_Excluding_Permission_Classes.md
+# Backend\Django_REST_Framework\Permissions\006_Combining_and_Excluding_Permission_Classes.md
 
 ### Combining and Excluding Permission Classes
 
@@ -6689,7 +6689,7 @@ Inside permission_classes you can also use parentheses (()) to control which exp
 permission_classes = [(IsFinancesMember | IsTechMember) & IsOwner]
 ```
 In this example, (IsFinancesMember | IsTechMember) will be resolved first. Then, the result of that will be used with & IsOwner.
-# Backend\Django REST Framework\Project_init\001_Installation.md
+# Backend\Django_REST_Framework\Project_init\001_Installation.md
 
 ### Installation
 Przykładowa zawartość pliku requirements.txt, którą należy zainstalować.
@@ -6700,7 +6700,7 @@ django-filter==22.1
 djangorestframework==3.14.0  
 djangorestframework-jsonapi==6.0.0
 ```
-# Backend\Django REST Framework\Project_init\002_Settings.md
+# Backend\Django_REST_Framework\Project_init\002_Settings.md
 
 ### Settings
 
@@ -6770,7 +6770,7 @@ Utworzyć i wykonać migracje
 python manage.py makemigrations
 python manage.py migrate
 ```
-# Backend\Django REST Framework\Routers\001_Router_urls.md
+# Backend\Django_REST_Framework\Routers\001_Router_urls.md
 
 ### Router urls
 
@@ -6794,7 +6794,7 @@ urlpatterns += [
     path('contact/', core_views.ContactAPIView.as_view()), # NEW URL
 ]
 ```
-# Backend\Django REST Framework\Routers\002_Default_router.md
+# Backend\Django_REST_Framework\Routers\002_Default_router.md
 
 ### DefaultRouter
 
@@ -6808,7 +6808,7 @@ router = routers.DefaultRouter()
 router.register(r'item', ecommerce_views.ItemViewSet, basename='item')  
 router.register(r'order', ecommerce_views.OrderViewSet, basename='order')
 ```
-# Backend\Django REST Framework\Serializing\001_Serializing_definition.md
+# Backend\Django_REST_Framework\Serializing\001_Serializing_definition.md
 
 ### Serializing
 
@@ -6827,7 +6827,7 @@ While deserializing the data, serializers also perform validation.
 Generally, you write your serializers in a serializers.py file. If it becomes too big, you can restructure it into a separate Python package.
 
 
-# Backend\Django REST Framework\Serializing\002_Base_serializer.md
+# Backend\Django_REST_Framework\Serializing\002_Base_serializer.md
 
 ### Serializer
 Wymaga zdefiniowania wszystkich pól, jakie mają być serializowane. Odpowiednik modelu Form z bazowego Django.
@@ -6890,7 +6890,7 @@ class SnippetSerializer(serializers.Serializer):
 		instance.save()  
 		return instance
 ```
-# Backend\Django REST Framework\Serializing\003_Model_serializer.md
+# Backend\Django_REST_Framework\Serializing\003_Model_serializer.md
 
 ### ModelSerializer
 Korzysta ze wskazanych pól modelu zdefiniowanego w klasie Meta, możliwe jest jednak dodanie własnych danych. Odpowiednik modelu ModelForm z bazowego Django.
@@ -6944,7 +6944,7 @@ class ContactSerializer(serializers.ModelSerializer):
 			'message'  
 		)
 ```
-# Backend\Django REST Framework\Serializing\004_Serializing_and_deserializing.md
+# Backend\Django_REST_Framework\Serializing\004_Serializing_and_deserializing.md
 
 ### Proces serializacji i deserializacji
 Model:
@@ -7044,7 +7044,7 @@ serializer.validated_data
 serializer.save()
 ### <Snippet: Snippet object>
 ```
-# Backend\Django REST Framework\Serializing\005_Queryset_serializing.md
+# Backend\Django_REST_Framework\Serializing\005_Queryset_serializing.md
 
 ### Serializowanie querysetów
 
@@ -7054,7 +7054,7 @@ serializer = SnippetSerializer(Snippet.objects.all(), many=True)
 serializer.data
 ### [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 ```
-# Backend\Django REST Framework\Serializing\006_extra_kwargs.md
+# Backend\Django_REST_Framework\Serializing\006_extra_kwargs.md
 
 ### extra_kwargs
 Aby nadpisać niektóre właściwości dla poszczególnych pól można utworzyć zmienną extra_kwargs w klasie Meta serializera:
@@ -7067,7 +7067,7 @@ class UserSerializer(serializers.ModelSerializer):
           'min_length': 5
       }}
 ```
-# Backend\Django REST Framework\Serializing\007_Validation.md
+# Backend\Django_REST_Framework\Serializing\007_Validation.md
 
 ### Validation
 
@@ -7132,7 +7132,7 @@ class MovieSerializer(serializers.ModelSerializer):
     rating = IntegerField(validators=[is_rating])
     ...
 ```
-# Backend\Django REST Framework\Serializing\008_Custom_output.md
+# Backend\Django_REST_Framework\Serializing\008_Custom_output.md
 
 ### Custom output
 
@@ -7248,7 +7248,7 @@ class ResourceSerializer(serializers.ModelSerializer):
 
         return super().to_internal_value(resource_data)
 ```
-# Backend\Django REST Framework\Serializing\009_Serializer_context.md
+# Backend\Django_REST_Framework\Serializing\009_Serializer_context.md
 
 ### Serializer context
 
@@ -7282,7 +7282,7 @@ class ResourceSerializer(serializers.ModelSerializer):
         return representation
 ```
 Our serializer output will now contain key with value.
-# Backend\Django REST Framework\Serializing\010_Source_keyword.md
+# Backend\Django_REST_Framework\Serializing\010_Source_keyword.md
 
 ### Source keyword
 
@@ -7357,7 +7357,7 @@ class UserSerializer(serializers.ModelSerializer):
         ]  # note we also added the new fields here
 ```
 We can access userprofile.<field_name>, because it is a one-to-one relationship with our user.
-# Backend\Django REST Framework\Serializing\011_SerializerMethodField.md
+# Backend\Django_REST_Framework\Serializing\011_SerializerMethodField.md
 
 ### SerializerMethodField
 
@@ -7384,7 +7384,7 @@ class UserSerializer(serializers.ModelSerializer):
         return f'{obj.first_name} {obj.last_name}'
 ```
 This piece of code creates a user serializer that also contains full_name which is the result of the get_full_name() function.
-# Backend\Django REST Framework\Serializing\012_Different_serializers_for_read_and_write.md
+# Backend\Django_REST_Framework\Serializing\012_Different_serializers_for_read_and_write.md
 
 ### Different Read and Write Serializers
 
@@ -7410,7 +7410,7 @@ class MyViewSet(viewsets.ModelViewSet):
         return MyModelReadSerializer
 ```
 This code checks what REST operation has been used and returns MyModelWriteSerializer for write operations and MyModelReadSerializer for read operations.
-# Backend\Django REST Framework\Serializing\013_Read_only_fields.md
+# Backend\Django_REST_Framework\Serializing\013_Read_only_fields.md
 
 ### Read-only Fields
 
@@ -7439,7 +7439,7 @@ class AccountSerializer(serializers.Serializer):
     class Meta:
         read_only_fields = ['id', 'username']
 ```
-# Backend\Django REST Framework\Serializing\014_Nested_serializers.md
+# Backend\Django_REST_Framework\Serializing\014_Nested_serializers.md
 
 ### Nested serializers
 
@@ -7590,7 +7590,7 @@ If we change it to 2 our serializer will serialize a level deeper:
 The downside is that you have no control over a child's serialization. Using depth will include all fields on the children, in other words.
 
 The authors of Two Scoops of Django argue that you should remove any POST or PUT methods for nested resources and create separate GET/POST/PUT API views for them. From my own experience, they're right: Trying to use a writable nested serializer can quickly become irritating.
-# Backend\Django REST Framework\Serializing\015_Eager_loading.md
+# Backend\Django_REST_Framework\Serializing\015_Eager_loading.md
 
 ### Eager loading
 
@@ -7626,7 +7626,7 @@ orders = Order.objects.all()
 queryset = OrderSerializer.setup_eager_loading(orders)
 data = OrderSerializer(queryset, many=True).data
 ```
-# Backend\Django REST Framework\Testing\001_APITestCase.md
+# Backend\Django_REST_Framework\Testing\001_APITestCase.md
 
 ### APITestCase
 DRF zapewnia moduł wspierający testowanie napisanego API. W tym celu należy zaimportować klasę APITestCase z modułu rest_framework.test
@@ -7641,7 +7641,7 @@ class ContactTestCase(APITestCase):
     """
     pass
 ```
-# Backend\Django REST Framework\Testing\002_setUp.md
+# Backend\Django_REST_Framework\Testing\002_setUp.md
 
 ### setUp
 Zdefiniowanie metody setUp() w klasie dziedziczącej po klasie APITestCase pozwala sprawia, że kod, napisany w tej metodzie wykona się przed wykonaniem zestawu testów zdefiniowanym w klasie.
@@ -7665,7 +7665,7 @@ class ContactTestCase(APITestCase):
 		}  
         self.url = "/contact/"
 ```
-# Backend\Django REST Framework\Testing\003_Creating_unit_tests.md
+# Backend\Django_REST_Framework\Testing\003_Creating_unit_tests.md
 
 ### Tworzenie unit testów
 Testy tworzone są jako metody dla klasy dziedziczącej po APITestCase. Przykładowy unit test:
@@ -7688,14 +7688,14 @@ class ContactTestCase(APITestCase):
 		self.assertEqual(Contact.objects.count(), 1)  
 		self.assertEqual(Contact.objects.get().title, "Billy Smith")
 ```
-# Backend\Django REST Framework\Testing\004_Running_tests.md
+# Backend\Django_REST_Framework\Testing\004_Running_tests.md
 
 ### Uruchomienie testów
 Uruchomienie wszystkich istniejących w projekcie testów odbywa się poprzez uruchomienie komendy:
 ```
 python manage.py test
 ```
-# Backend\Django REST Framework\Throttling\001_Throttling.md
+# Backend\Django_REST_Framework\Throttling\001_Throttling.md
 
 ### Throttling
 
@@ -7774,7 +7774,7 @@ REST_FRAMEWORK = {
     },
 }
 ```
-# Backend\Django REST Framework\Versioning\001_Versioning.md
+# Backend\Django_REST_Framework\Versioning\001_Versioning.md
 
 ### Versioning
 
@@ -7858,7 +7858,7 @@ REST_FRAMEWORK = {
 }
 ```
 
-![versioning.png](..\Notes\Backend\Django REST Framework\Versioning\_images\versioning_01.png)
+![versioning.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Versioning/_images/versioning_01.png)
 
 #### URLPathVersioning
 
@@ -7927,9 +7927,9 @@ REST_FRAMEWORK = {
 Now a subdomain can serve a different version of the app.
 
 Main domain:
-![versioning_02.png](..\Notes\Backend\Django REST Framework\Versioning\_images\versioning_02.png)
+![versioning_02.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Versioning/_images/versioning_02.png)
 Subdomain:
-![versioning_03.png](..\Notes\Backend\Django REST Framework\Versioning\_images\versioning_03.png)
+![versioning_03.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Versioning/_images/versioning_03.png)
 
 #### QueryParameterVersioning
 
@@ -7950,7 +7950,7 @@ REST_FRAMEWORK = {
 You can test this option directly in the browser by adding a query parameter to the URL: http://127.0.0.1:8000/v2/api/shopping-lists/<SHOPPING-LIST-UUID>/?version=v2.
 
 
-# Backend\Django REST Framework\Views\001_APIView.md
+# Backend\Django_REST_Framework\Views\001_APIView.md
 
 ### API View
 
@@ -7959,7 +7959,7 @@ Source: https://testdriven.io/blog/drf-views-part-1/
 #### Intro
 APIView class is a base for all the views that you might choose to use in your DRF application.
 
-![001_APIView.png](..\Notes\Backend\Django REST Framework\Views\_images\001_APIView.png)
+![001_APIView.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Views/_images/001_APIView.png)
 
 #### Example
 ```python
@@ -8006,7 +8006,7 @@ The call to the database is done inside the handler functions. They're selected 
 | throttle_classes          | determines if a request should be authorized based on the rate of requests	                                                     | AnonRateThrottle, UserRateThrottle          |
 | permission_classes        | determines if a request should be authorized based on user credentials	                                                         | IsAuthenticated, DjangoModelPermissions     |
 | content_negotiation_class | selects one of the multiple possible representations of the resource to return to a client (unlikely you'll want to set it up)	 | only custom content negotiation classes     |
-# Backend\Django REST Framework\Views\002_Function_view.md
+# Backend\Django_REST_Framework\Views\002_Function_view.md
 
 ### Function-based Views
 
@@ -8053,7 +8053,7 @@ def items_not_done(request):
 
     return Response(content)
 ```
-# Backend\Django REST Framework\Views\003_GenericAPIView_and_Mixins.md
+# Backend\Django_REST_Framework\Views\003_GenericAPIView_and_Mixins.md
 
 ### GenericAPIView and mixins
 
@@ -8133,7 +8133,7 @@ We defined get and post methods on our own, which used list and create actions p
 Theoretically, that means that you could bind POST methods with list actions and GET methods with create actions, and things would "kind" of work.
 
 **It's a good idea to have a single view for handling all instances -- listing all instances and adding a new instance -- and another view for handling a single instance -- retrieving, updating, and deleting single instances.**
-# Backend\Django REST Framework\Views\004_Concrete_views.md
+# Backend\Django_REST_Framework\Views\004_Concrete_views.md
 
 ### Concrete Views
 
@@ -8164,13 +8164,13 @@ class ListCreateAPIView(mixins.ListModelMixin,
 |RetrieveDestroyAPIView|	read-delete for single instance	|get, delete	|RetrieveModelMixin, DestroyModelMixin|
 |RetrieveUpdateDestroyAPIView|	read-update-delete for single instance|	get, put, patch, delete	|RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin|
 
-![004_Concrete_views.png](..\Notes\Backend\Django REST Framework\Views\_images\004_Concrete_views.png)
+![004_Concrete_views.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Views/_images/004_Concrete_views.png)
 
 All classes that extend from a concrete view need:
 
 * queryset
 * serializer class
-# Backend\Django REST Framework\Views\005_ViewSet.md
+# Backend\Django_REST_Framework\Views\005_ViewSet.md
 
 ### ViewSets
 
@@ -8189,7 +8189,7 @@ There are four types of ViewSets, from the most basic to the most powerful:
 * ReadOnlyModelViewSet
 * ModelViewSet
 
-![005_ViewSet.png](..\Notes\Backend\Django REST Framework\Views\_images\005_ViewSet.png)
+![005_ViewSet.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django_REST_Framework/Views/_images/005_ViewSet.png)
 
 #### Base ViewSet
 
@@ -8251,7 +8251,7 @@ class ItemsViewSet(ViewSet):
 ```
 
 The detail parameter should be set as True if the action is meant for a single object or False if it's meant for all objects.
-# Backend\Django REST Framework\Views\006_Routers.md
+# Backend\Django_REST_Framework\Views\006_Routers.md
 
 ### Routers
 
@@ -8331,7 +8331,7 @@ routes = [
         ),
     ]
 ```
-# Backend\Django REST Framework\Views\007_GenericViewSet.md
+# Backend\Django_REST_Framework\Views\007_GenericViewSet.md
 
 ### GenericViewSet
 
@@ -8395,7 +8395,7 @@ class ItemViewSet(GenericViewSet):
 ```
 
 
-# Backend\Django REST Framework\Views\008_ModelViewSet.md
+# Backend\Django_REST_Framework\Views\008_ModelViewSet.md
 
 ### ModelViewSets
 
@@ -8424,7 +8424,7 @@ class ItemReadOnlyViewSet(ReadOnlyModelViewSet):
     serializer_class = ItemSerializer
     queryset = Item.objects.all()
 ```
-# Backend\Django REST Framework\Views\009_Renderers.md
+# Backend\Django_REST_Framework\Views\009_Renderers.md
 
 ### DRF Renderers
 
@@ -8455,7 +8455,7 @@ class ShoppingItemViewSet(ModelViewSet):
     serializer_class = ShoppingItemSerializer
     renderer_classes = [JSONRenderer]
 ```
-# Backend\Django REST Framework\Views\010_Custom_view_actions.md
+# Backend\Django_REST_Framework\Views\010_Custom_view_actions.md
 
 ### Custom actions
 
@@ -9775,7 +9775,7 @@ def y(x):
 ### Funkcja cząstkowa - zapis 2
 y = partial(quadratic, a=3, b=1, c=-4)
 ```
-# Backend\Python\Good practices\7_principles_of_modern_software_design\001_Favor_composition_over_inheritance.md
+# Backend\Python\Good_practices\7_principles_of_modern_software_design\001_Favor_composition_over_inheritance.md
 
 #### Composition over inheritance
 
@@ -10035,7 +10035,7 @@ Protocol `PaymentSource` defines, how payment source should look like for typing
 `Employee` object represents all employees, that may have many payment sources.
 
 Computing pay in `compute_pay()` method works for all payment sources as according to defined protocol they share the same interface.
-# Backend\Python\Good practices\7_principles_of_modern_software_design\002_High_cohesion.md
+# Backend\Python\Good_practices\7_principles_of_modern_software_design\002_High_cohesion.md
 
 #### High cohesion
 
@@ -10142,7 +10142,7 @@ if __name__ == "__main__":
 After minor refactoring `Order` class has only responsibility to add items and store order data.
 Payment processes were moved to separate `PaymentProcessor` class, where all payment types have separate method for handling payment.
 Statuses were changed to Enum instead of raw string.
-# Backend\Python\Good practices\7_principles_of_modern_software_design\003_Low_coupling.md
+# Backend\Python\Good_practices\7_principles_of_modern_software_design\003_Low_coupling.md
 
 #### Low coupling
 
@@ -10211,7 +10211,7 @@ class Order:
         self.prices.append(price)
 ```
 
-# Backend\Python\Good practices\7_principles_of_modern_software_design\004_Start_with_the_data.md
+# Backend\Python\Good_practices\7_principles_of_modern_software_design\004_Start_with_the_data.md
 
 #### Start with the data
 
@@ -10434,7 +10434,7 @@ if __name__ == "__main__":
     main()
 ```
 
-# Backend\Python\Good practices\7_principles_of_modern_software_design\005_Depend_on_Abstractions.md
+# Backend\Python\Good_practices\7_principles_of_modern_software_design\005_Depend_on_Abstractions.md
 
 #### Depend on Abstractions
 
@@ -10517,7 +10517,7 @@ class PaymentProcessor:
         print(f"Processing debit payment for amount: ${(payable.total_price / 100):.2f}.")
         payable.set_payment_status(PaymentStatus.PAID)
 ```
-# Backend\Python\Good practices\7_principles_of_modern_software_design\006_Separate_creation_from_use.md
+# Backend\Python\Good_practices\7_principles_of_modern_software_design\006_Separate_creation_from_use.md
 
 #### Separate creation from use
 
@@ -10664,7 +10664,7 @@ def main() -> None:
     # perform the exporting job
     do_export(factory)
 ```
-# Backend\Python\Good practices\7_principles_of_modern_software_design\007_Keep_things_simple.md
+# Backend\Python\Good_practices\7_principles_of_modern_software_design\007_Keep_things_simple.md
 
 #### Keep things simple
 
@@ -10732,7 +10732,7 @@ if the only thing you need to do is to add two integers.
 
 You Ain't Gonna Need It - this rule speaks about not implementing something, that you don't need right now. Don't create extra 
 features - users will ask you for them if they will be needed.  
-# Backend\Python\Good practices\Basics\001_Language_properties.md
+# Backend\Python\Good_practices\Basics\001_Language_properties.md
 
 #### WŁAŚCIWOŚCI JĘZYKA
 ##### 1.1. Przestrzenie nazw  
@@ -10775,7 +10775,7 @@ print(x)           # drukuje zmienną globalną x
 ##### 1.6. PEP8  
 PEP 8 to opracowany jeszcze w 2001 r. dokument, w którym opisane zostały najlepsze praktyki w zakresie pisania czytelnego kodu w Pythonie. Stanowi część oficjalnej dokumentacji języka. Stanowi on powszechnie respektowaną normę i w zasadzie stanowi lekturę obowiązkową dla każdego, kto chce programować w Pythonie. Z treścią dokumentu zapoznać się można na  [oficjalnej stronie Pythona](https://www.python.org/dev/peps/pep-0008/#introduction).
 
-# Backend\Python\Good practices\Being_responsible_developer\001_Mixins.md
+# Backend\Python\Good_practices\Being_responsible_developer\001_Mixins.md
 
 #### Mixins
 
@@ -10807,7 +10807,7 @@ just usual classes.
 
 Instead of injecting additional methods to class it's better to use composition (as stands in "Favor composition over 
 inheritance" principle). It makes your code better to read and understand.
-# Backend\Python\Good practices\Being_responsible_developer\002_Setting_up_a_complex_software_project.md
+# Backend\Python\Good_practices\Being_responsible_developer\002_Setting_up_a_complex_software_project.md
 
 #### Setting up a complex software project
 
@@ -10857,12 +10857,12 @@ we need to avoid that. Better solution is to split it into smaller packages focu
 To make code organization easier you can translate picked architecture to directories in application. Example: if you use 
 Model-View-Controller architecture pattern you can create model, view, controller directories to store logic for particular architecture part.
 
-# Backend\Python\Good practices\Clean_code\000_Sources.md
+# Backend\Python\Good_practices\Clean_code\000_Sources.md
 
 ##### Sources
 [1] https://testdriven.io/blog/clean-code-python
 
-# Backend\Python\Good practices\Clean_code\001_Code_standards.md
+# Backend\Python\Good_practices\Clean_code\001_Code_standards.md
 
 #### Code standards
 ##### PEP 8
@@ -10943,7 +10943,7 @@ If the implementation is hard to explain, it's a bad idea.
 If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!
 ```
-# Backend\Python\Good practices\Clean_code\002_Code_principles.md
+# Backend\Python\Good_practices\Clean_code\002_Code_principles.md
 
 #### Code Principles
 ##### DRY (Don't repeat yourself)
@@ -10969,7 +10969,7 @@ It consists of the following five concepts:
 -   The  **I**nterface segregation principle: "A client should not be forced to implement an interface that it doesn’t use."
 -   The  **D**ependency inversion principle: "Depend upon abstractions, not concretions."
 
-# Backend\Python\Good practices\Clean_code\003_Code_formatters.md
+# Backend\Python\Good_practices\Clean_code\003_Code_formatters.md
 
 #### Code Formatters
 The most popular Python code formatters are:
@@ -10984,7 +10984,7 @@ The most popular Python linters are:
 -   [Pylint](https://pylint.pycqa.org/)
 -   [PyFlakes](https://github.com/PyCQA/pyflakes)
 -   [mypy](http://mypy-lang.org/)
-# Backend\Python\Good practices\Clean_code\004_Naming_conventions.md
+# Backend\Python\Good_practices\Clean_code\004_Naming_conventions.md
 
 #### Naming conventions
 ```python
@@ -10995,7 +10995,7 @@ au = 55
 #### This is good
 active_user_amount = 55
 ```
-# Backend\Python\Good practices\Clean_code\005_Variables.md
+# Backend\Python\Good_practices\Clean_code\005_Variables.md
 
 ##### Variables
 ###### 1. Use nouns for variable names
@@ -11064,7 +11064,7 @@ class Person:
         self.age = age
 ```
 We're already inside the `Person` class, so there's no need to add a `person_` prefix to every class variable.
-# Backend\Python\Good practices\Clean_code\006_Functions.md
+# Backend\Python\Good_practices\Clean_code\006_Functions.md
 
 ##### Functions
 ###### 1. Use verbs for function names
@@ -11100,7 +11100,7 @@ def display_personnel(data):
 ```
 ###### 5. Keep your arguments at a minimum
 
-# Backend\Python\Good practices\Design_wins\001_Avoid_type_abuse.md
+# Backend\Python\Good_practices\Design_wins\001_Avoid_type_abuse.md
 
 #### Avoid type abuse
 
@@ -11135,7 +11135,7 @@ class User:
     last_name: str
     role: Role
 ```
-# Backend\Python\Good practices\Design_wins\002_Use_clear_names.md
+# Backend\Python\Good_practices\Design_wins\002_Use_clear_names.md
 
 #### Use clear names
 
@@ -11165,7 +11165,7 @@ class Contract:
     def compute_pay(self):
         return self.hours_worked * self.hourly_rate
 ```
-# Backend\Python\Good practices\Design_wins\003_Avoid_flags.md
+# Backend\Python\Good_practices\Design_wins\003_Avoid_flags.md
 
 #### Avoid flags
 
@@ -11206,7 +11206,7 @@ class BitcoinWallet:
         print(f"Selling {amount * SATOSHI_TO_BTC_RATE} BTC.")
         self.balance -= amount
 ```
-# Backend\Python\Good practices\Design_wins\004_Do_not_use_too_many_args.md
+# Backend\Python\Good_practices\Design_wins\004_Do_not_use_too_many_args.md
 
 #### Don't use too many arguments
 
@@ -11296,7 +11296,7 @@ def main():
         datetime(2022, 7, 17),
     )
 ```
-# Backend\Python\Good practices\Project workflow\001_Project_workflow.md
+# Backend\Python\Good_practices\Project workflow\001_Project_workflow.md
 
 #### Project workflow
 
@@ -11310,7 +11310,7 @@ Steps for automate project workflow with code quality ensured:
 
 https://testdriven.io/blog/python-project-workflow/
 https://github.com/MateDawid/course_Python_Project_Workflow
-# Backend\Python\Good practices\Pythonic_Patterns\001_Strategy.md
+# Backend\Python\Good_practices\Pythonic_Patterns\001_Strategy.md
 
 #### Strategy
 
@@ -11613,7 +11613,7 @@ def main() -> None:
 
 * Classic functions definitions
 * Partial function declared in `main()` function
-# Backend\Python\Good practices\Pythonic_Patterns\002_Bridge.md
+# Backend\Python\Good_practices\Pythonic_Patterns\002_Bridge.md
 
 #### Bridge
 
@@ -11819,7 +11819,7 @@ if __name__ == "__main__":
     main()
 ```
 
-# Backend\Python\Good practices\Pythonic_Patterns\003_Template_Method.md
+# Backend\Python\Good_practices\Pythonic_Patterns\003_Template_Method.md
 
 #### Template method
 
@@ -12004,7 +12004,7 @@ class EthereumTradingBot(TradingBot):
 * `BitcoinTradingBot` and `EthereumTradingBot` as `TradingBot` subclasses
 * `BitcoinTradingBot` and `EthereumTradingBot` have their own implementations of `TradingBot` abstract methods
 * `BitcoinTradingBot` and `EthereumTradingBot` inherit `.trade()` method from `TradingBot` class.
-# Backend\Python\Good practices\Pythonic_Patterns\004_Abstract_Factory.md
+# Backend\Python\Good_practices\Pythonic_Patterns\004_Abstract_Factory.md
 
 #### Abstract Factory
 
@@ -12272,7 +12272,7 @@ def compute_tax(
     # return the total tax
     return income_tax + capital_tax
 ```
-# Backend\Python\Good practices\Pythonic_Patterns\005_Pipeline_patterns.md
+# Backend\Python\Good_practices\Pythonic_Patterns\005_Pipeline_patterns.md
 
 #### Pipeline patterns
 
@@ -12445,7 +12445,7 @@ if __name__ == "__main__":
     main()
 
 ```
-# Backend\Python\Good practices\Pythonic_Patterns\006_Notification_patterns.md
+# Backend\Python\Good_practices\Pythonic_Patterns\006_Notification_patterns.md
 
 #### Notification patterns
 
@@ -12755,7 +12755,7 @@ def main() -> None:
 * In main function all different handlers are being set up - email, slack, and log
 * Business logic performed in  `register_new_user`, `password_forgotten`, `upgrade_plan` has `post_event` method used 
 inside for handling events 
-# Backend\Python\Good practices\Pythonic_Patterns\007_Registry.md
+# Backend\Python\Good_practices\Pythonic_Patterns\007_Registry.md
 
 #### Registry
 
@@ -13104,7 +13104,7 @@ def load_plugins(plugins: list[str]) -> None:
 
 ```
 * Function for loading additional plugins defined.
-# Backend\Python\Good practices\Pythonic_Patterns\008_Command.md
+# Backend\Python\Good_practices\Pythonic_Patterns\008_Command.md
 
 #### Command
 
@@ -13416,7 +13416,7 @@ if __name__ == "__main__":
     main()
 
 ```
-# Backend\Python\Good practices\Pythonic_Patterns\009_Callback.md
+# Backend\Python\Good_practices\Pythonic_Patterns\009_Callback.md
 
 #### Callback
 
@@ -13454,7 +13454,7 @@ def main() -> None:
 * Button class having `click` method.
 * `click` method performing `on_click` function defined on class setup
 
-# Backend\Python\Good practices\Pythonic_Patterns\010_Function_wrapper.md
+# Backend\Python\Good_practices\Pythonic_Patterns\010_Function_wrapper.md
 
 #### Function wrapper
 
@@ -13514,7 +13514,7 @@ def main() -> None:
     print(f"Total: ${order.compute_total()/100:.2f}")
 ```
 * `loyalty_program_discount` as wrapper for `percentage_discount` with predefined discounts per `LoyaltyProgram`
-# Backend\Python\Good practices\Pythonic_Patterns\011_Function_builder.md
+# Backend\Python\Good_practices\Pythonic_Patterns\011_Function_builder.md
 
 #### Function builder
 
@@ -14235,11 +14235,11 @@ Sources:
 #### Basics
 In the case of memory a well-behaved service will use memory and free memory. It performs like this chart reporting on the memory used over a three-month period.
 
-![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_good.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Python/Memory/_images/001_tracemalloc_good.png)
 
 A microservice that leaks memory over time will exhibit a saw-tooth behavior as memory increases until some point (for example, maximum memory available) where the service is shut down, freeing all the memory and then restarted.
 
-![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_bad.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Python/Memory/_images/001_tracemalloc_bad.png)
 
 If a code review does not turn up any viable suspects, then it is time to turn to tools for tracking down memory leaks. The first tool should provide a way to chart memory usage over time. At BuzzFeed we use DataDog to monitor microservices performance. Leaks may accumulate slowly over time, several bytes at a time. In this case it is necessary to chart the memory growth to see the trend.
 
@@ -14253,7 +14253,7 @@ for i, stat in enumerate(snapshot.statistics(‘filename’)[:5], 1):
     logging.info(“top_current”,i=i, stat=str(stat))
 ```
 The output will look similar to this:
-![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_01.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Python/Memory/_images/001_tracemalloc_01.png)
 This shows the size of the memory allocation, the number of objects allocated and the average size each on a per module basis.
 
 #### Snapshots comparison
@@ -14269,7 +14269,7 @@ for i, stat in enumerate(stats[:5], 1):
 
 The output will look similar to this:
 
-![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_02.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Python/Memory/_images/001_tracemalloc_02.png)
 
 This shows the size and the number of objects and a comparison of each and the average allocation size on a per module basis.
 
@@ -14282,7 +14282,7 @@ for stat in traces[1]:
     for line in stat.traceback.format():
         logging.info(info)
 ```
-![](..\Notes\Backend\Python\Memory\_images\001_tracemalloc_03.png)
+![](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Python/Memory/_images/001_tracemalloc_03.png)
 Reading bottom to top, this shows a trace to a line in the socket module where a memory allocation took place. With this information it may be possible to finally isolate the cause of the memory leak.
 
 #### The Search for Memory Leak
@@ -15925,7 +15925,7 @@ Najefektywniejszy sposób znajdowania wspólnego czynnika. Składa się z nastę
 * Zastąpienie liczby y resztą z dzielenia oraz liczby x liczbą y i ponowne wykonanie dzielenia,
 * Poprzedni krok powtarzany jest do momentu otrzymania reszty dzielenia równej 0
 * Ostatni dzielnik jest największym wspólnym czynnikiem
-# Computer Science\Data structures\001_Array.md
+# Computer Science\Data_structures\001_Array.md
 
 ## Tablice
 Python jako swoją implementację abstrakcyjnej struktury danych tablicy stosuje listy, wykorzystujące nadmierną alokację (zabezpieczają się większą ilością pamięci niż zajmują przechowywane dane). 
@@ -15953,7 +15953,7 @@ a_list = [8, 0, 3, 0, 12]
 move_zeros(a_list)
 print(a_list) #  [8, 3, 12, 0, 0]
 ```
-# Computer Science\Data structures\002_Linked_list.md
+# Computer Science\Data_structures\002_Linked_list.md
 
 ## Lista połączona
 Implementacja abstrakcyjnego typu danych listy. Pozwala na dodawanie, usuwanie oraz wyszukiwanie elementów. Elementy listy nie są indeksowane, ponieważ komputer nie przechowuje ich w jednym, ciągłym obszarze pamięci. Zamiast tego lista połączona stanowi łańcuch wierzchołków, z których każdy zawiera jakieś dane oraz adres następnego wierzchołka listy.
@@ -15993,7 +15993,7 @@ d = deque()
 d.append('Harry')
 d.append('Potter')
 ```
-# Computer Science\Data structures\003_Queue.md
+# Computer Science\Data_structures\003_Queue.md
 
 ## Kolejki
 ### 1. Kolejka
@@ -16005,7 +16005,7 @@ Często nazywana kopcem binarnym. Elementy kopca są wstawiane wraz z priorytete
 
 ![Priority Queue Data Structure](https://cdn.programiz.com/sites/tutorial2program/files/insert-1_0.png)
 
-# Computer Science\Test-Driven Development\001_Test-Driven Development.md
+# Computer Science\Test_Driven_Development\001_Test-Driven Development.md
 
 ## Test-Driven Development
 

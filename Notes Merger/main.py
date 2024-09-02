@@ -1,9 +1,12 @@
 import os
 import re
+import urllib.request
+from urllib.parse import urljoin
 from pathlib import Path
 from typing import TextIO
 
 NOTES_ROOT = r"..\Notes\\"
+REPOSITORY_ROOT = "https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/"
 
 
 def get_table_of_content(searched_dir: str, input_dict: dict, excluded_dirs: list | None = None, ) -> dict:
@@ -44,11 +47,18 @@ def get_fixed_image_line(line: str, line_images: list, header_file: str):
             fixed_filename = Path(images_dir_path, filename)
             if not os.path.exists(fixed_filename):
                 raise Exception(f'get_fixed_image_line: Path {fixed_filename} does not exist!')
+            images_dir_url = urljoin(
+                REPOSITORY_ROOT,
+                urllib.request.pathname2url(
+                    images_dir_path.replace(NOTES_ROOT, '')
+                )
+            ) + '/'
+            file_url = urljoin(images_dir_url, filename)
         if resize:
             resize = resize.strip()
-            line = line.replace(f"![{alt}]({filename} {resize})", f"![{alt}]({fixed_filename} {resize})")
+            line = line.replace(f"![{alt}]({filename} {resize})", f"![{alt}]({file_url} {resize})")
         else:
-            line = line.replace(f"![{alt}]({filename})", f"![{alt}]({fixed_filename})")
+            line = line.replace(f"![{alt}]({filename})", f"![{alt}]({file_url})")
 
     return line
 

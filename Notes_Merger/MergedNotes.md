@@ -214,6 +214,1738 @@ After logging in, you navigate to the download service within the website that l
 * Users that don't have accounts on the OpenID providers that you have configured won't be able to access your application. The best approach is to implement both -- i.e., username and password and OpenID -- and let the user choose.
 
 
+# Backend\Celery\001_Terminology.md
+
+## Terminology
+
+> Source: https://testdriven.io/courses/django-celery/intro
+
+Celery (along with similar tools like RQ and Huey) uses the **producer/consumer model**.
+
+**Message broker** is an intermediary program used as the transport for producing or consuming tasks.
+
+**Result backend** is used to store the result of a Celery task.
+
+The **Celery client** is the producer which adds a new task to the queue via the **message broker**. **Celery workers** then consume new tasks from the queue, again, via the **message broker**. Once processed, results are then stored in the **result backend**.
+
+In terms of tools, RabbitMQ is arguably the better choice for a message broker since it supports AMQP (Advanced Message Queuing Protocol) while Redis is fine as your result backend.
+# Backend\Celery\002_Setting_up.md
+
+## Setting up
+
+>Source: https://testdriven.io/courses/django-celery/getting-started/#H-4-setting-up-celery
+
+![celery_setup](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/001_celery_setup.png)
+
+Create a celery.py file in the same folder as wsgi.py:
+
+```python
+## config_dir/celery.py
+"""
+https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html
+"""
+import os
+
+from celery import Celery
+
+from django.conf import settings
+
+## this code copied from manage.py
+## set the default Django settings module for the 'celery' app.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_celery_example.settings')
+
+## you can change the name here
+app = Celery("django_celery_example")
+
+## read config from Django settings, the CELERY namespace would make celery
+## config keys has `CELERY` prefix
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+## discover and load tasks.py from from all registered Django apps
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+
+@app.task
+def divide(x, y):
+    import time
+    time.sleep(5)
+    return x / y
+```
+
+```python
+## config_dir/__init__.py
+## This will make sure the app is always imported when
+## Django starts so that shared_task will use this app.
+from .celery import app as celery_app
+
+__all__ = ('celery_app',)
+```
+
+Since Celery can read config from the Django settings file, add the following config to django_celery_example/settings.py for better configuration management:
+
+```python
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+```
+
+It's worth noting here that the Celery documentation refers to the broker URL as BROKER_URL instead of CELERY_BROKER_URL. So, why are we using CELERY_BROKER_URL?
+
+app.config_from_object('django.conf:settings', namespace='CELERY') tells Celery to read values from the CELERY namespace in settings.py. So, if you just set BROKER_URL in your Django settings file, the setting would be ignored since it lacks the CELERY namespace. This rule applies for all Celery config keys.
+# Backend\Celery\003_Sending_Task_to_Celery.md
+
+## Sending a Task to Celery
+
+>Source: https://testdriven.io/courses/django-celery/getting-started/#H-7-sending-a-task-to-celery
+
+```python
+## django_celery_example/celery.py
+"""
+https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html
+"""
+import os
+
+from celery import Celery
+
+from django.conf import settings
+
+## this code copied from manage.py
+## set the default Django settings module for the 'celery' app.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_celery_example.settings')
+
+## you can change the name here
+app = Celery("django_celery_example")
+
+## read config from Django settings, the CELERY namespace would make celery
+## config keys has `CELERY` prefix
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+## discover and load tasks.py from from all registered Django apps
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+
+@app.task
+def divide(x, y):
+    import time
+    time.sleep(5)
+    return x / y
+```
+
+Having config like above in celery.py - with Celery app named `django_celery_example` - and Broker (like Redis) running we can run Celery worker like:
+
+```commandline
+celery -A django_celery_example worker --loglevel=info
+```
+
+To run task manually use:
+```commandline
+(venv)$ python manage.py migrate
+(venv)$ python manage.py shell
+>>> from django_celery_example.celery import divide
+>>> task = divide.delay(1, 2)
+```
+
+What's happening?
+
+1. We used the `delay` method to send a new message to the message broker. The worker process then picked up and executed the task from the queue.
+2. After releasing from the Enter key, the code finished executing while the `divide` task ran in the background.
+
+Picture the workflow in your head:
+
+1. The Celery client (the producer) adds a new task to the queue via the message broker.
+2. The Celery worker (the consumer) grabs the tasks from the queue, again, via the message broker.
+3. Once processed, results are stored in the result backend.
+
+```commandline
+>>> task = divide.delay(1, 2)
+
+>>> type(task)
+<class 'celery.result.AsyncResult'>
+```
+
+After we called the delay method, we get an AsyncResult instance, which can be used to check the task state along with the return value or exception details.
+
+```commandline
+>>> print(task.state, task.result)
+PENDING None
+
+>>> print(task.state, task.result)
+PENDING None
+
+>>> print(task.state, task.result)
+PENDING None
+
+>>> print(task.state, task.result)
+SUCCESS 0.5
+
+>>> print(task.state, task.result)
+SUCCESS 0.5
+```
+
+What happens if there's an error?
+
+```commandline
+>>> task = divide.delay(1, 0)
+
+## wait a few seconds before checking the state and result
+
+>>> task.state
+'FAILURE'
+
+>>> task.result
+ZeroDivisionError('division by zero')
+```
+
+# Backend\Celery\004_Monitoring_Celery_with_Flower.md
+
+## Monitoring Celery with Flower
+
+> Source: https://testdriven.io/courses/django-celery/getting-started/#H-8-monitoring-celery-with-flower
+
+```commandline
+pip install flower
+```
+
+Once installed, spin up the server:
+
+```commandline
+celery -A django_celery_example flower --port=5555
+```
+
+Navigate to http://localhost:5555 in your browser of choice to view the dashboard. Click "Tasks" in the nav bar at the top to view the finished tasks.
+
+![flower](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/004_flower.png)
+# Backend\Celery\005_Checking_state_of_single_task.md
+
+## Checking state of single task
+
+> Source: https://testdriven.io/courses/django-celery/getting-started/#H-8-monitoring-celery-with-flower
+
+![004_flower.png](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/004_flower.png)
+
+Take note of the UUID column. This is the id of AsyncResult. Copy the UUID for the failed task and open the terminal window where the Django shell is running to view the details:
+
+```commandline
+>>> from celery.result import AsyncResult
+>>> task = AsyncResult('6104b10e-cffe-4703-997d-bc085068d517')  # replace with your UUID
+>>>
+>>> task.state
+'FAILURE'
+>>>
+>>> task.result
+ZeroDivisionError('division by zero')
+```
+# Backend\Celery\006_Auto-reload.md
+
+## Auto reload
+
+>Source: https://testdriven.io/courses/django-celery/auto-reload/
+
+### Solution 1: Custom Django Command
+
+You can write a Django management command to restart the Celery workers and then hook that command into Django's autoreload utility.
+
+```python
+## management/commands/celery_worker.py
+import shlex
+import subprocess
+import sys
+
+from django.core.management.base import BaseCommand
+from django.utils import autoreload
+
+
+def restart_celery():
+    celery_worker_cmd = "celery -A django_celery_example worker"
+    cmd = f'pkill -f "{celery_worker_cmd}"'
+    if sys.platform == "win32":
+        cmd = "taskkill /f /t /im celery.exe"
+
+    subprocess.call(shlex.split(cmd))
+    subprocess.call(shlex.split(f"{celery_worker_cmd} --loglevel=info"))
+
+
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        print("Starting celery worker with autoreload...")
+        autoreload.run_with_reloader(restart_celery)
+```
+
+Update compose/local/django/celery/worker/start:
+
+```commandline
+##!/bin/bash
+
+set -o errexit
+set -o nounset
+
+python manage.py celery_worker
+```
+
+Next, you'll need to install the procps package to use the pkill command, so install the package in compose/local/django/Dockerfile:
+
+```Dockerfile
+RUN apt-get update \
+  # dependencies for building Python packages
+  && apt-get install -y build-essential \
+  # psycopg2 dependencies
+  && apt-get install -y libpq-dev \
+  # Translations dependencies
+  && apt-get install -y gettext \
+  # Additional dependencies
+  && apt-get install -y git procps \
+  # cleaning up unused files
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
+```
+
+Now after code change worker automatically restarts.
+
+### Solution 2: Watchfiles
+
+Watchfiles (previously called Watchgod), a helpful tool for monitoring file system events, can help us restart Celery worker after code change.
+
+```commandline
+pip install watchfiles
+```
+
+Assuming you run your Celery worker like so
+
+```commandline
+celery -A django_celery_example worker --loglevel=info
+```
+
+To incorporate Watchdog, you'd now run it like this:
+```commandline
+watchfiles --filter python 'celery -A django_celery_example worker --loglevel=info'
+```
+* `--filter python` tells `watchfiles` to only watch `py` files.
+* `celery -A django_celery_example worker --loglevel=info` is the command we want `watchfiles` to run
+* By default, watchfiles will watch the current directory and all subdirectories
+
+```commandline
+## requirements.txt
+watchfiles==0.21.0
+```
+
+compose/local/django/celery/worker/start:
+```commandline
+##!/bin/bash
+
+set -o errexit
+set -o nounset
+
+watchfiles \
+  --filter python \
+  'celery -A django_celery_example worker --loglevel=info'
+```
+
+# Backend\Celery\007_Debugging_Celery_Task.md
+
+## Debugging a Celery Task
+> Source: https://testdriven.io/courses/django-celery/debugging-celery/
+
+### Method 1: Eager Mode
+
+By setting task_always_eager to True, tasks will be executed immediately (synchronously) instead of being sent to the queue (asynchronously), allowing you to debug the code within the task as you normally would (with breakpoints and print statements and what not) with any other code in your Django app.
+
+It's worth noting that task_always_eager is False by default to help prevent inadvertently activating it in production.
+
+So, you can add `CELERY_TASK_ALWAYS_EAGER=True` to the settings of Django project to activate it.
+
+### Method 2: PyCharm
+
+If you're not using Docker to run your application locally, then you can follow these steps to help with debugging a Celery task:
+
+1. Make sure the message broker and result backend settings have been configured and that the relevant services are running.
+2. Launch the debugger for your Django server.
+3. Launch the debugger for your Celery worker (you'll need to configure this with a Python run config instead of a Django run config).
+
+### Methods 3: rdb
+
+rdb is a powerful tool that allows you to debug your Celery task directly in your terminal.
+
+You must have Telnet installed in order for this to work.
+
+You'll need to install telnet like so in compose/local/django/Dockerfile:
+
+```Dockerfile
+...
+
+RUN apt-get update \
+  # dependencies for building Python packages
+  && apt-get install -y build-essential \
+  # psycopg2 dependencies
+  && apt-get install -y libpq-dev \
+  # Translations dependencies
+  && apt-get install -y gettext \
+  # Additional dependencies
+  && apt-get install -y git procps telnet \              # new
+  # cleaning up unused files
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
+
+...
+```
+Next, add rdb to the Celery task in django_celery_example/celery.py:
+
+```python
+@app.task
+def divide(x, y):
+    from celery.contrib import rdb
+    rdb.set_trace()
+
+    # this is for test purposes
+    import time
+    time.sleep(10)
+    return x / y
+```
+
+`rdb.set_trace()` works like a breakpoint.
+
+Update:
+
+```commandline
+$ docker compose up -d --build
+$ docker compose logs -f
+```
+
+Next, in a new terminal window navigate to the project directory, and then send a task to the Celery worker via the Django shell:
+
+```commandline
+$ docker compose exec web bash
+(container)$ ./manage.py shell
+```
+
+Within the shell, run the Celery task:
+
+```commandline
+>>> from django_celery_example.celery import divide
+>>> divide.delay(1, 2)
+```
+
+Back in the first window where the logs are running, you should see something similar to:
+
+```commandline
+django-celery-project-celery_worker-1  | [2024-01-02 03:08:33,224: INFO/MainProcess] Task django_celery_example.celery.divide[73e0876f-7a55-4917-8f71-3972e2e2bfa1] received
+django-celery-project-celery_worker-1  | [2024-01-02 03:08:33,262: WARNING/ForkPoolWorker-16] Remote Debugger:6915: Ready to connect: telnet 127.0.0.1 6915
+django-celery-project-celery_worker-1  |
+django-celery-project-celery_worker-1  | Type `exit` in session to continue.
+django-celery-project-celery_worker-1  |
+django-celery-project-celery_worker-1  | Remote Debugger:6915: Waiting for client...
+```
+
+Take note of the port: `Remote Debugger:6915: Waiting for client..`
+
+Open another terminal window, navigate to the project directory, and connect to the debugger via Telnet:
+
+```commandline
+$ docker compose exec celery_worker bash
+(container)$ telnet 127.0.0.1 6915
+
+Connected to 127.0.0.1.
+Escape character is '^]'.
+> /app/django_celery_example/celery.py(31)divide()
+-> import time
+(Pdb)
+```
+
+> Make sure to change `6915` to the port the debugger is running on your machine.
+
+Now you can start debugging:
+
+```commandline
+(Pdb) args
+x = 1
+y = 2
+
+(Pdb) help
+
+Documented commands (type help <topic>):
+========================================
+EOF    cl         display   j         next     run     unalias    where
+a      clear      down      jump      p        rv      undisplay
+alias  commands   enable    l         pp       s       unt
+args   condition  h         list      r        source  until
+b      d          help      ll        restart  step    up
+break  debug      ignore    longlist  return   tbreak  w
+bt     disable    interact  n         retval   u       whatis
+
+Miscellaneous help topics:
+==========================
+exec  pdb
+
+Undocumented commands:
+======================
+c  cont  continue  exit  q  quit
+```
+
+You can exit the debug shell by typing c (which means continue). The Celery worker will finish executing the task:
+
+```commandline
+django-celery-project-celery_worker-1  | [2024-01-02 03:10:08,206: WARNING/ForkPoolWorker-16] Remote Debugger:6915: Session with 127.0.0.1:34462 ended.
+django-celery-project-celery_worker-1  | [2024-01-02 03:10:18,211: INFO/ForkPoolWorker-16] Task django_celery_example.celery.divide[73e0876f-7a55-4917-8f71-3972e2e2bfa1] succeeded in 105.04715652900632s: 0.5
+```
+
+Make sure to comment our or remove rdb from the task once done:
+
+```python
+@app.task
+def divide(x, y):
+    # from celery.contrib import rdb
+    # rdb.set_trace()
+
+    # this is for test purposes
+    import time
+    time.sleep(10)
+    return x / y
+```
+# Backend\Celery\008_Problem_1_Blocking_Form_Submission.md
+
+## Problem 1: Blocking Form Submission
+
+> Source: https://testdriven.io/courses/django-celery/third-party-services/#H-1-problem-1-blocking-form-submission
+
+### Problem
+
+Say you have a form that lets users subscribe to your newsletter. In the view, you parse the form data, grab the provided email address, and send it to a third-party email marketing API like MailChimp or ConvertKit.
+
+```python
+def subscribe_user(email):
+    # used for testing a failed api call
+    if random.choice([0, 1]):
+        raise Exception('random processing error')
+
+    # used for simulating a call to a third-party email marketing api
+    requests.post('https://httpbin.org/delay/5')
+
+
+def subscribe(request):
+    if request.method == 'POST':
+        form = SubscribeForm(request.POST)
+        if form.is_valid():
+            subscribe_user(form.cleaned_data['email'])
+            return HttpResponse('thanks')
+    else:
+        form = SubscribeForm()
+
+    return render(request, 'subscribe.html', {'form': form})
+```
+
+So, we have a Django function-based view (FBV) that mimics a call to a third-party email marketing API with requests.post('https://httpbin.org/delay/5'). This view could degrade performance if you're sustaining heavy traffic.
+
+If you're running three sync workers with Gunicorn then you'll have three child processes available to process each HTTP request to that view. If three users submit the form at the same time, all three processes will be blocked for at least five seconds. And so, since sync works can only serve a single request at a time, any other HTTP request will have to wait until one of the workers becomes available before the request can be handled.
+
+If you need to call a third-party API within a view, you can move the actual call to an asynchronous Celery task to prevent the web process from being blocked.
+
+Full workflow:
+
+1. You'll want to use JavaScript to hijack the form submission and then send the data to the server via an AJAX request.
+2. Within the Django view, enqueue a new task (which takes the submitted email and calls the external API) and return the task ID in the response back to the client.
+3. You'll then use that task ID to continue to check the state of the task via another AJAX request.
+4. When the task finishes, you should then display the appropriate message based on whether the task succeeds or fails.
+
+![workflow](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/008_workflow.png)
+
+> Rather than introducing a polling mechanism (calling the API in a loop, checking the status of the task), you could use WebSockets or HTTP/2 to "push" the response from the server to the client after the task finishes executing. You'll see an example of this in the next chapter.
+
+> It's worth noting that this full workflow is a bit overkill for a simple call to a third-party email marketing API. The user isn't waiting to get something right away; they only care that they receive the next newsletter when you send the blast. Thus, you should indicate that the form submission was successful and handle any issues with the API call in the backend without the user knowing exactly what's happening. 
+> 
+> If you're using an API to process a payment or modify a user submitted file via an external service, then you should definitely use this full workflow.
+
+### Implementation
+
+Add the Requests library to your requirements file:
+
+```
+requests==2.31.0
+```
+
+Start by adding the following code to polls/views.py:
+
+```python
+import json
+import random
+
+import requests
+from celery.result import AsyncResult
+from django.http import JsonResponse
+from django.shortcuts import render
+
+from polls.forms import YourForm
+from polls.tasks import sample_task
+
+
+## helpers
+
+def api_call(email):
+    # used for testing a failed api call
+    if random.choice([0, 1]):
+        raise Exception('random processing error')
+
+    # used for simulating a call to a third-party api
+    requests.post('https://httpbin.org/delay/5')
+
+
+## views
+
+def subscribe(request):
+    if request.method == 'POST':
+        form = YourForm(request.POST)
+        if form.is_valid():
+            task = sample_task.delay(form.cleaned_data['email'])
+            # return the task id so the JS can poll the state
+            return JsonResponse({
+                'task_id': task.task_id,
+            })
+
+    form = YourForm()
+    return render(request, 'form.html', {'form': form})
+
+
+def task_status(request):
+    task_id = request.GET.get('task_id')
+
+    if task_id:
+        task = AsyncResult(task_id)
+        state = task.state
+
+        if state == 'FAILURE':
+            error = str(task.result)
+            response = {
+                'state': state,
+                'error': error,
+            }
+        else:
+            response = {
+                'state': state,
+            }
+        return JsonResponse(response)
+```
+
+Here, in the subscribe view, if the request method is POST (via AJAX), a task called sample_task is enqueued and the task ID is returned. The task_status view can then be used to check the status of the task given the task ID.
+
+Wire up the app-level URLs in polls/urls.py:
+
+```python
+from django.urls import path
+
+from polls.views import subscribe, task_status
+
+
+urlpatterns = [
+    path('form/', subscribe, name='form'),
+    path('task_status/', task_status, name='task_status'),
+]
+```
+
+Add a tasks.py file to the "polls" folder:
+
+```python
+from celery import shared_task
+
+
+@shared_task()
+def sample_task(email):
+    from polls.views import api_call
+
+    api_call(email)
+```
+
+> Celery will automatically search for tasks within each of your registered Django app's because we called the autodiscover_tasks method in django_celery_example/celery.py.
+
+Next, add a basic form to polls/forms.py:
+
+```python
+from django import forms
+
+
+class YourForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        # add class to make the fields work with Bootstrap
+        # In real projects, you can check https://django-crispy-forms.readthedocs.io/en/latest/
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
+    username = forms.CharField(max_length=100)
+    email = forms.EmailField(max_length=100)
+```
+
+Add a "templates" folder to "polls", and then add a form.html file:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Celery example</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+        crossorigin="anonymous"
+  >
+</head>
+
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-12 col-md-4">
+      <form id="your-form">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          {{ form.email }}
+        </div>
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          {{ form.username }}
+        </div>
+        <div class="mb-3" id="messages"></div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous">
+</script>
+</body>
+</html>
+```
+Then, add the core JavaScript to send the initial XHR request to kick off the task along with a request to check the status of the request using the task ID:
+
+```html
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function updateProgress(yourForm, task_id, btnHtml) {
+    fetch(`/task_status/?task_id=${task_id}`, {
+      method: 'GET',
+    })
+      .then(response => response.json())
+      .then((res) => {
+        const taskStatus = res.state;
+
+        if (['SUCCESS', 'FAILURE'].includes(taskStatus)) {
+          const msg = yourForm.querySelector('#messages');
+          const submitBtn = yourForm.querySelector('button[type="submit"]');
+
+          if (taskStatus === 'SUCCESS') {
+              msg.innerHTML = 'job succeeded';
+          } else if (taskStatus === 'FAILURE') {
+            // display error message on the form
+            msg.innerHTML = res.error;
+          }
+
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = btnHtml;
+        } else {
+          // the task is still running
+          setTimeout(function () {
+            updateProgress(yourForm, task_id, btnHtml);
+          }, 1000);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error)
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const yourForm = document.getElementById("your-form");
+    yourForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const submitBtn = yourForm.querySelector('button[type="submit"]');
+      const btnHtml = submitBtn.innerHTML;
+      const spinnerHtml = 'Processing...';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = spinnerHtml;
+
+      const msg = yourForm.querySelector('#messages');
+      msg.innerHTML = '';
+
+      // Get all field data from the form
+      const formData = new URLSearchParams(new FormData(yourForm));
+
+      fetch('/form/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: formData,
+      })
+        .then(response => response.json())
+        .then((res) => {
+          // after we get Celery task id, we start polling
+          const task_id = res.task_id;
+          updateProgress(yourForm, task_id, btnHtml);
+          console.log(res);
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        });
+    });
+  });
+</script>
+```
+What's happening here?
+
+* On form submit, we disabled the submit button and replaced the button text with "Processing...", to indicate to the end user that some sort of backend processing is happening. We also serialized the form input values and sent them along with the POST request to /form/.
+* When a successful response comes back with the task ID, we passed the ID to the updateProgress function, which calls the /task_status/ endpoint. updateProgress continues to call that endpoint every second until the task is completed.
+* Once complete, we displayed the appropriate message, updated the text in the button, and enabled the submit button.
+
+Navigate to http://localhost:8010/form in your browser. Input a random name and email address and click submit.
+
+Depending on the outcome of the API call, you'll see either a success or error message. The key here is that the web process is not blocked during the five second time from the API call: https://httpbin.org/delay/5.
+# Backend\Celery\009_Problem_2_Webhook_Handler.md
+
+## Problem 2: Webhook Handler
+
+
+> Source: https://testdriven.io/courses/django-celery/third-party-services/#H-4-problem-2-webhook-handler
+
+Third party APIs often use webhooks to send event notifications. Depending on the notification, you may need to execute some sort of process. If the execution of this process is not handled in the background, this will block one of your Gunicorn workers until the process finishes execution.
+
+Celery can again be used to handle such processing asynchronously.
+
+### Problem
+
+```python
+## polls/urls.py
+from django.urls import path
+
+from polls.views import subscribe, task_status, webhook_test
+
+
+urlpatterns = [
+    path('form/', subscribe, name='form'),
+    path('task_status/', task_status, name='task_status'),
+    path('webhook_test/', webhook_test, name='webhook_test'),      # new
+]
+```
+```python
+## polls/views.py
+
+@csrf_exempt
+def webhook_test(request):
+    if not random.choice([0, 1]):
+        # mimic an error
+        raise Exception()
+
+    # blocking process
+    requests.post('https://httpbin.org/delay/5')
+    return HttpResponse('pong')
+```
+So, let's say you need to send a request to a third-party API when the webhook view is triggered. Example workflow:
+
+* One third-party service (service A) sends a webhook notification request to /webhook_test/.
+* The view processes the notification by calling a different third-party service (service B).
+
+This can present a few problems:
+
+* Some exception is raised in your webhook handler (or service B is down for maintenance) and service A does not have a retry policy.
+> Most reliable services that provide webhook notifications, will retry delivery of the notification several times if the receiver does not send back a 200 OK.
+* The webhook handler needs to call a third-party API, which, again, would block the web process.
+
+### Implementation
+
+![workflow](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/009_workflow.png)
+
+```python
+## polls/tasks.py
+
+@shared_task(bind=True)
+def task_process_notification(self):
+    try:
+        if not random.choice([0, 1]):
+            # mimic random error
+            raise Exception()
+
+        # this would block the I/O
+        requests.post('https://httpbin.org/delay/5')
+    except Exception as e:
+        logger.error('exception raised, it would be retry after 5 seconds')
+        raise self.retry(exc=e, countdown=5)
+```
+
+Notes:
+
+1. Since we set bind to True, this is a bound task, so the first argument to the task will always be the current task instance (self). Because of this, we can call self.retry to retry the failed task.
+2. Remember to raise the exception returned by the self.retry method to make it work.
+3. By setting the countdown argument to 5, the task will retry after a 5 second delay.
+
+> It's worth noting that many Celery beginners get confused as to why some tutorials use app.task while others use shared_task. Well, shared_task lets you define Celery tasks without having to import the Celery instance, so it can make your task code more reusable.
+
+Add a new view to send the new task to a Celery worker:
+
+```python
+@csrf_exempt
+def webhook_test_async(request):
+    """
+    Use celery worker to handle the notification
+    """
+    task = task_process_notification.delay()
+    logger.info(task.id)
+    return HttpResponse('pong')
+```
+
+Add the view to polls/urls.py:
+
+```python
+from django.urls import path
+
+from polls.views import subscribe, task_status, webhook_test, webhook_test_async
+
+
+urlpatterns = [
+    path('form/', subscribe, name='form'),
+    path('task_status/', task_status, name='task_status'),
+    path('webhook_test/', webhook_test, name='webhook_test'),
+    path('webhook_test_async/', webhook_test_async, name='webhook_test_async'),
+]
+```
+# Backend\Celery\010_Celery_beat.md
+
+## Celery Beat
+
+> Source: https://testdriven.io/courses/django-celery/periodic-tasks/
+
+### Celery Beat for periodic tasks
+Celery Beat is a scheduling tool used to enqueue tasks at regular intervals, which are then executed by Celery workers.
+
+Responsibilities:
+
+1. Celery Workers are responsible for picking up tasks from the queue, running them, and returning the results.
+2. Celery Beat is responsible for sending tasks to the queue based on the defined config.
+
+In production, while you can have multiple workers processing tasks from the queue, you should only have a single Celery Beat process. More than one Celery Beat process will result in duplicate tasks being enqueued. In other words, if you schedule a single task and have two Beat processes, two tasks will be enqueued.
+
+![010_workflow](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/010_workflow.png)
+
+### Static config
+
+In this example, let's create a task that clears session records in the database every X seconds.
+
+First, add the task to polls/tasks.py:
+```python
+@shared_task(name='task_clear_session')
+def task_clear_session():
+    from django.core.management import call_command
+    call_command('clearsessions')
+```
+
+This task calls the Django clearsessions management command. We defined a name for the task via name='task_clear_session'. This name must be unique.
+
+Next, add the Celery Beat config to your settings file:
+
+```python
+CELERY_BEAT_SCHEDULE = {
+    'task-clear-session': {
+        'task': 'task_clear_session',
+        "schedule": 5.0,  # five seconds
+    },
+}
+```
+
+Notes:
+
+1. The task field is the task name. If we didn't explicitly define a name above in the task, Celery would create one for us which is often the path module plus the function name -- i.e., polls.tasks.task_clear_session. This is not always the case, though, which is why it's a good practice to explicitly define a name. Otherwise, you can get the task name from the output of the Celery Worker after the task executes.
+2. The schedule field supports crontab, timedelta, and solar formats.
+
+### Dynamic config
+
+What if you need to add, edit, or remove a periodic task dynamically? In other words, what if you wanted to make a change to the config at runtime?
+
+The django-celery-beat package enables this by allowing you to manage periodic tasks from the Django Admin interface. The Beat config is then stored in the database.
+
+First, add the package to the requirements file:
+
+```
+django-celery-beat==2.6.0
+```
+Add it to your INSTALLED_APPS in the settings as well:
+
+```python
+INSTALLED_APPS = [
+    # ...
+    'django_celery_beat',
+]
+```
+Next, update the images, run the new containers, apply the migrations:
+
+```
+$ docker compose up -d --build
+
+$ docker compose exec web python manage.py migrate
+```
+
+Next, update beat scheduler in the command in compose/local/django/celery/beat/start:
+
+```bash
+##!/bin/bash
+
+set -o errexit
+set -o nounset
+
+rm -f './celerybeat.pid'
+celery -A django_celery_example beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+```
+
+Re-build again:
+```commandline
+docker compose up -d --build
+```
+
+Navigate to http://localhost:8010/admin/django_celery_beat/periodictask/.
+
+![admin_panel](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/010_admin_panel.png)
+
+Notes:
+
+1. django_celery_beat pulled in the config from CELERY_BEAT_SCHEDULE allowing you to overwrite it dynamically.
+2. Now, you can add, edit, or remove tasks from the Django Admin dynamically.
+
+Go ahead and comment out the task-clear-session task in the settings to prevent this from firing and adding clutter to the logs:
+
+```python
+CELERY_BEAT_SCHEDULE = {
+    # 'task-clear-session': {
+    #     'task': 'task_clear_session',
+    #     "schedule": 5.0,  # five seconds
+    # },
+}
+```
+# Backend\Celery\011_Multiple_queues_and_task_routing.md
+
+## Multiple Queues and Task Routing
+
+> Source: https://testdriven.io/courses/django-celery/multiple-queues/
+
+### Background
+
+By default, Celery creates a default queue in your message broker when it's first executed. Celery then routes all tasks to that default queue and all Celery workers consume tasks from that queue as well. Celery allows you to spin up additional queues so you can have more control over which workers process which tasks.
+
+For example, you could configure two queues: high_priority and low_priority. As the names suggest, "higher" priority tasks could be routed to the high_priority queue while the low_priority queue handles "lower" priority tasks. You can then spin up two workers: one for the high_priority queue and one for the low_priority and default queues.
+
+![queues](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Celery/_images/011_queues.png)
+
+It's a good practice to configure at least one additional queue (two total) so you can route slow tasks to one queue and fast tasks to a different queue so that slow tasks don't block the fast tasks.
+
+### Configuration
+
+Start by adding the following settings to settings.py:
+
+```python
+from kombu import Queue
+
+...
+
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+
+## Force all queues to be explicitly listed in `CELERY_TASK_QUEUES` to help prevent typos
+CELERY_TASK_CREATE_MISSING_QUEUES = False
+
+CELERY_TASK_QUEUES = (
+    # need to define default queue here or exception would be raised
+    Queue('default'),
+
+    Queue('high_priority'),
+    Queue('low_priority'),
+)
+```
+
+Notes:
+
+1. The Celery default queue name is celery. Here, we used CELERY_TASK_DEFAULT_QUEUE to change the name to default to prevent confusion.
+2. CELERY_TASK_CREATE_MISSING_QUEUES = False prevents Celery from auto-creating queues for us that we don't have defined in CELERY_TASK_QUEUES. This forces us to be more explicit by adding all the queues that we want created (even the default queue) to CELERY_TASK_QUEUES. You'll see an example of this shortly.
+3. In CELERY_TASK_QUEUES, we added the default queue along with two new queues: high_priority and low_priority.
+
+Update compose/local/django/celery/worker/start:
+```bash
+##!/bin/bash
+
+set -o errexit
+set -o nounset
+
+watchfiles \
+  --filter python \
+  'celery -A django_celery_example worker --loglevel=info -Q high_priority,default'      # update
+```
+
+Here, we added the -Q option to the command to specify the queues enabled (high_priority and default) for the worker.
+
+To test, enqueue a few tasks in the Django shell within a new terminal window:
+
+```commandline
+$ docker compose down -v
+
+$ docker compose up -d --build
+
+$ docker compose exec web bash
+(container)$ python manage.py shell
+
+>>> from django_celery_example.celery import divide
+
+## enqueue task to the default queue
+>>> divide.apply_async(args=[1, 2])
+
+## enqueue task to the high_priority queue
+>>> divide.apply_async(args=[1, 2], queue='high_priority')
+
+## enqueue task to the low_priority queue
+>>> divide.apply_async(args=[1, 2], queue='low_priority')
+```
+
+Since no worker is set to consume tasks from the low_priority queue, you won't see any log output from the last task routed to that queue. You won't see the task in the Flower dashboard (at http://localhost:5557) either.
+
+### Task routing
+
+You can specify the destination for a particular task in the following places (in order of precedence):
+
+1. Routing-related arguments in the apply_async method
+2. Routing-related attributes on the Task
+3. Routers defined in the CELERY_TASK_ROUTES setting
+
+It's a good practice to set some general rules in the CELERY_TASK_ROUTES and override them as necessary.
+
+#### Manual Routing
+
+Add CELERY_TASK_ROUTES to the settings file:
+
+```python
+CELERY_TASK_ROUTES = {
+    'django_celery_example.celery.*': {
+        'queue': 'high_priority',
+    },
+}
+```
+
+So, all tasks with a name that matches django_celery_example.celery.* are routed to the high_priority queue. Tasks that do not match that pattern will be routed to the default queue.
+
+```bash
+$ docker compose exec web bash
+(container)$ ./manage.py shell
+
+>>> from django_celery_example.celery import divide
+
+## enqueue task to the high_priority queue
+>>> divide.delay(1, 2)
+
+## enqueue task to the low_priority queue (overwrite rule in CELERY_TASK_ROUTES)
+>>> divide.apply_async(args=[1, 2], queue='low_priority')
+```
+
+#### Dynamic Routing
+
+Instead of manually configuring routing rules per task, you can also configure the rules in CELERY_TASK_ROUTES dynamically.
+
+To do this, let's first define a common naming convention for tasks:
+
+```
+<QUEUE>:<TASK_NAME>
+```
+
+```python
+@shared_task(name='default:dynamic_example_one')
+def dynamic_example_one():
+    logger.info('Example One')
+
+
+@shared_task(name='low_priority:dynamic_example_two')
+def dynamic_example_two():
+    logger.info('Example Two')
+
+
+@shared_task(name='high_priority:dynamic_example_three')
+def dynamic_example_three():
+    logger.info('Example Three')
+```
+
+Next, update settings.py like so:
+
+```python
+## manual task routing
+
+## CELERY_TASK_ROUTES = {
+##     'django_celery_example.celery.*': {
+##         'queue': 'high_priority',
+##     },
+## }
+
+## dynamic task routing
+
+def route_task(name, args, kwargs, options, task=None, **kw):
+    if ':' in name:
+        queue, _ = name.split(':')
+        return {'queue': queue}
+    return {'queue': 'default'}
+
+
+CELERY_TASK_ROUTES = (route_task,)
+```
+# Backend\Celery\012_Retry_failed_tasks.md
+
+## Retry failed tasks
+
+> Source: https://testdriven.io/courses/django-celery/retrying-failed-tasks/
+
+### Celery Task
+
+```python
+@shared_task(bind=True)
+def task_process_notification(self):
+    try:
+        if not random.choice([0, 1]):
+            # mimic random error
+            raise Exception()
+
+        # this would block the I/O
+        requests.post('https://httpbin.org/delay/5')
+    except Exception as e:
+        logger.error('exception raised, it would be retry after 5 seconds')
+        raise self.retry(exc=e, countdown=5)
+```
+
+In the real world this may call an internal or external third-party service. Regardless of the service, assume it's very unreliable, especially at peak periods. How can we handle failures?
+
+### Solution 1: Use a Try/Except Block
+
+We've already implemented this solution, but let's quickly review:
+
+1. Since we set bind to True, this is a bound task, so the first argument to the task will always be the current task instance (self). Because of this, we can call self.retry to retry the failed task.
+2. Please remember to raise the exception returned by the self.retry method to make it work.
+3. By setting the countdown argument to 5, the task will retry after a 5 second delay.
+
+### Solution 2: Task Retry Decorator
+
+Celery 4.0 added built-in support for retrying, so you can let the exception bubble up and specify in the decorator how to handle it:
+
+```python
+@shared_task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 7, 'countdown': 5})
+def task_process_notification(self):
+    if not random.choice([0, 1]):
+        # mimic random error
+        raise Exception()
+
+    requests.post('https://httpbin.org/delay/5')
+```
+Notes:
+
+1. `autoretry_for` takes a list/tuple of exception types that you'd like to retry for.
+2. `retry_kwargs` takes a dictionary of additional options for specifying how autoretries are executed. In the above example, the task will retry after a 5 second delay (via countdown) and it allows for a maximum of 7 retry attempts (via `max_retries`). Celery will stop retrying after 7 failed attempts and raise an exception.
+
+### Exponential Backoff
+
+If your Celery task needs to send a request to a third-party service, it's a good idea to use [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff) to avoid overwhelming the service.
+
+```python
+@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={'max_retries': 5})
+def task_process_notification(self):
+    if not random.choice([0, 1]):
+        # mimic random error
+        raise Exception()
+
+    requests.post('https://httpbin.org/delay/5')
+```
+
+In this example, the first retry should run after 1s, the following after 2s, the third one after 0s
+
+```commandline
+Task polls.tasks.task_process_notification[fbe041b6-e6c1-453d-9cc9-cb99236df6ff] retry: Retry in 1s: Exception()
+Task polls.tasks.task_process_notification[fbe041b6-e6c1-453d-9cc9-cb99236df6ff] retry: Retry in 2s: Exception()
+Task polls.tasks.task_process_notification[fbe041b6-e6c1-453d-9cc9-cb99236df6ff] retry: Retry in 0s: Exception()
+```
+
+You can also set retry_backoff to a number for use as a delay factor:
+
+```python
+@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=5, retry_kwargs={'max_retries': 5})
+def task_process_notification(self):
+    if not random.choice([0, 1]):
+        # mimic random error
+        raise Exception()
+
+    requests.post('https://httpbin.org/delay/5')
+```
+
+```commandline
+Task polls.tasks.task_process_notification[6a0b2682-74f5-410b-af1e-352069238f3d] retry: Retry in 2s: Exception()
+Task polls.tasks.task_process_notification[6a0b2682-74f5-410b-af1e-352069238f3d] retry: Retry in 0s: Exception()
+Task polls.tasks.task_process_notification[6a0b2682-74f5-410b-af1e-352069238f3d] retry: Retry in 12s: Exception()
+```
+
+### Randomness
+
+When you build a custom retry strategy for your Celery task (which needs to send a request to another service), you should add some randomness to the delay calculation to prevent all tasks from being executed simultaneously resulting in a thundering herd.
+
+Celery has you covered here as well with retry_jitter:
+
+```python
+@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=5, retry_jitter=True, retry_kwargs={'max_retries': 5})
+def task_process_notification(self):
+    if not random.choice([0, 1]):
+        # mimic random error
+        raise Exception()
+
+    requests.post('https://httpbin.org/delay/5')
+```
+
+This option is set to True by default, which helps prevent the thundering herd problem when you use Celery's built-in retry_backoff.
+
+### Task Base Class
+
+If you find yourself writing the same retry arguments in your Celery task decorators, you can (as of Celery 4.4) define retry arguments in a base class, which you can then use as a base class in your Celery tasks:
+
+```python
+class BaseTaskWithRetry(celery.Task):
+    autoretry_for = (Exception, KeyError)
+    retry_kwargs = {'max_retries': 5}
+    retry_backoff = True
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_process_notification(self):
+    raise Exception()
+```
+# Backend\Celery\013_Database_transactions.md
+
+## Database transactions
+
+> Source: https://testdriven.io/courses/django-celery/database-transactions/
+
+### What is a Database Transaction?
+
+A database transaction is a unit of work that is either committed (applied to the database) or rolled back (undone from the database) as a unit.
+
+Most databases use the following pattern:
+
+1. Begin the transaction.
+2. Execute a set of data manipulations and/or queries.
+3. If no error occurs, then commit the transaction.
+4. If an error occurs, then roll back the transaction.
+
+As you can see, a transaction is a very useful way to keep your data far away from chaos.
+
+### Database Transactions in Django
+
+Assume you have the following view:
+
+```python
+def test_view(request):
+    user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+    logger.info(f'create user {user.pk}')
+    raise Exception('test')
+```
+
+#### Default behavior
+Django's default behavior is to autocommit: Each query is directly committed to the database unless a transaction is active. In other words, with autocommit, each query starts a transaction and either commits or rolls back the transaction as well. If you have a view with three queries, then each will run one-by-one. If one fails, the other two will be committed.
+
+So, in the above view, the exception is raised after the transaction is committed, creating the user john.
+
+#### Explicit control
+If you'd prefer to have more control over database transactions, you can override the default behavior with transaction.atomic. In this mode, before calling a view function, Django starts a transaction. If the response is produced without problems, Django commits the transaction. On the other hand, if the view produces an exception, Django rolls back the transaction. If you have three queries and one fails, then none of the queries will be committed.
+
+Here's how the same example view would look with transaction.atomic:
+
+```python
+def transaction_test(request):
+    with transaction.atomic():
+        user = User.objects.create_user('john1', 'lennon@thebeatles.com', 'johnpassword')
+        logger.info(f'create user {user.pk}')
+        raise Exception('force transaction to rollback')
+```
+
+Now the user create operation will roll back when the exception is raised, so the user will not be created in the end.
+
+transaction.atomic is a very useful tool which can keep your data organized, especially when you need to manipulate data in models.
+
+It can also be used as a decorator like so:
+
+```python
+@transaction.atomic
+def transaction_test2(request):
+    user = User.objects.create_user('john1', 'lennon@thebeatles.com', 'johnpassword')
+    logger.info(f'create user {user.pk}')
+    raise Exception('force transaction to rollback')
+```
+
+So if some error gets raised in the view, and we do not catch it, then the transaction would roll back.
+
+If you want to use transaction.atomic for all view functions, you can set ATOMIC_REQUESTS to True in your Django settings file:
+
+```python
+ATOMIC_REQUESTS=True
+
+## or
+
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+```
+
+You can then override the behavior so that the view runs in autocommit mode:
+
+```python
+@transaction.non_atomic_requests
+```
+
+### DoesNotExist exception
+
+If you don't have a solid understanding of how Django manages database transactions, it can be quite confusing when you come across random database-related errors in a Celery worker.
+
+Add the following view to polls/views.py:
+
+```python
+def random_username():
+    username = ''.join([random.choice(ascii_lowercase) for i in range(5)])
+    return username
+
+@transaction.atomic
+def transaction_celery(request):
+    username = random_username()
+    user = User.objects.create_user(username, 'lennon@thebeatles.com', 'johnpassword')
+    logger.info(f'create user {user.pk}')
+    task_send_welcome_email.delay(user.pk)
+
+    time.sleep(1)
+    return HttpResponse('test')
+```
+
+Then, add the task to polls/tasks.py:
+
+```python
+@shared_task()
+def task_send_welcome_email(user_pk):
+    user = User.objects.get(pk=user_pk)
+    logger.info(f'send email to {user.email} {user.pk}')
+```
+
+1. Since the view uses the transaction.atomic decorator, all database operations are only committed if an error isn't raised in the view, including the Celery task.
+2. The task is fairly simple: We create a user and then pass the primary key to the task to send a welcome email.
+3. time.sleep(1) is used to introduce a race condition.
+
+Update the URLs in polls/urls.py:
+
+```python
+from django.urls import path
+
+from polls.views import subscribe, task_status, webhook_test, webhook_test_async, subscribe_ws, transaction_celery
+
+
+urlpatterns = [
+    path('form/', subscribe, name='form'),
+    path('task_status/', task_status, name='task_status'),
+    path('webhook_test/', webhook_test, name='webhook_test'),
+    path('webhook_test_async/', webhook_test_async, name='webhook_test_async'),
+    path('form_ws/', subscribe_ws, name='form_ws'),
+    path('transaction_celery/', transaction_celery, name='transaction_celery'),               # new
+]
+```
+
+Navigate to http://localhost:8010/transaction_celery/ in your browser. You should see the following error in the terminal:
+
+```commandline
+django.contrib.auth.models.User.DoesNotExist: User matching query does not exist.
+```
+
+Why?
+
+1. In the Django view, we pause for 1 second after enqueueing the task.
+2. Since the task executes immediately, user = User.objects.get(pk=user_pk) fails as the user is not in the database because the transaction in Django has not yet been committed.
+
+**Solution 1**
+Disable the database transaction, so Django would use the autocommit feature. To do so, you can simply remove the transaction.atomic decorator. However, this isn't recommended since the atomic database transaction is a powerful tool.
+
+**Solution 2**
+Force the Celery task to run after a period of time.
+
+For example, to pause for 10 seconds:
+```python
+task_send_welcome_email.apply_async(args=[user.pk], countdown=10)
+```
+
+**Solution 3**
+Django has a callback function called transaction.on_commit that executes after a transaction successfully commits. To use this, update the view like so:
+```python
+from functools import partial
+
+
+@transaction.atomic
+def transaction_celery(request):
+    username = random_username()
+    user = User.objects.create_user(username, 'lennon@thebeatles.com', 'johnpassword')
+    logger.info(f'create user {user.pk}')
+    # the task does not get called until after the transaction is committed
+    transaction.on_commit(partial(task_send_welcome_email.delay, user.pk))
+
+    time.sleep(1)
+    return HttpResponse('test')
+```
+Notes:
+
+1. Now, the task doesn't get called until after the database transaction commit. So, when the Celery worker finds the user, it can be found because the code in the worker always runs after the Django database transaction commits successfully.
+2. Here we use partial to bind the user.pk to the task_send_welcome_email.delay function, this can help avoid the late binding bug brought with lambda in some cases. You can check Performing actions after commit from the Django docs and Use partial() With Django’s transaction.on_commit() to Avoid Late-Binding Bugs to learn more about this.
+
+This is the recommended solution.
+
+> It's worth noting that you may not want your transaction to commit right away, especially if you're running in a high-scale environment. If either the database or instance are at high-utilization, forcing a commit will only add to the existing usage. In this case, you may want to use the second solution and wait for a sufficient amount of time (20 seconds, perhaps) to ensure that the changes are made to the database before the task executes.
+
+### Testing
+
+Django's TestCase wraps each test in a transaction which is then rolled back after each test. Since no transactions are ever committed, on_commit() never runs either. So, if you need to test code fired in an on_commit callback, you can use either TransactionTestCase or TestCase.captureOnCommitCallbacks() in your test code.
+
+### Database Transaction in a Celery Task
+
+If your Celery task needs to update a database record, it makes sense to use a database transaction in the Celery task.
+
+One simple way is with transaction.atomic():
+
+```python
+@shared_task()
+def task_transaction_test():
+    with transaction.atomic():
+        from .views import random_username
+        username = random_username()
+        user = User.objects.create_user(username, 'lennon@thebeatles.com', 'johnpassword')
+        user.save()
+        logger.info(f'send email to {user.pk}')
+        raise Exception('test')
+```
+
+A better approach is to write a custom decorator which has transaction support:
+
+```python
+class custom_celery_task:
+    """
+    This is a decorator we can use to add custom logic to our Celery task
+    such as retry or database transaction
+    """
+    def __init__(self, *args, **kwargs):
+        self.task_args = args
+        self.task_kwargs = kwargs
+
+    def __call__(self, func):
+        @functools.wraps(func)
+        def wrapper_func(*args, **kwargs):
+            try:
+                with transaction.atomic():
+                    return func(*args, **kwargs)
+            except Exception as e:
+                # task_func.request.retries
+                raise task_func.retry(exc=e, countdown=5)
+
+        task_func = shared_task(*self.task_args, **self.task_kwargs)(wrapper_func)
+        return task_func
+
+...
+
+@custom_celery_task(max_retries=5)
+def task_transaction_test():
+    # do something
+```
+# Backend\Celery\014_Logging.md
+
+## Logging
+
+> Source: https://testdriven.io/courses/django-celery/logging/
+
+By default, Celery "hijacks" and modifies the root logger:
+
+```python
+root = logging.getLogger()
+
+if self.app.conf.worker_hijack_root_logger:
+    root.handlers = []
+    get_logger('celery').handlers = []
+    get_logger('celery.task').handlers = []
+    get_logger('celery.redirected').handlers = []
+
+## Configure root logger
+self._configure_logger(
+    root, logfile, loglevel, format, colorize, **kwargs
+)
+```
+
+`worker_hijack_root_logger` defaults to True. So, you can see in the above code that Celery clears the root handlers and resets the root log level. Be aware of this since it can cause some strange problems that are difficult to debug.
+
+### Logging in Celery task
+
+Add the following task to polls/tasks.py:
+
+```python
+from celery.utils.log import get_task_logger
+...
+logger = get_task_logger(__name__)
+
+
+@shared_task()
+def task_test_logger():
+    logger.info('test')
+```
+
+Notes:
+1. With `get_task_logger(__name__)` the logger name will be the module name.
+2. `get_task_logger` also adds the `task_name` and `task_id` to the log, which helps us troubleshoot in some cases.
+3. Finally, `get_task_logger` sets up one logger called `celery.task`, which is the parent of all task loggers. `get_task_logger(__name__)` builds the relationship for us so we do not need to set up a handler or formatter in the Django logging config.
+
+Test:
+```commandline
+$ docker compose up -d --build
+
+$ docker compose logs -f
+```
+
+Open the shell in a new terminal window:
+
+```commandline
+$ docker compose exec web bash
+(container)$ ./manage.py shell
+>>> from polls.tasks import task_test_logger
+>>> task_test_logger.delay()
+```
+
+In the logs you should see:
+
+```commandline
+django-celery-project-celery_worker-1  | [2024-01-03 01:30:03,253: INFO/ForkPoolWorker-14] polls.tasks.task_test_logger[a6c0506f-53ad-4136-94ff-6e34d6711252]: test
+django-celery-project-celery_worker-1  | [2024-01-03 01:30:03,258: INFO/ForkPoolWorker-14] Task polls.tasks.task_test_logger[a6c0506f-53ad-4136-94ff-6e34d6711252] succeeded in 0.005411332997027785s: None
+```
+
+To customize the log format, you can modify the worker_log_format and worker_task_log_format config options in the settings file. Just make sure to use CELERY_WORKER_LOG_FORMAT and CELERY_WORKER_TASK_LOG_FORMAT since we set the namespace in django_celery_example/celery.py:
+```python
+## read config from Django settings, the CELERY namespace would make celery
+## config keys has `CELERY` prefix
+app.config_from_object('django.conf:settings', namespace='CELERY')
+```
+
+### Custom Celery Task Logging
+
+#### (1) Override
+You can use the Celery setup_logging signal to completely override Celery's logging configuration.
+
+> Celery won’t configure the loggers if this signal is connected, so you can use it to completely override the logging configuration with your own.
+
+```python
+@setup_logging.connect()
+def on_setup_logging(**kwargs):
+    logging_dict = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file_log': {
+                'class': 'logging.FileHandler',
+                'filename': 'celery.log',
+            },
+            'default': {
+                'class': 'logging.StreamHandler',
+            }
+        },
+        'loggers': {
+            'celery': {
+                'handlers': ['default', 'file_log'],
+                'propagate': False,
+            },
+        },
+        'root': {
+            'handlers': ['default'],
+            'level': 'INFO',
+        },
+    }
+
+    logging.config.dictConfig(logging_dict)
+
+    # display task_id and task_name in task log
+    from celery.app.log import TaskFormatter
+    celery_logger = logging.getLogger('celery')
+    for handler in celery_logger.handlers:
+        handler.setFormatter(
+            TaskFormatter(
+                '[%(asctime)s: %(levelname)s/%(processName)s/%(thread)d] [%(task_name)s(%(task_id)s)] %(message)s'
+            )
+        )
+```
+
+1. You'll have full control over the root logger and you can use Python's standard logger for logging.
+2. As you can see, in the above code, we used TaskFormatter to make the task_id and task_name available in the log format.
+3. We can also log concurrency info, like processName and threadName. Review the source code for logging for more info.
+
+#### (2) Disable
+
+You can change `worker_hijack_root_logger` to False to prevent Celery from clearing the root handlers and resetting the root log level.
+
+This is the most invasive method, so it should only be used in rare cases.
+
+To use, add the following to the Django settings:
+
+```python
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file_log': {
+            'class': 'logging.FileHandler',
+            'filename': 'celery.log',
+        },
+        'default': {
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'celery': {
+            'handlers': ['default', 'file_log'],
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['default'],
+        'level': 'INFO',
+    },
+}
+```
+Here, we used CELERY_WORKER_HIJACK_ROOT_LOGGER to change worker_hijack_root_logger to False, so Celery does not clear the logging handlers when it sets up logging.
+
+#### (3) Augment Celery's Logger
+
+You can use the Celery after_setup_logger and after_setup_task_logger signals, which are sent after Celery sets up the logger, to modify the logger.
+
+This is recommended method in most cases since it's the least invasive.
+
+Add the following after_setup_logger handler to django_celery_example/celery.py:
+
+```python
+import logging
+from celery.signals import after_setup_logger
+
+...
+
+@after_setup_logger.connect()
+def on_after_setup_logger(logger, **kwargs):
+    formatter = logger.handlers[0].formatter
+    file_handler = logging.FileHandler('celery.log')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+```
+
+You should now be able to see all Celery task logs in celery.log.
+
 # Backend\Django\Admin_site\001_Basic_customization.md
 
 ### Basic Admin Site Customization
@@ -555,6 +2287,480 @@ class TicketAdmin(admin.ModelAdmin):
     # ...
     form = TicketAdminForm
 ```
+# Backend\Django\Channels\001_Websockets.md
+
+### Websockets
+
+> Source: https://testdriven.io/courses/django-celery/websockets/#H-2-websocket
+
+
+#### WebSocket
+WebSocket is a computer communications protocol, providing full-duplex communication channels over a single TCP connection.
+
+When a web client establishes a WebSocket connection with a server, the connection stays alive and the client and server can send messages to each other.
+
+#### ASGI vs WSGI
+
+> ASGI is a spiritual successor to WSGI, the long-standing Python standard for compatibility between web servers, frameworks, and applications.
+
+In short, ASGI was created to add support for WebSockets, HTTP/2, and async/await, none of which are supported by WSGI. Like WSGI, it's an interface between Django and a web server (like Nginx).
+
+![asgi](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Channels/_images/001_asgi.png)
+
+As you can see, ASGI handles:
+
+1. Standard HTTP requests from the web server to a Django view and returns HTTP responses back to the web server.
+2. WebSocket connections between the web server and WebSocket Consumers for sending and receiving messages.
+
+# Backend\Django\Channels\002_Django_Channels.md
+
+### Django Channels
+
+> Source: https://testdriven.io/courses/django-celery/websockets/#H-5-django-channels
+
+#### Django Channels
+
+Django Channels is a project that takes Django and extends its abilities beyond HTTP -- to handle WebSockets, chat protocols, IoT protocols, and more. It’s built on a Python specification called ASGI.
+
+In Django Channels:
+
+1. Consumers are akin to regular Django views. However, regular views can only process incoming requests whereas a consumer can send and receive messages and react to a WebSocket connection being opened or closed.
+2. Channels are mailboxes that messages can be sent to. Each channel has a name. Anyone who has the name of a channel can send a message to that channel.
+3. Groups are collections of related channels. Each group has a name. Anyone who has the name of a group can add or remove a channel to the group by name and send a message to all channels in the group.
+
+#### Workflow
+
+![workflow](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Channels/_images/002_workflow.png)
+
+> For simplicity, the web server and ASGI interface were omitted from the above diagram.
+
+1. The client sends an AJAX request to a Django view to trigger a Celery task.
+2. Django returns a task_id which can be used to receive messages about the task.
+3. The client then uses the task_id to create a WebSocket connection via ws://127.0.0.1:8010/ws/task_status/{task_id}.
+4. When the Django consumer receives the WebSocket request, it registers to receive group events sent to a group with the task ID.
+5. After the Celery task finishes processing, Celery sends a message to the group and the consumer instance receives the message as well.
+6. The consumer then sends a message back to the client with the task status and result.
+7. The client closes the WebSocket and displays the result on the page.
+
+#### Implementation
+
+```
+### requirements.txt
+
+daphne==4.0.0
+channels==4.0.0
+channels-redis==4.1.0
+```
+
+```python
+### django_celery_example/settings.py
+INSTALLED_APPS = [
+    'daphne',  # should put this on top
+
+    ...
+
+    'channels',
+]
+```
+Also, in your settings comment out the WSGI_APPLICATION and add the ASGI_APPLICATION config:
+
+```python
+### django_celery_example/settings.py
+
+### WSGI_APPLICATION = 'django_celery_example.wsgi.application'
+ASGI_APPLICATION = 'django_celery_example.asgi.application'
+```
+
+```python
+### django_celery_example/settings.py
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(os.environ.get("CHANNELS_REDIS", "redis://127.0.0.1:6379/0"))],
+        },
+    },
+}
+```
+
+```
+### .env
+
+CHANNELS_REDIS=redis://redis:6379/0
+```
+
+```python
+### django_celery_example/asgi.py
+
+import os
+
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
+
+from polls import routing
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_celery_example.settings')
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    'websocket': URLRouter(
+        routing.urlpatterns
+    )
+})
+```
+
+Notes:
+
+1. django_celery_example/asgi.py is the entry point into the app.
+2. By default, we do not need to config the HTTP router since Channels handles this for us.
+3. We added the websocket router along with routing.urlpatterns to point to the polls app.
+
+> In Channels, a router is akin to Django's URL configuration.
+
+```python
+### polls/routing.py
+
+from django.urls import path
+
+from polls import consumers
+
+
+urlpatterns = [
+    path('ws/task_status/<task_id>/', consumers.TaskStatusConsumer.as_asgi()),
+]
+```
+
+Here, the `ws://localhost:8010/ws/task_status/{task_id}/` URL points to the `consumers.TaskStatusConsumer` consumer.
+
+```python
+### polls/consumers.py
+
+import json
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from channels.generic.websocket import WebsocketConsumer
+from celery.result import AsyncResult
+
+
+def get_task_info(task_id):
+    """
+    return task info according to the task_id
+    """
+    task = AsyncResult(task_id)
+    state = task.state
+
+    if state == 'FAILURE':
+        error = str(task.result)
+        response = {
+            'state': state,
+            'error': error,
+        }
+    else:
+        response = {
+            'state': state,
+        }
+    return response
+
+
+def notify_channel_layer(task_id):
+    """
+    This function would be called in Celery task.
+
+    Since Celery now still not support `asyncio`, so we should use async_to_sync
+    to make it synchronous
+
+    https://channels.readthedocs.io/en/stable/topics/channel_layers.html#using-outside-of-consumers
+    """
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        task_id,
+        {'type': 'update_task_status', 'data': get_task_info(task_id)}
+    )
+
+
+class TaskStatusConsumer(WebsocketConsumer):
+    def connect(self):
+        self.task_id = self.scope['url_route']['kwargs']['task_id']
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.task_id,
+            self.channel_name
+        )
+
+        self.accept()
+
+        self.send(text_data=json.dumps(get_task_info(self.task_id)))
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.task_id,
+            self.channel_name
+        )
+
+    def update_task_status(self, event):
+        data = event['data']
+
+        self.send(text_data=json.dumps(data))
+```
+
+Notes:
+
+1. The get_task_info helper function returns a dict that contains the task state for the given task ID.
+2. notify_channel_layer, another helper, is called by Celery to send status notifications to TaskStatusConsumer.
+3. In TaskStatusConsumer.connect, we get the task_id from self.scope, and then add the current channel to the task_id group.
+4. In TaskStatusConsumer.update_task_status, if the consumer receives an event which has a type of update_task_status, it will send the data back to client.
+
+```python
+### polls/tasks.py
+from celery.signals import task_postrun
+from polls.consumers import notify_channel_layer
+
+
+@task_postrun.connect
+def task_postrun_handler(task_id, **kwargs):
+    """
+    When celery task finish, send notification to Django channel_layer, so Django channel would receive
+    the event and then send it to web client
+    """
+    notify_channel_layer(task_id)
+```
+
+Here, we created a Celery signal handler that will be called after each Celery task is executed, which sends a message to the relevant channel via get_channel_layer.
+
+```python
+### polls/urls.py
+
+from django.urls import path
+
+from polls.views import subscribe, task_status, webhook_test, webhook_test_async, subscribe_ws
+
+
+urlpatterns = [
+    path('form/', subscribe, name='form'),
+    path('task_status/', task_status, name='task_status'),
+    path('webhook_test/', webhook_test, name='webhook_test'),
+    path('webhook_test_async/', webhook_test_async, name='webhook_test_async'),
+    path('form_ws/', subscribe_ws, name='form_ws'),
+]
+```
+
+```python
+### polls/views.py
+
+def subscribe_ws(request):
+    """
+    Use Websocket to get notification of Celery task, instead of using ajax polling
+    """
+    if request.method == 'POST':
+        form = YourForm(request.POST)
+        if form.is_valid():
+            task = sample_task.delay(form.cleaned_data['email'])
+            # return the task id so the JS can poll the state
+            return JsonResponse({
+                'task_id': task.task_id,
+            })
+
+    form = YourForm()
+    return render(request, 'form_ws.html', {'form': form})
+```
+
+So, if the form passes validation, we send the submitted email to the Celery worker and return the task_id back to the client. The client will then use the task_id to open a WebSocket connection.
+
+```html
+### polls/templates/form_ws.html 
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Celery example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+          crossorigin="anonymous"
+    >
+</head>
+
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-12 col-md-4">
+      <form id="your-form">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          {{ form.email }}
+        </div>
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          {{ form.username }}
+        </div>
+        <div class="mb-3" id="messages"></div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous">
+</script>
+</body>
+</html>
+```
+
+Next, add the JavaScript code to the template file as well:
+
+```html
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function updateProgress(yourForm, task_id, btnHtml) {
+    const ws_url = `/ws/task_status/${task_id}/`;
+    const WS = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + window.location.host + ws_url);
+
+    WS.onmessage = function (event) {
+      const res = JSON.parse(event.data);
+      const taskStatus = res.state;
+
+      if (['SUCCESS', 'FAILURE'].includes(taskStatus)) {
+        const msg = yourForm.querySelector('#messages');
+        const submitBtn = yourForm.querySelector('button[type="submit"]');
+
+        if (taskStatus === 'SUCCESS') {
+          msg.innerHTML = 'job succeeded';
+        } else if (taskStatus === 'FAILURE') {
+          msg.innerHTML = res.error;
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = btnHtml;
+
+        // close the websocket because we do not need it now
+        WS.close();
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const yourForm = document.getElementById("your-form");
+    yourForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const submitBtn = yourForm.querySelector('button[type="submit"]');
+      const btnHtml = submitBtn.innerHTML;
+      const spinnerHtml = 'Processing...';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = spinnerHtml;
+
+      const msg = yourForm.querySelector('#messages');
+      msg.innerHTML = '';
+
+      // Get all field data from the form
+      const formData = new URLSearchParams(new FormData(yourForm));
+
+      fetch('/form_ws/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: formData,
+      })
+        .then(response => response.json())
+        .then((res) => {
+          // after we get Celery task id, we start polling
+          const task_id = res.task_id;
+          updateProgress(yourForm, task_id, btnHtml);
+          console.log(res);
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        });
+    });
+  });
+
+</script>
+```
+
+What's happening here?
+
+1. On form submit, we disabled the submit button and replaced the button text with "Processing...", to indicate to the end user that some sort of backend processing is happening. We also serialized the form input values and sent them along with the POST request to /form_ws/.
+2. When a successful response comes back with the task ID, we passed the ID to the updateProgress function, which creates a WebSocket connection to /ws/task_status/${task_id}/.
+3. After the WebSocket is connected, when the client receives a message from the server, the WS.onmessage callback will fire.
+4. If we receive the task status from the server, which tells us the task has finished, WS.close is called to close the WebSocket.
+5. Once complete, we displayed the appropriate message, updated the text in the button, and enabled the submit button.
+
+Navigate to http://localhost:8010/form_ws in your browser. Input a random name and email address and click submit.
+
+Depending on the outcome of the API call, you'll see either a success or error message. The key here is that the web process is not blocked during the five second delay from the API call: https://httpbin.org/delay/5.
+
+If you open devtools to check the WS, you can see all the messages.
+
+![ws_test](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Channels/_images/002_ws_test.png)
+
+* As you can see, when we connect to the server, it returned the task status PENDING.
+* When the task finishes, the signal handler was executed and the message was sent to the channel_layer (RedisChannelLayer in this case), then the consumer received the message and sent it to the client.
+
+Finally, to improve performance, let's update the methods in TaskStatusConsumer to handle async processing in polls/consumers.py
+
+```python
+### polls/consumers.py
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+...
+
+class TaskStatusConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.task_id = self.scope['url_route']['kwargs']['task_id']
+
+        await self.channel_layer.group_add(
+            self.task_id,
+            self.channel_name
+        )
+
+        await self.accept()
+
+        await self.send(text_data=json.dumps(get_task_info(self.task_id)))
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.task_id,
+            self.channel_name
+        )
+
+    async def update_task_status(self, event):
+        data = event['data']
+
+        await self.send(text_data=json.dumps(data))
+```
+
+Here, we:
+
+1. Updated the base class of our consumer from WebsocketConsumer to AsyncWebsocketConsumer.
+2. Used async to declare asynchronous methods.
+3. Replaced async_to_sync with await to call the async functions. Thus, channel_layer.group_add, channel_layer.group_send, and channel_layer.group_discard are async by default, which is why we needed to use async_to_sync() before this refactor.
+
+It's worth knowing that we didn't update the notify_channel_layer helper to use async/await since the function is called from Celery and Celery does not support asyncio yet.
+
+
 # Backend\Django\Config\001_venv.md
 
 ### Virtual Environment
@@ -767,6 +2973,109 @@ server {
 }
 ```
 So, when a request is sent to /media/ -- e.g, /media/upload.png -- Nginx will attempt to serve the file from the "/home/app/web/mediafiles/" folder.
+
+# Backend\Django\Deployment\001_Deployment_checklist_command.md
+
+### Deployment checklist command
+
+> Source: https://testdriven.io/courses/tdd-django/advanced-ci/#H-2-django-deployment-checklist
+
+Django provides deployment checklist admin command.
+
+```commandline
+python manage.py check --deploy --fail-level=WARNING
+```
+
+Example output:
+```commandline
+SystemCheckError: System check identified some issues:
+  WARNINGS:
+    ?: (security.W004) You have not set a value for the SECURE_HSTS_SECONDS setting. If your entire site is served only over SSL, you may want to consider setting a value and enabling HTTP Strict Transport Security. Be sure to read the documentation first; enabling HSTS carelessly can cause serious, irreversible problems.
+    ?: (security.W008) Your SECURE_SSL_REDIRECT setting is not set to True. Unless your site should be available over both SSL and non-SSL connections, you may want to either set this setting True or configure a load balancer or reverse-proxy server to redirect all connections to HTTPS.
+    ?: (security.W009) Your SECRET_KEY has less than 50 characters or less than 5 unique characters. Please generate a long and random SECRET_KEY, otherwise many of Django's security-critical features will be vulnerable to attack.
+    ?: (security.W012) SESSION_COOKIE_SECURE is not set to True. Using a secure-only session cookie makes it more difficult for network traffic sniffers to hijack user sessions.
+    ?: (security.W016) You have 'django.middleware.csrf.CsrfViewMiddleware' in your MIDDLEWARE, but you have not set CSRF_COOKIE_SECURE to True. Using a secure-only CSRF cookie makes it more difficult for network traffic sniffers to steal the CSRF token.
+  System check identified 5 issues (0 silenced).
+ERROR: Job failed: exit code 1
+```
+# Backend\Django\docker_compose\001_Useful_commands.md
+
+### Useful commands
+
+> Source: https://testdriven.io/courses/tdd-django/workflow/
+
+#### Common Commands
+Build the images:
+```
+$ docker compose build
+```
+Run the containers:
+```
+$ docker compose up -d
+```
+Create migrations:
+```
+$ docker compose exec {service_name} python manage.py makemigrations
+```
+Apply migrations:
+```
+$ docker compose exec {service_name} python manage.py migrate
+```
+Seed the database:
+```
+$ docker compose exec {service_name} python manage.py loaddata data.json
+```
+Run the tests:
+```
+$ docker compose exec {service_name} pytest -p no:warnings
+```
+Run the tests with coverage:
+```
+$ docker compose exec {service_name} pytest -p no:warnings --cov=.
+```
+Lint:
+```
+$ docker compose exec {service_name} flake8 .
+```
+Run Black and isort with check options:
+```
+$ docker compose exec {service_name} black --exclude=migrations --check .
+$ docker compose exec {service_name} isort . --check-only
+```
+Make code changes with Black and isort:
+```
+$ docker compose exec {service_name} black --exclude=migrations .
+$ docker compose exec {service_name} isort .
+```
+
+#### Other Commands
+To stop the containers:
+```
+$ docker compose stop
+```
+To bring down the containers:
+```
+$ docker compose down
+```
+Want to force a build?
+```
+$ docker compose build --no-cache
+```
+Remove images:
+```
+$ docker rmi $(docker images -q)
+```
+
+#### Postgres
+Want to access the database via psql?
+
+```
+$ docker compose exec {db_service_name} psql -d {POSTGRES_DB} -U {POSTGRES_USER}
+```
+Then, you can connect to the database and run SQL queries. For example:
+```
+### select * from {table_name};
+```
 
 # Backend\Django\Forms\001_Base_forms.md
 
@@ -4530,6 +6839,133 @@ When the user makes a request of your application, a WSGI handler is instantiate
 #### Middlewares
 
 There are four key points you can hook into the request/response cycle through your own custom middleware: ```process_request```, ```process_response```, ```process_view```, and ```process_exception```. Think of an onion: request middlewares are executed from the outside-in, hit the view at the center, and return through response middlewares back to the surface.
+# Backend\Django\Performance\006_Scalling.md
+
+### Scalling
+
+> Source: https://cjgiridhar.medium.com/scaling-django-for-millions-of-users-7658113e720
+
+#### Scalable Architecture
+
+Scaling vertically means that you scale your application by upgrading the machine it is running on. You just throw more resources (RAM, CPU) on it and hope that it will be enough to support the number of requests that your app receives. This will work well in the initial days before you’d want to scale horizontally by spawning more machines that serve your application, instead of dumping more resources on a single machine and distributing traffic across your machines with the help of a load balancer.
+
+One way to achieve horizontal scaling is to opt for a scalable architectural pattern like that of the microservices. Splitting applications to individual services (SOA) help you scale them individually as your load increases. You can also work on optimizations at a service level. You can have multiple services written in Django to scale your app horizontally. (Note: Be aware of the extra costs in terms of communication among services, the data transfer and complexities involved in managing services.)
+
+Scaling horizontally also requires you to make your app stateless and keep the state “outside”. This can be achieved in Django with Cache Backends (Memcache or Redis) to store data on another server to achieve statelessness. Adding cache to Django can help you handle 45k requests per second.
+
+#### Connections and Connection Pooling
+
+If you have not used Django extensively, it is easy to miss out on the CONN_MAX_AGE param in settings.py that defines the maximum lifetime of your connection. This is Django’s way of connection pooling.
+
+By default, Django, closes the connection at the end of each request. Persistent connections avoid overloading the database for each request and the cost ( it takes 20ms to make a DB connection ) of creating a connection is also reduced. So developers should consider setting CONN_MAX_AGE to None (unlimited persistent connections) or a suitable value depending on your request volume at the applications’ end.
+
+Way to offload the connection pooling outside of Django is using tools like PgBouncer that helps you set the pool size, the max clients you want to handle at any moment (default_pool_size), and the number of clients that can connect to the DB ( max_client_conn).Also to make sure the max_connections param in postgres.conf file is tuned to handle the number of concurrent connections to the PostgreSQL server.
+
+![pooling](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Performance/_images/006_pooling.png)
+
+#### Databases
+
+If you are not able to scale your backend, then most likely the database is your bottleneck. There are a few quick things that can help you reduce the time to process your DB query and shorten the request/response cycle to improve performance (always think about reducing the time for the request/response cycle — the holy grail).
+
+* Choosing the right database
+* Indexes — Adding appropriate indexes can speed up your DB (SELECT) Queries and reduce the time to respond to users. It is best to look at slow (above 30 ms) queries and queries that are done often to look at avenues for improvements. But don’t overdo it. More indexes would impact performance of INSERT and UPDATE and also increase the load on disks to store the indexes. pgFouine is a good log analyzer tool that you may want to try to get to these slow performing queries.
+* Also it is recommended that the CPU and RAM is tuned correctly for the number of client connections. Pgtune does a great job of helping you tune Postgres config by your hardware.
+
+#### Django Middleware
+
+Coming back to Django, another way to reduce the request/response time is by removing the extra middlewares that your app is not benefiting from. Every request that is made to the Django backend passes through these middlewares and adds extra time (20–30ms) to the request/response cycle.
+
+Example app: API calls to the Django backend from the React Native app and didn’t need to use some of the middlewares that are enabled in Django by default. Sessions (django.contrib.sessions), Messages (django.contrib.messages) and Admins (django.contrib.admin) app and corresponding middlewares (django.contrib.sessions.middleware.SessionMiddleware, django.contrib.messages.middleware.MessagesMiddleware) could be removed from settings > INSTALLED_APPS and settings > MIDDLEWARE sections respectively.
+
+#### Django Code Optimizations
+
+There are a few best practices that you should watch out for while performing code reviews:
+
+select_related() and prefetch_related() are designed to stop the deluge of database queries that are caused by accessing related objects. select_related works by creating an SQL join and including the fields of the related object in the SELECT statement. For this reason, select_related gets the related objects in the same database query. In this case, 2nd example is the right way to do it:
+
+![select_related](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Performance/_images/006_select_related.png)
+
+prefetch_related is handy when you’re going to get a set of things, it does a separate lookup for each relationship, and performs the join operation in Python.
+
+Bulk queries are preferred to insert/update large amounts of datasets. Django ORM can perform multiple inserts or update operations in a single query. Typically you would batch 1000 or 5000 records and insert or update them in one go. bulk_create() and bulk_update() are the methods to be used in this case.
+
+Only querying specific information from the DB tables also improves the response times. For instance, functions like values(), only() help you select specific fields or columns from the table when you filter data with ORM.
+
+#### Measuring
+
+This is the most important piece in the puzzle. How do you figure something is wrong? Where is the bottleneck — is the CPU usage high or is it the Memory? Setting up monitoring systems like Prometheus (or munin) is required to identify issues and also to understand if your changes indeed fixed the issues.
+
+Setting up debug logs in Django settings > LOGGING section also helps in understanding the time it takes to run a query. Ideally when you create an API you should make sure that the response time is under 100ms, and in turn make sure queries are executed within 20ms. Note: This setting should be enabled only in development setup.
+
+
+# Backend\Django\Performance\007_Pooling.md
+
+### Pooling
+
+> Sources: 
+> https://medium.com/@shreyasbulbule007/database-pooling-in-django-and-node-js-for-postgresql-db-why-what-and-how-a27bba7d17c4
+> https://stackoverflow.com/questions/4041114/what-is-database-pooling
+
+Database connection pooling is a method used to keep database connections open so they can be reused by others.
+
+Typically, opening a database connection is an expensive operation, especially if the database is remote. You have to open up network sessions, authenticate, have authorisation checked, and so on. Pooling keeps the connections active so that, when a connection is later requested, one of the active ones is used in preference to having to create another one.
+
+![pooling](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Backend/Django/Performance/_images/007_pooling.png)
+
+#### Usual approach
+
+Let’s say a client wants to run an SQL query on some remote AWS server. So normally a client makes a connection to the database server which is a heavy task since it involves Authentication, Authorization, Starting Network Sessions, etc. Then the given SQL query runs and obtains the result. After that, the connection is again closed permanently. A normal SQL connection is quite heavy around 1.3 MB in size [ref]. Over time when multiple such connections are concurrently opened and closed it causes a large amount of overhead which causes database performance to deteriorate and hence the high API response times in case the server does not have good resources.
+
+#### Pooling approach
+
+With the database pooling available the connections are not immediately closed when the connection is closed by the client instead they are stored in a pool of connections that are reused for future clients. In this way, we avoid the major overhead of opening and closing the connections when new clients request new connections. The connections are only closed when certain conditions are met like ageing of the connections or inactivity.
+
+#### Pooling in Django
+
+Adding Pooling to Django is super-duper easy. We would be using the django-db-connection-pool package.
+
+Let's Install it first in the project’s virtual environment. I am installing the PostgreSQL version but you can choose whichever you are using.
+
+```commandline
+pip install django-db-connection-pool[postgresql]
+```
+
+Open your settings.py and replace the DATABASES settings with the one below:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'dj_db_conn_pool.backends.postgresql'
+    },
+    'POOL_OPTIONS' : {
+            'POOL_SIZE': 10,
+            'MAX_OVERFLOW': 10,
+            'RECYCLE': 24 * 60 * 60
+        }
+}
+```
+
+Now here we have POOL_OPTIONS. I will explain every option in detail so that you can configure the Pool the way you want.
+
+1. POOL_SIZE: These are the largest number of concurrent connections that would be kept alive to the Database. Note that when we start the server the connections start from 0. Defaults to 5.
+2. MAX_OVERFLOW: Let’s say if the total number of active connections surpasses POOL_SIZE then they would be handled up to this limit. If a connection is closed and the total active connections are more than POOL_SIZE then it is closed and discarded instead of keeping it in a standby state inside the pool. If the total active connections surpass POOL_SIZE + MAX_OVERFLOW then the SQLalchemy that Django uses under the hood raises an exception. If you don’t want this limit you can set it to -1 to enable unlimited overflow connections. Defaults to 10.
+3. RECYCLE: This is the time in seconds after which a connection in the pool is considered stale and replaced by a new connection. If you set the value to -1 then the connections are never recycled. Defaults to -1.
+4. PRE_PING: When set to True, this parameter enables the pre-ping feature, which checks the health of connections in the pool before they are used. It helps to identify and discard any connections that have become stale or invalid. The default is True.
+5. ECHO: Setting this parameter to True would enable logging of SQL statements and other relevant information to the console. This can be useful for debugging purposes but is usually disabled in production environments. The default is False.
+6. TIMEOUT: Specifies the maximum number of seconds that a connection attempt can wait for a connection to become available in the pool. If no connection becomes available within this time, an exception is raised. The default is 30 seconds.
+
+
+# Backend\Django\Performance\008_Application_monitoring_tools.md
+
+### Application monitoring tools
+
+> Source: https://testdriven.io/courses/django-celery/intro/#H-1-why-celery
+
+As you build out your web app, you should try to ensure that the response time of a particular view is lower than 500ms. Application Performance Monitoring tools that can be used to help surface potential issues:
+* New Relic
+* Scout 
+
+
 # Backend\Django\Permissions\001_User_level_permissions.md
 
 ### User-level Permissions
@@ -8848,30 +11284,71 @@ def database():
 # Backend\pytest\006_Monkey_patching.md
 
 ## Monkey patching
-Monkey patching "nadpisuje" elementy programu np. funkcje innymi mechanizmami. Poniżej przyklad zastąpienia funkcji input.
+
+> Source: https://testdriven.io/courses/tdd-django/pytest-monkeypatching/
+
+Monkeypatching is the act of dynamically changing a piece of code at runtime. Essentially, it allows you to override the default behavior of a module, object, method, or function without changing its source code.
+
+Source code:
 
 ```python
-from pay.order import LineItem, Order  
-from pay.payment import pay_order  
-from pytest import MonkeyPatch  
-  
+## twitter.py
 
-## klasa MonkeyPatch musi być przekazana jako argument funkcji
-def test_pay_order(monkeypatch: MonkeyPatch) -> None:
-	# Przygotowanie inputów  
-    inputs = ["1249190007575069", "12", "2024"]  
-    # Zastąpienie domyślnego wywołania funkcji input przez zwrócenie pierwszego elementu listy inputs
-    monkeypatch.setattr("builtins.input", lambda _: inputs.pop(0))  
-    order = Order()  
-    order.line_items.append(LineItem("Test", 100))  
-    pay_order(order)
+import os
+import tweepy
+
+consumer_key = os.getenv("CONSUMER_KEY")
+consumer_secret = os.getenv("CONSUMER_SECRET")
+access_key = os.getenv("ACCESS_KEY")
+access_secret = os.getenv("ACCESS_SECRET")
+
+
+def get_friends(user):
+    """
+    Given a valid Twitter user 20 friends are returned
+    """
+
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_key, access_secret)
+    api = tweepy.API(auth)
+
+    friends = []
+
+    try:
+        user = api.get_user(user)
+    except tweepy.error.TweepError:
+        return "Failed to get request token."
+
+    for friend in user.friends():
+        friends.append(friend.screen_name)
+
+    return friends
 ```
-Do monkey patchingu można wykorzystać też funkcjonalność fixture'ów. Poniżej przykład zablokowania możliwości wykorzystania metody request. Parametr autouse wskazuje, że fixture ten będzie wykonany przed każdym testem.
+
+So, the `get_friends` function uses `tweepy` to authenticate against the Twitter API. Once authenticated, it then returns a list of twenty friends.
+
+Test:
+
 ```python
-@pytest.fixture(autouse=True)  
-def no_requests(monkeypatch):  
-    monkeypatch.delattr('requests.sessions.Session.request')
+## test.py
+
+import twitter
+
+
+def test_get_friends(monkeypatch):
+    def mock_get_friends(user):
+        return [(lambda x: f"friend{x}")(x) for x in range(20)]
+
+    monkeypatch.setattr(twitter, "get_friends", mock_get_friends)
+
+    assert len(twitter.get_friends("testdrivenio")) == 20
 ```
+
+`test_get_friends` uses the pytest monkeypatch fixture to create a mocked version of `get_friends`, called `mock_get_friends`, that returns a list of twenty strings. Then, during a test run, `mock_get_friends` gets called rather than the real `get_friends` function. This not only decreases the amount of time it will take for the test to run, but it also makes the test more predictable since it is not affected by network connectivity issues, outages in the Twitter API, or rate limiting issues.
+
+That said, keep in mind that the test is not actually testing the get_friends function call; it's replacing the function's default behavior (authenticating and calling the Twitter API) with new behavior (simply returning a list of strings).
+
+While mocking or monkeypatching can speed up test runs and make the tests more predictable, at some point in the testing process, possibly in a staging environment, you should test out all external communication so that you can be confident that the system works as expected. This is often achieved with some form of end-to-end tests.
 # Backend\pytest\007_Mocking.md
 
 ## Mockowanie
@@ -15096,6 +17573,32 @@ if __name__ == "__main__":
 When executed, this will display a line-by-line analysis of memory usage during the execution of the example_function
 
 Understanding memory usage is crucial for optimizing code. The memory_profiler module helps in profiling memory consumption.
+# Backend\Python\Profiling\004_timeit.md
+
+### timeit
+
+> Source: https://www.youtube.com/watch?v=zPfSwhofPpk
+
+```python
+import timeit
+
+### Implementation 1: List comprehension
+code1 = """
+a = [1 ,2, 3, 4, 5]
+b = [x * 2 for x in a]
+"""
+
+### Implementation 2: map function
+def code2():
+    a = [1, 2, 3, 4, 5]
+    b = list(map(lambda x: x * 2, a))
+
+
+### Check execution time of both functions
+time1 = timeit.timeit(code1, number=100000)
+time2 = timeit.timeit(code1, number=100000)
+```
+
 # Backend\Python\Servers\001_Gunicorn_vs_uvicorn.md
 
 ### Gunicorn vs Uvicorn
@@ -16005,6 +18508,170 @@ Często nazywana kopcem binarnym. Elementy kopca są wstawiane wraz z priorytete
 
 ![Priority Queue Data Structure](https://cdn.programiz.com/sites/tutorial2program/files/insert-1_0.png)
 
+# Computer Science\Design_patterns\Composite.md
+
+## Composite
+
+> Source: https://refactoring.guru/design-patterns/composite
+
+Composite is a structural design pattern that lets you compose objects into tree structures and then work with these structures as if they were individual objects.
+
+### Problem
+
+Using the Composite pattern makes sense only when the core model of your app can be represented as a tree.
+
+For example, imagine that you have two types of objects: Products and Boxes. A Box can contain several Products as well as a number of smaller Boxes. These little Boxes can also hold some Products or even smaller Boxes, and so on.
+
+Say you decide to create an ordering system that uses these classes. Orders could contain simple products without any wrapping, as well as boxes stuffed with products...and other boxes. How would you determine the total price of such an order?
+
+![box_tree](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Computer%20Science/Design_patterns/_images/box_tree.png)
+
+*An order might comprise various products, packaged in boxes, which are packaged in bigger boxes and so on. The whole structure looks like an upside down tree.*
+
+### Solution
+
+The Composite pattern suggests that you work with Products and Boxes through a common interface which declares a method for calculating the total price.
+
+How would this method work? For a product, it’d simply return the product’s price. For a box, it’d go over each item the box contains, ask its price and then return a total for this box. If one of these items were a smaller box, that box would also start going over its contents and so on, until the prices of all inner components were calculated. A box could even add some extra cost to the final price, such as packaging cost.
+
+![comics](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Computer%20Science/Design_patterns/_images/comics.png)
+
+*The Composite pattern lets you run a behavior recursively over all components of an object tree.*
+
+The greatest benefit of this approach is that you don’t need to care about the concrete classes of objects that compose the tree. You don’t need to know whether an object is a simple product or a sophisticated box. You can treat them all the same via the common interface. When you call a method, the objects themselves pass the request down the tree.
+
+### Structure
+
+![structure](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Computer%20Science/Design_patterns/_images/structure.png)
+
+### Pseudocode
+
+![compound_graphics](https://raw.githubusercontent.com/MateDawid/Learning/main/Notes/Computer%20Science/Design_patterns/_images/compound_graphics.png)
+
+The CompoundGraphic class is a container that can comprise any number of sub-shapes, including other compound shapes. A compound shape has the same methods as a simple shape. However, instead of doing something on its own, a compound shape passes the request recursively to all its children and “sums up” the result.
+
+The client code works with all shapes through the single interface common to all shape classes. Thus, the client doesn’t know whether it’s working with a simple shape or a compound one. The client can work with very complex object structures without being coupled to concrete classes that form that structure.
+
+```javascript
+// The component interface declares common operations for both
+// simple and complex objects of a composition.
+interface Graphic is
+    method move(x, y)
+    method draw()
+
+// The leaf class represents end objects of a composition. A
+// leaf object can't have any sub-objects. Usually, it's leaf
+// objects that do the actual work, while composite objects only
+// delegate to their sub-components.
+class Dot implements Graphic is
+    field x, y
+
+    constructor Dot(x, y) { ... }
+
+    method move(x, y) is
+        this.x += x, this.y += y
+
+    method draw() is
+        // Draw a dot at X and Y.
+
+// All component classes can extend other components.
+class Circle extends Dot is
+    field radius
+
+    constructor Circle(x, y, radius) { ... }
+
+    method draw() is
+        // Draw a circle at X and Y with radius R.
+
+// The composite class represents complex components that may
+// have children. Composite objects usually delegate the actual
+// work to their children and then "sum up" the result.
+class CompoundGraphic implements Graphic is
+    field children: array of Graphic
+
+    // A composite object can add or remove other components
+    // (both simple or complex) to or from its child list.
+    method add(child: Graphic) is
+        // Add a child to the array of children.
+
+    method remove(child: Graphic) is
+        // Remove a child from the array of children.
+
+    method move(x, y) is
+        foreach (child in children) do
+            child.move(x, y)
+
+    // A composite executes its primary logic in a particular
+    // way. It traverses recursively through all its children,
+    // collecting and summing up their results. Since the
+    // composite's children pass these calls to their own
+    // children and so forth, the whole object tree is traversed
+    // as a result.
+    method draw() is
+        // 1. For each child component:
+        //     - Draw the component.
+        //     - Update the bounding rectangle.
+        // 2. Draw a dashed rectangle using the bounding
+        // coordinates.
+
+
+// The client code works with all the components via their base
+// interface. This way the client code can support simple leaf
+// components as well as complex composites.
+class ImageEditor is
+    field all: CompoundGraphic
+
+    method load() is
+        all = new CompoundGraphic()
+        all.add(new Dot(1, 2))
+        all.add(new Circle(5, 3, 10))
+        // ...
+
+    // Combine selected components into one complex composite
+    // component.
+    method groupSelected(components: array of Graphic) is
+        group = new CompoundGraphic()
+        foreach (component in components) do
+            group.add(component)
+            all.remove(component)
+        all.add(group)
+        // All components will be drawn.
+        all.draw()
+```
+
+### Applicability
+
+**Use the Composite pattern when you have to implement a tree-like object structure.**
+
+The Composite pattern provides you with two basic element types that share a common interface: simple leaves and complex containers. A container can be composed of both leaves and other containers. This lets you construct a nested recursive object structure that resembles a tree.
+
+**Use the pattern when you want the client code to treat both simple and complex elements uniformly.**
+
+All elements defined by the Composite pattern share a common interface. Using this interface, the client doesn’t have to worry about the concrete class of the objects it works with.
+
+### How to implement
+
+1. Make sure that the core model of your app can be represented as a tree structure. Try to break it down into simple elements and containers. Remember that containers must be able to contain both simple elements and other containers.
+
+2. Declare the component interface with a list of methods that make sense for both simple and complex components.
+
+3. Create a leaf class to represent simple elements. A program may have multiple different leaf classes.
+
+4. Create a container class to represent complex elements. In this class, provide an array field for storing references to sub-elements. The array must be able to store both leaves and containers, so make sure it’s declared with the component interface type.
+
+    While implementing the methods of the component interface, remember that a container is supposed to be delegating most of the work to sub-elements.
+
+5. Finally, define the methods for adding and removal of child elements in the container.
+
+    Keep in mind that these operations can be declared in the component interface. This would violate the Interface Segregation Principle because the methods will be empty in the leaf class. However, the client will be able to treat all the elements equally, even when composing the tree.
+
+### Pros and cons
+
+✔️ You can work with complex tree structures more conveniently: use polymorphism and recursion to your advantage.
+
+✔️ Open/Closed Principle. You can introduce new element types into the app without breaking the existing code, which now works with the object tree.
+
+❌ It might be difficult to provide a common interface for classes whose functionality differs too much. In certain scenarios, you’d need to overgeneralize the component interface, making it harder to comprehend.
 # Computer Science\Test_Driven_Development\001_Test-Driven Development.md
 
 ## Test-Driven Development

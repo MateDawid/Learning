@@ -2,7 +2,7 @@
 
 > Source: https://testdriven.io/courses/django-celery/getting-started/#H-8-monitoring-celery-with-flower
 
-![004_flower.png](_images%2F004_flower.png)
+![004_flower.png](_images/004_flower.png)
 
 Take note of the UUID column. This is the id of AsyncResult. Copy the UUID for the failed task and open the terminal window where the Django shell is running to view the details:
 

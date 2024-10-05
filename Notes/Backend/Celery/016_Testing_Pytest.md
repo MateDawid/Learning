@@ -351,3 +351,180 @@ register(UserFactory)
 
 We removed the user fixture that we just created, and then "registered" the factory, as a Model Fixture. This will implement an instance of the model created by the factory with the model's lowercase-underscore class name. In other words, in our tests, we'll have access to a variable called user created by UserFactory automatically.
 
+## Test Celery Task
+
+Next, let's add a few tests for our Celery task in tests/polls/test_task.py:
+
+```python
+from unittest import mock
+
+import pytest
+import requests
+from celery.exceptions import Retry
+
+from polls.tasks import task_add_subscribe
+
+
+def test_post_succeed(db, monkeypatch, user):
+    mock_requests_post = mock.MagicMock()
+    monkeypatch.setattr(requests, 'post', mock_requests_post)
+
+    task_add_subscribe(user.pk)
+
+    mock_requests_post.assert_called_with(
+        'https://httpbin.org/delay/5',
+        data={'email': user.email}
+    )
+
+
+def test_exception(db, monkeypatch, user):
+    mock_requests_post = mock.MagicMock()
+    monkeypatch.setattr(requests, 'post', mock_requests_post)
+
+    mock_task_add_subscribe_retry = mock.MagicMock()
+    monkeypatch.setattr(task_add_subscribe, 'retry', mock_task_add_subscribe_retry)
+
+    mock_task_add_subscribe_retry.side_effect = Retry()
+    mock_requests_post.side_effect = Exception()
+
+    with pytest.raises(Retry):
+        task_add_subscribe(user.pk)
+```
+
+Notes:
+
+1. We patch'ed the post method of requests, to prevent the HTTP request from being sent out during test.
+2. If an exception is raised, the Celery task will retry via raise self.retry(exc=exc).
+
+## Marking Test Functions
+
+Now that we have a good understanding of how fixtures work, let's look at mark, which is used to add metadata to your test functions.
+
+To view the default marks from pytest and pytest-django, run:
+
+```commandline
+$ docker compose exec web python -m pytest --markers
+```
+
+For example, if some of your tests cannot run with a version of Python below 3.3, you can use the skipif mark like so:
+
+```python
+@pytest.mark.skipif(sys.version_info < (3, 3), reason='does not support XXX')
+def test_abc():
+    pass
+```
+
+So, when the test suite is run, this test will be skipped if the Python version is lower than 3.3.
+
+## Test Classes
+
+It's worth noting that you can use unittest-based tests with pytest as well:
+
+```python
+from unittest import mock
+
+import pytest
+import requests
+from celery.exceptions import Retry
+
+from polls.tasks import task_add_subscribe
+
+
+@pytest.mark.usefixtures('db', 'user')
+class TestTaskAddSubscribe:
+
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    @mock.patch('polls.tasks.requests.post')
+    def test_post_succeed(self, mock_requests_post, user):
+        task_add_subscribe(user.pk)
+
+        mock_requests_post.assert_called_with(
+            'https://httpbin.org/delay/5',
+            data={'email': user.email}
+        )
+
+    @pytest.mark.usefixtures('db')
+    @mock.patch('polls.tasks.task_add_subscribe.retry')
+    @mock.patch('polls.views.requests.post')
+    def test_exception(self, mock_requests_post, mock_task_add_subscribe_retry, user):
+        mock_task_add_subscribe_retry.side_effect = Retry()
+        mock_requests_post.side_effect = Exception()
+
+        with pytest.raises(Retry):
+            task_add_subscribe(user.pk)
+```
+
+Here, we used pytest.mark.usefixtures, which can be used on a test class or method to set the fixture for the test. We used mock.patch rather than monkeypatch as well.
+
+## Test Coverage
+
+To test the number of lines covered by tests, add pytest-cov to the requirements file:
+
+> pytest-cov integrates Coverage.py with pytest. While you can still generate coverage reports with Coverage.py, pytest-cov works better with the pytest CLI and has a few additional features.
+
+Run the tests with coverage:
+
+```
+$ docker compose up -d --build
+
+$ docker compose exec web pytest --cov=.
+
+
+---------- coverage: platform linux, python 3.11.4-final-0 -----------
+Name                                Stmts   Miss  Cover
+-------------------------------------------------------
+django_celery_example/__init__.py       2      0   100%
+django_celery_example/asgi.py           6      6     0%
+django_celery_example/celery.py        20      7    65%
+django_celery_example/settings.py      33      4    88%
+django_celery_example/urls.py           3      0   100%
+django_celery_example/wsgi.py           4      4     0%
+manage.py                              12     12     0%
+polls/__init__.py                       0      0   100%
+polls/admin.py                          1      0   100%
+polls/apps.py                           4      0   100%
+polls/consumers.py                     27     16    41%
+polls/factories.py                     13      0   100%
+polls/forms.py                          8      0   100%
+polls/migrations/__init__.py            0      0   100%
+polls/models.py                         1      0   100%
+polls/routing.py                        3      3     0%
+polls/tasks.py                         52     18    65%
+polls/tests.py                         39     39     0%
+polls/urls.py                           3      0   100%
+polls/views.py                         78     43    45%
+tests/conftest.py                       9      0   100%
+tests/polls/test_task.py               19      0   100%
+tests/polls/test_view.py               13      0   100%
+tests/settings.py                       1      0   100%
+-------------------------------------------------------
+TOTAL                                 351    152    57%
+
+================================================= 3 passed, 1 warning in 4.66s =================================================
+```
+
+Notice how we're including test files in the coverage report. This is misleading. We can tell Coverage.py to ignore specific files and folders.
+
+Add a .coveragerc file to the project root:
+
+```ini
+[run]
+omit =
+    tests/*
+    */migrations/*
+    manage.py
+    tests.py
+    factories.py
+```
+
+You can create an HTML report as well to get more info:
+
+```
+$ docker compose exec web pytest --cov=. --cov-report html
+$ open htmlcov/index.html
+```

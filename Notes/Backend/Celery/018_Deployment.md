@@ -532,3 +532,7 @@ $ docker compose -f docker-compose.prod.yml -p django-celery-prod ps
 Name   Command   State   Ports
 ------------------------------
 ```
+
+### Deploy to DigitalOcean
+
+Process described [here](https://testdriven.io/courses/django-celery/deployment/#H-9-deploy-to-digitalocean).

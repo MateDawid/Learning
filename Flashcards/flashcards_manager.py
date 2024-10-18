@@ -7,7 +7,7 @@ from collections import OrderedDict
 from typing import TextIO
 
 NOTES_ROOT = r"..\Notes"
-CHECKLIST_FILE = r"..\Flashcards_checklist.md"
+CHECKLIST_FILE = r"Flashcards_checklist.md"
 
 
 def get_notes_files_dict(root_dir: str) -> dict:

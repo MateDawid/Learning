@@ -136,3 +136,6 @@ config.json
 
 #Logs
 logs
+
+# Flashcards
+Flashcards/Checklists/*.md

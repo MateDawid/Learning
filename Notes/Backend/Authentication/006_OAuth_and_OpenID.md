@@ -1,7 +1,8 @@
 # OAuth and OpenID
 
-Source 1: https://testdriven.io/blog/web-authentication-methods/#oauth-and-openid
-Source 2: https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc
+> Source 1: https://testdriven.io/blog/web-authentication-methods/#oauth-and-openid
+> 
+> Source 2: https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc
 
 ## Intro
 

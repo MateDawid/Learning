@@ -1,11 +1,11 @@
 # Flashcard checklist
 ## Backend\Authentication
-- [ ] Backend\Authentication\001_Basic_authentication.md
-- [ ] Backend\Authentication\002_Digest_authentication.md
-- [ ] Backend\Authentication\003_Session-based_Auth.md
-- [ ] Backend\Authentication\004_Token-based_Auth.md
-- [ ] Backend\Authentication\005_One_Time_Passwords.md
-- [ ] Backend\Authentication\006_OAuth_and_OpenID.md
+- [X] ~~Backend\Authentication\001_Basic_authentication.md~~
+- [X] ~~Backend\Authentication\002_Digest_authentication.md~~
+- [X] ~~Backend\Authentication\003_Session-based_Auth.md~~
+- [X] ~~Backend\Authentication\004_Token-based_Auth.md~~
+- [X] ~~Backend\Authentication\005_One_Time_Passwords.md~~
+- [X] ~~Backend\Authentication\006_OAuth_and_OpenID.md~~
 
 ## Backend\Celery
 - [ ] Backend\Celery\001_Terminology.md
@@ -44,6 +44,9 @@
 ## Backend\Django\Channels
 - [ ] Backend\Django\Channels\001_Websockets.md
 - [ ] Backend\Django\Channels\002_Django_Channels.md
+- [ ] Backend\Django\Channels\003_Websockets_setup.md
+- [ ] Backend\Django\Channels\004_Websocket_Sending_and_Receiving_Messages.md
+- [ ] Backend\Django\Channels\005_Websocket_Authenticating_Socket_Connections.md
 
 ## Backend\Django\Config
 - [ ] Backend\Django\Config\001_venv.md
@@ -164,6 +167,7 @@
 - [ ] Backend\Django_REST_Framework\Authentication\001_Credentials_based_authentication.md
 - [ ] Backend\Django_REST_Framework\Authentication\002_Email_verification_and_password_reset.md
 - [ ] Backend\Django_REST_Framework\Authentication\003_Authentication_types.md
+- [ ] Backend\Django_REST_Framework\Authentication\004_JWT.md
 
 ## Backend\Django_REST_Framework\Basics
 - [ ] Backend\Django_REST_Framework\Basics\001_DRF_Basics.md

@@ -8,9 +8,9 @@
 - [X] ~~Backend\Authentication\006_OAuth_and_OpenID.md~~
 
 ## Backend\Celery
-- [ ] Backend\Celery\001_Terminology.md
-- [ ] Backend\Celery\002_Setting_up.md
-- [ ] Backend\Celery\003_Sending_Task_to_Celery.md
+- [X] Backend\Celery\001_Terminology.md
+- [X] Backend\Celery\002_Setting_up.md
+- [X] Backend\Celery\003_Sending_Task_to_Celery.md
 - [ ] Backend\Celery\004_Monitoring_Celery_with_Flower.md
 - [ ] Backend\Celery\005_Checking_state_of_single_task.md
 - [ ] Backend\Celery\006_Auto-reload.md

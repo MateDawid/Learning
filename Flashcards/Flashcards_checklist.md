@@ -8,20 +8,20 @@
 - [X] ~~Backend\Authentication\006_OAuth_and_OpenID.md~~
 
 ## Backend\Celery
-- [X] Backend\Celery\001_Terminology.md
-- [X] Backend\Celery\002_Setting_up.md
-- [X] Backend\Celery\003_Sending_Task_to_Celery.md
-- [ ] Backend\Celery\004_Monitoring_Celery_with_Flower.md
-- [ ] Backend\Celery\005_Checking_state_of_single_task.md
-- [ ] Backend\Celery\006_Auto-reload.md
-- [ ] Backend\Celery\007_Debugging_Celery_Task.md
-- [ ] Backend\Celery\008_Problem_1_Blocking_Form_Submission.md
-- [ ] Backend\Celery\009_Problem_2_Webhook_Handler.md
-- [ ] Backend\Celery\010_Celery_beat.md
-- [ ] Backend\Celery\011_Multiple_queues_and_task_routing.md
-- [ ] Backend\Celery\012_Retry_failed_tasks.md
-- [ ] Backend\Celery\013_Database_transactions.md
-- [ ] Backend\Celery\014_Logging.md
+- [X] ~~Backend\Celery\001_Terminology.md~~
+- [X] ~~Backend\Celery\002_Setting_up.md~~
+- [X] ~~Backend\Celery\003_Sending_Task_to_Celery.md~~
+- [X] ~~Backend\Celery\004_Monitoring_Celery_with_Flower.md~~
+- [X] ~~Backend\Celery\005_Checking_state_of_single_task.md~~
+- [X] ~~Backend\Celery\006_Auto-reload.md~~
+- [X] ~~Backend\Celery\007_Debugging_Celery_Task.md~~
+- [X] ~~Backend\Celery\008_Problem_1_Blocking_Form_Submission.md~~
+- [X] ~~Backend\Celery\009_Problem_2_Webhook_Handler.md~~
+- [X] ~~Backend\Celery\010_Celery_beat.md~~
+- [X] ~~Backend\Celery\011_Multiple_queues_and_task_routing.md~~
+- [X] ~~Backend\Celery\012_Retry_failed_tasks.md~~
+- [X] ~~Backend\Celery\013_Database_transactions.md~~
+- [X] ~~Backend\Celery\014_Logging.md~~
 - [ ] Backend\Celery\015_Testing_Django_Test_Framework.md
 - [ ] Backend\Celery\016_Testing_Pytest.md
 - [ ] Backend\Celery\017_Custom_task_decorator.md
